@@ -21,4 +21,8 @@ public class Cardapio {
     public void removeList(int i){
         pratos.remove(i);
     }
+
+    public Prato selectList(int j){
+        return pratos.get(j);
+    }
 }
