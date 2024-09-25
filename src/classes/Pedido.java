@@ -9,4 +9,10 @@ public class Pedido {
         this.prato = prato;
         this.num_mesa = num_mesa;
     }
+
+    public void mostrarPedido(){
+        System.out.println("Prato: " + prato.nome);
+        System.out.println("Mesa: " + num_mesa);
+        System.out.println("Confirmado: " + (confirmado ? "Sim" : "Não"));
+    }
 }

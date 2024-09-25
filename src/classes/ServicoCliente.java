@@ -1,7 +1,9 @@
 package classes;
-import java.util.Scanner;
 
 public interface ServicoCliente {
-    public void enviarPedido(Cardapio _cardapio,Mesa[][] mesas);
-    public void enviarPedido(Cardapio _cardapio);
+        void enviarPedido(Cardapio _cardapio,Mesa[][] mesas);
+        void enviarPedido(Cardapio _cardapio);
+
+        void cancelarPedido(Mesa[][] mesas);
+        void cancelarPedido();
 }
