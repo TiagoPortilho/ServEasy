@@ -127,4 +127,17 @@ public class Atendente extends Funcionarios implements ServicoCliente{
             }while (!(escolha == 5));
         }
     }
+
+    @Override
+    public void darFeedback(Mesa[][] mesas, Feedback feedbacklist){
+        Scanner input = new Scanner(System.in);
+        String _feedback;
+        Mesa _mesa;
+        _mesa = verificarMesas(mesas);
+        System.out.println("Escreva o feedback da mesa " + _mesa.numero + ":");
+        _feedback = input.nextLine();
+        feedbacklist.addList(_feedback);
+        System.out.println("Seu feedback foi enviado! Aperte ENTER para continuar.");
+        input.nextLine();
+    }
 }

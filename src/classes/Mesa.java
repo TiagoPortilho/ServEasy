@@ -94,4 +94,15 @@ public class Mesa implements ServicoCliente{
         }
 
     }
+
+    @Override
+    public void darFeedback(Mesa[][] mesas, Feedback feedbacklist){
+        Scanner input = new Scanner(System.in);
+        String _feedback;
+        System.out.println("Escreva seu feedback:");
+        _feedback = input.nextLine();
+        feedbacklist.addList(_feedback);
+        System.out.println("Seu feedback foi enviado! Aperte ENTER para continuar.");
+        input.nextLine();
+    }
 }
