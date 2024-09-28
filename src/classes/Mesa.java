@@ -19,11 +19,6 @@ public class Mesa implements ServicoCliente{
 
     @Override
     public void enviarPedido(Cardapio _cardapio, Mesa[][] mesas) {
-        //don't need to use, this is for interface implementation.
-    }
-
-    @Override
-    public void enviarPedido(Cardapio _cardapio) {
         Scanner input = new Scanner(System.in);
         int j;//Select
         Prato _prato;
@@ -42,11 +37,6 @@ public class Mesa implements ServicoCliente{
 
     @Override
     public void cancelarPedido(Mesa[][] mesas) {
-        //don't need to use, this is for interface implementation.
-    }
-
-    @Override
-    public void cancelarPedido() {
         Scanner input = new Scanner(System.in);
         int j, cont = 0;
         Pedido _pedido;
@@ -65,8 +55,43 @@ public class Mesa implements ServicoCliente{
         else {
             pedidos.remove(_pedido);
             System.out.println("Seu pedido foi cancelado.");
+            valor_gasto -= _pedido.prato.preco;
         }
     }
 
+    @Override
+    public void pagarMesa(Mesa[][] mesas) {
+        Scanner input = new Scanner(System.in);
+        String i;
+        int escolha;
+        System.out.println("Deseja fechar a conta?(S)Sim (N)Não");
+        i = input.nextLine().toUpperCase();
+        if (i.equals("S")){
+            System.out.println("Valor gasto: R$" + valor_gasto);
+            do {
+                System.out.println("""
+                    Escolha a forma de pagamento:
+                    1 - PIX
+                    2 - Crédito
+                    3 - Débito
+                    4 - Aplicativo de pagamento
+                    """);
+                escolha = input.nextInt();input.nextLine();
+                switch (escolha){
+                    case 1:
+                        System.out.println("Pagamento efetuado!");
+                    case 2:
+                        System.out.println("Pagamento efetuado!");
+                    case 3:
+                        System.out.println("Pagamento efetuado!");
+                    case 4:
+                        System.out.println("Pagamento efetuado!");
+                    default:
+                        System.out.println("Selecione uma opção válida");
+                }
+            }while (!(escolha == 5));
 
+        }
+
+    }
 }
