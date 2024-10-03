@@ -5,15 +5,13 @@ import java.util.Scanner;
 
 public class Mesa implements ServicoCliente{
     int numero;
-    boolean ocupada = false;//default value
+    boolean ocupada = false;// default value
     List<Pedido> pedidos;
-    float valor_gasto;
-    boolean pago;
+    float valor_gasto = 0;// default value
+    boolean pago = false;// default value
 
-    public Mesa(int numero, float valor_gasto, boolean pago) {
+    public Mesa(int numero) {
         this.numero = numero;
-        this.valor_gasto = valor_gasto;
-        this.pago = pago;
     }
 
 
