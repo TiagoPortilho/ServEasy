@@ -1,9 +1,9 @@
 package classes;
 
 public class Prato {
-    String nome;
-    float preco;
-    String descricao;
+    public String nome;
+    public float preco;
+    public String descricao;
 
     public Prato(String nome, float preco, String descricao) {
         this.nome = nome;

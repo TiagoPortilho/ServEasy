@@ -2,21 +2,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import classes.*;
-import usuarios.UserAtendente;
-import usuarios.UserCliente;
-import usuarios.UserCozinheiro;
-import usuarios.UserDono;
+import usuarios.* ;
+
 
 public class Main {
     public static void main(String[] args) {
         // This part and "usuarios" folder is an example of how the project will work.
         Scanner input = new Scanner(System.in);
         int a;
+        Feedback feedbacklist = new Feedback();
 
         // Table filler.
-        Mesa[][] mesas = new Mesa[6][6];
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
+        Mesa[][] mesas = new Mesa[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 mesas[i][j] = new Mesa(i * 10 + j + 1);
             }
         }
@@ -42,16 +41,24 @@ public class Main {
         switch (a){
             case 1:
                 UserCliente cliente = new UserCliente();
-                cliente.clienteProgram(mesas, cardapio);
+                cliente.clienteProgram(mesas, cardapio,feedbacklist);
+                break;
             case 2:
                 UserAtendente atendente = new UserAtendente();
-                atendente.atendenteProgram(mesas,cardapio);
+                atendente.atendenteProgram(mesas,cardapio,feedbacklist);
+                break;
             case 3:
                 UserCozinheiro cozinheiro = new UserCozinheiro();
-                cozinheiro.cozinheiroProgram(mesas,cardapio);
+                cozinheiro.cozinheiroProgram(mesas,cardapio,feedbacklist);
+                break;
             case 4:
                 UserDono dono = new UserDono();
-                dono.donoProgram(mesas,cardapio);
+                dono.donoProgram(mesas,cardapio,feedbacklist);
+                break;
+            default:
+                System.out.println("Essa opção não existe.");
+                break;
+
         }
     }
 }

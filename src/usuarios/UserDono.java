@@ -3,8 +3,7 @@ package usuarios;
 import classes.*;
 
 public class UserDono {
-
-    public void donoProgram(Mesa[][] mesas, Cardapio cardapio){
+    public void donoProgram(Mesa[][] mesas, Cardapio cardapio, Feedback feedbacklist){
 
     }
 }

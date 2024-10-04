@@ -3,7 +3,7 @@ package usuarios;
 import classes.*;
 
 public class UserCozinheiro {
-    public void cozinheiroProgram(Mesa[][] mesas, Cardapio cardapio){
+    public void cozinheiroProgram(Mesa[][] mesas, Cardapio cardapio, Feedback feedbacklist){
 
     }
 }

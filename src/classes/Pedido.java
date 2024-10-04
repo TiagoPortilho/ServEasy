@@ -1,9 +1,9 @@
 package classes;
 
 public class Pedido {
-    Prato prato;
-    int num_mesa;
-    boolean confirmado = false;
+    public Prato prato;
+    public int num_mesa;
+    public boolean confirmado = false;
 
     public Pedido(Prato prato, int num_mesa) {
         this.prato = prato;

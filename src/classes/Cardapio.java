@@ -1,8 +1,9 @@
 package classes;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Cardapio {
-    List<Prato> pratos;
+    public List<Prato> pratos = new ArrayList<>();
 
     public void mostrarCardapio(){
         int i = 0;
