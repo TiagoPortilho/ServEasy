@@ -74,22 +74,27 @@ public class Atendente extends Funcionarios implements ServicoCliente{
 
         _mesa = verificarMesas(mesas);
 
-        System.out.println("Mostrando pedidos:");
-        for (Pedido pedido : _mesa.pedidos){
-            System.out.println("\nPedido - " + cont);
-            pedido.mostrarPedido();
-            cont++;
-        }
-        System.out.println("\nSelecione o pedido que deseja cancelar:");
-        j = input.nextInt();input.nextLine();
-        _pedido = _mesa.pedidos.get(j);
-        if (!_pedido.confirmado){
-            System.out.println("Seu pedido já foi confirmado e está em preparo, não será possível cancelar.");
+        if (_mesa.pedidos.isEmpty()){
+            System.out.println("Essa mesa ainda não fez nenhum pedido");
         }
         else {
-            _mesa.pedidos.remove(_pedido);
-            System.out.println("Seu pedido foi cancelado.");
-            _mesa.valor_gasto -= _pedido.prato.preco;
+            System.out.println("Mostrando pedidos:");
+            for (Pedido pedido : _mesa.pedidos){
+                System.out.println("\nPedido - " + cont);
+                pedido.mostrarPedido();
+                cont++;
+            }
+            System.out.println("\nSelecione o pedido que deseja cancelar:");
+            j = input.nextInt();input.nextLine();
+            _pedido = _mesa.pedidos.get(j);
+            if (_pedido.confirmado){
+                System.out.println("Seu pedido já foi confirmado e está em preparo, não será possível cancelar.");
+            }
+            else {
+                _mesa.pedidos.remove(_pedido);
+                System.out.println("Seu pedido foi cancelado.");
+                _mesa.valor_gasto -= _pedido.prato.preco;
+            }
         }
     }
 
@@ -105,28 +110,23 @@ public class Atendente extends Funcionarios implements ServicoCliente{
         i = input.nextLine().toUpperCase();
         if (i.equals("S")){
             System.out.println("Valor gasto: R$" + _mesa.valor_gasto);
-            do {
-                System.out.println("""
+            System.out.println("""
                     Escolha a forma de pagamento:
                     1 - PIX
                     2 - Crédito
                     3 - Débito
                     4 - Aplicativo de pagamento
                     """);
-                escolha = input.nextInt();input.nextLine();
-                switch (escolha){
-                    case 1:
-                        System.out.println("Pagamento efetuado!");
-                    case 2:
-                        System.out.println("Pagamento efetuado!");
-                    case 3:
-                        System.out.println("Pagamento efetuado!");
-                    case 4:
-                        System.out.println("Pagamento efetuado!");
-                    default:
-                        System.out.println("Selecione uma opção válida");
-                }
-            }while (!(escolha == 5));
+            escolha = input.nextInt();input.nextLine();
+            switch (escolha){
+                case 1, 2, 3, 4:
+                    System.out.println("Pagamento efetuado!");
+                    break;
+                default:
+                    System.out.println("Selecione uma opção válida");
+                    break;
+            }
+
         }
     }
 

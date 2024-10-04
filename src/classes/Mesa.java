@@ -15,6 +15,16 @@ public class Mesa implements ServicoCliente{
         this.numero = numero;
     }
 
+    public void verPedidos(){
+        int cont = 0;
+        for (Pedido pedido : pedidos){
+            System.out.println("\nPedido - " + cont);
+            pedido.mostrarPedido();
+            cont++;
+        }
+        System.out.println("Valor gasto: R$" + valor_gasto);
+    }
+
     @Override
     public Pedido enviarPedido(Cardapio _cardapio, Mesa[][] mesas) {
         Scanner input = new Scanner(System.in);
@@ -38,26 +48,32 @@ public class Mesa implements ServicoCliente{
 
     @Override
     public void cancelarPedido(Mesa[][] mesas) {
-        Scanner input = new Scanner(System.in);
-        int j, cont = 0;
-        Pedido _pedido;
-        System.out.println("Mostrando pedidos:");
-        for (Pedido pedido : pedidos){
-            System.out.println("\nPedido - " + cont);
-            pedido.mostrarPedido();
-            cont++;
-        }
-        System.out.println("\nSelecione o pedido que deseja cancelar:");
-        j = input.nextInt();input.nextLine();
-        _pedido = pedidos.get(j);
-        if (!_pedido.confirmado){
-            System.out.println("Seu pedido já foi confirmado e está em preparo, não será possível cancelar.");
+        if (pedidos.isEmpty()){
+            System.out.println("Você ainda não fez nenhum pedido.");
         }
         else {
-            pedidos.remove(_pedido);
-            System.out.println("Seu pedido foi cancelado.");
-            valor_gasto -= _pedido.prato.preco;
+            Scanner input = new Scanner(System.in);
+            int j, cont = 0;
+            Pedido _pedido;
+            System.out.println("Mostrando pedidos:");
+            for (Pedido pedido : pedidos){
+                System.out.println("\nPedido - " + cont);
+                pedido.mostrarPedido();
+                cont++;
+            }
+            System.out.println("\nSelecione o pedido que deseja cancelar:");
+            j = input.nextInt();input.nextLine();
+            _pedido = pedidos.get(j);
+            if (_pedido.confirmado){
+                System.out.println("Seu pedido já foi confirmado e está em preparo, não será possível cancelar.");
+            }
+            else {
+                pedidos.remove(_pedido);
+                System.out.println("Seu pedido foi cancelado.");
+                valor_gasto -= _pedido.prato.preco;
+            }
         }
+
     }
 
     @Override
@@ -69,31 +85,24 @@ public class Mesa implements ServicoCliente{
         i = input.nextLine().toUpperCase();
         if (i.equals("S")){
             System.out.println("Valor gasto: R$" + valor_gasto);
-            do {
-                System.out.println("""
+
+            System.out.println("""
                     Escolha a forma de pagamento:
                     1 - PIX
                     2 - Crédito
                     3 - Débito
                     4 - Aplicativo de pagamento
                     """);
-                escolha = input.nextInt();input.nextLine();
-                switch (escolha){
-                    case 1:
-                        System.out.println("Pagamento efetuado!");
-                    case 2:
-                        System.out.println("Pagamento efetuado!");
-                    case 3:
-                        System.out.println("Pagamento efetuado!");
-                    case 4:
-                        System.out.println("Pagamento efetuado!");
-                    default:
-                        System.out.println("Selecione uma opção válida");
-                }
-            }while (!(escolha == 5));
-
+            escolha = input.nextInt();input.nextLine();
+            switch (escolha){
+                case 1, 2, 3, 4:
+                    System.out.println("Pagamento efetuado!");
+                    break;
+                default:
+                    System.out.println("Selecione uma opção válida");
+            }
+            this.pago = true;
         }
-
     }
 
     @Override
