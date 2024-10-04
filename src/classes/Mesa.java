@@ -1,23 +1,24 @@
 package classes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Mesa implements ServicoCliente{
-    int numero;
-    boolean ocupada = false;// default value
-    List<Pedido> pedidos;
-    float valor_gasto = 0;// default value
-    boolean pago = false;// default value
+    public int numero;
+    public boolean ocupada = false;// default value
+    public List<Pedido> pedidos = new ArrayList<>();
+    public float valor_gasto = 0;// default value
+    public boolean pago = false;// default value
 
     public Mesa(int numero) {
         this.numero = numero;
     }
 
-
     @Override
-    public void enviarPedido(Cardapio _cardapio, Mesa[][] mesas) {
+    public Pedido enviarPedido(Cardapio _cardapio, Mesa[][] mesas) {
         Scanner input = new Scanner(System.in);
+        Pedido pedido;
         int j;//Select
         Prato _prato;
         int num_mesa = this.numero;
@@ -26,11 +27,13 @@ public class Mesa implements ServicoCliente{
         System.out.println("Selecione o prato desejado:");
         j = input.nextInt();input.nextLine();
         _prato = _cardapio.selectList(j);
-        pedidos.add(new Pedido(_prato,num_mesa));
+        pedido = new Pedido(_prato,num_mesa);
+        pedidos.add(pedido);
         //the path to kitchen will be implemented soon
         valor_gasto += _prato.preco;//it can be subtracted if the order is canceled
         System.out.println("Pedido feito! Aperte ENTER para continuar");
         input.nextLine();
+        return pedido;
     }
 
     @Override

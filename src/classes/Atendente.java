@@ -42,7 +42,7 @@ public class Atendente extends Funcionarios implements ServicoCliente{
 
 
     @Override
-    public void enviarPedido(Cardapio _cardapio, Mesa[][] mesas) {
+    public Pedido enviarPedido(Cardapio _cardapio, Mesa[][] mesas) {
         Scanner input = new Scanner(System.in);
         int num_mesa;
         int j;
@@ -55,12 +55,14 @@ public class Atendente extends Funcionarios implements ServicoCliente{
         System.out.println("Selecione o prato desejado:");
         j = input.nextInt();input.nextLine();
         _prato = _cardapio.selectList(j);
-        _mesa.pedidos.add(new Pedido(_prato,num_mesa));
+        Pedido pedido = new Pedido(_prato,num_mesa);
+        _mesa.pedidos.add(pedido);
         //the path to kitchen will be implemented soon
         _mesa.valor_gasto += _prato.preco;//it can be subtracted if the order is canceled
 
         System.out.println("Pedido feito! Aperte ENTER para continuar");
         input.nextLine();
+        return pedido;
     }
 
     @Override
