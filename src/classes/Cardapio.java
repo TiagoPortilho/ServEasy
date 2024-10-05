@@ -26,4 +26,8 @@ public class Cardapio {
     public Prato selectList(int j){
         return pratos.get(j);
     }
+
+    public int sizeList(){
+        return pratos.size();
+    }
 }
