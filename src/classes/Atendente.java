@@ -35,7 +35,9 @@ public class Atendente extends Funcionarios implements ServicoCliente{
                     }
                 }
             }
-            System.out.println("O número dessa mesa não existe ou não está ocupada.");
+            if (l != 1){
+                System.out.println("O número dessa mesa não existe ou não está ocupada.");
+            }
         } while (l != 1);
         return _mesa;
     }
