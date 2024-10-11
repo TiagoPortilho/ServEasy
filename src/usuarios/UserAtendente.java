@@ -60,6 +60,7 @@ public class UserAtendente {
                             }
                         }
                     }
+                    break;
                 case 2:
                     Pedido pedido = you.enviarPedido(cardapio, mesas);
                     // 20 second counter to accept the order
