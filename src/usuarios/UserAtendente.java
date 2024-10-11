@@ -49,19 +49,10 @@ public class UserAtendente {
 
             switch (escolha) {
                 case 1:
-                    System.out.println("Estado do restaurante: |X|Vazia |00|Ocupada");
-                    for (Mesa[] arrayMesa : mesas) {
-                        System.out.println(" ");
-                        for (Mesa value : arrayMesa) {
-                            if (value.ocupada) {
-                                System.out.print("|" + value.numero + "|");
-                            } else {
-                                System.out.print("|X|");
-                            }
-                        }
-                    }
+                    estadoRestaurante(mesas);
                     break;
                 case 2:
+                    estadoRestaurante(mesas);
                     Pedido pedido = you.enviarPedido(cardapio, mesas);
                     // 20 second counter to accept the order
                     new Thread(() -> {
@@ -74,12 +65,15 @@ public class UserAtendente {
                     }).start();
                     break;
                 case 3:
+                    estadoRestaurante(mesas);
                     you.cancelarPedido(mesas);
                     break;
                 case 4:
+                    estadoRestaurante(mesas);
                     you.pagarMesa(mesas);
                     break;
                 case 5:
+                    estadoRestaurante(mesas);
                     you.darFeedback(mesas, feedbacklist);
                     break;
                 case 6:
@@ -91,7 +85,19 @@ public class UserAtendente {
             }
         } while (!(escolha == 6));
 
+    }
 
-
+    public void estadoRestaurante(Mesa[][] mesas){
+        System.out.println("Estado do restaurante: |X|Vazia |00|Ocupada");
+        for (Mesa[] arrayMesa : mesas) {
+            System.out.println(" ");
+            for (Mesa value : arrayMesa) {
+                if (value.ocupada) {
+                    System.out.print("|" + value.numero + "|");
+                } else {
+                    System.out.print("|X|");
+                }
+            }
+        }
     }
 }
