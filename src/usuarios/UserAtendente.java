@@ -99,5 +99,6 @@ public class UserAtendente {
                 }
             }
         }
+        System.out.println("\n");
     }
 }
