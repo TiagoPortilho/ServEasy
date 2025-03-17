@@ -1,27 +1,27 @@
 package serveasy.model;
 
-import java.util.List;
-
 public class Feedback {
-    private List<String> feedback;
+    private int id;
+    private String comentario;
 
-    public Feedback(List<String> feedback) {
-        this.feedback = feedback;
+    public Feedback(int id, String comentario) {
+        this.id = id;
+        this.comentario = comentario;
     }
 
-    public List<String> getFeedback() {
-        return feedback;
+    public int getId() {
+        return id;
     }
 
-    public void setFeedback(List<String> feedback) {
-        this.feedback = feedback;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void adicionarFeedback(String comentario) {
-        this.feedback.add(comentario);
+    public String getComentario() {
+        return comentario;
     }
 
-    public void removerFeedback(String comentario) {
-        this.feedback.remove(comentario);
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
 }

@@ -137,20 +137,20 @@ public class Em_Andamento extends javax.swing.JFrame {
         tblPedidosAndamento.setForeground(new java.awt.Color(204, 204, 204));
         tblPedidosAndamento.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Id_pedido", "Numero_mesa", "Prato", "Hora"
+                "Id_pedido", "Numero_mesa", "Prato"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {

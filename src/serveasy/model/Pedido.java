@@ -1,6 +1,7 @@
 package serveasy.model;
 
 public class Pedido {
+    private int id;
     private Prato prato;
     private Mesa numMesa;
     private boolean confirmado;
