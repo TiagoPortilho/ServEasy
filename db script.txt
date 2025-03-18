@@ -46,3 +46,7 @@ CREATE TABLE pedido (
     CONSTRAINT fk_pedido_prato FOREIGN KEY (id_prato) REFERENCES prato(id),  
     CONSTRAINT fk_pedido_mesa FOREIGN KEY (id_mesa) REFERENCES mesa(id)     
 );
+
+CREATE TABLE feedback (
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,       
+    comentario TEXT NOT NULL);       
