@@ -3,17 +3,28 @@ package serveasy.model;
 import java.util.List;
 
 public class Mesa {
-    private int numero;
-    private boolean ocupada;
-    private List<Pedido> pedidos;
-    private float valorGasto;
-    private boolean pago;
+    private int id;                   
+    private int numero;               
+    private boolean ocupada;          
+    private List<Pedido> pedidos;     
+    private float valorGasto;         
+    private boolean pago;             
 
+    // Construtor
     public Mesa(int numero) {
         this.numero = numero;
         this.ocupada = false;
         this.valorGasto = 0.0f;
         this.pago = false;
+    }
+
+    // Getters e Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getNumero() {

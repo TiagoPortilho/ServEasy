@@ -1,12 +1,13 @@
 package serveasy.model;
 
-public class Cozinheiro {
+public class Funcionario {
+    private int id;
     private String nome;
     private String cpf;
     private int idade;
     private double salario;
 
-    public Cozinheiro(String nome, String cpf, int idade, double salario) {
+    public Funcionario(String nome, String cpf, int idade, double salario) {
         this.nome = nome;
         this.cpf = cpf;
         this.idade = idade;
