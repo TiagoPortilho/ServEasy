@@ -5,7 +5,7 @@ CREATE TABLE funcionario (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     nome VARCHAR(255) NOT NULL,
     cpf VARCHAR(14) NOT NULL UNIQUE,
-    tipo_funcionario VARCHAR(100) NOT NULL
+    tipo_funcionario VARCHAR(100) NOT NULL,
     idade INT NOT NULL,
     salario DECIMAL(10,2)
 );
