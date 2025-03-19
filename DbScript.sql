@@ -49,4 +49,30 @@ CREATE TABLE pedido (
 
 CREATE TABLE feedback (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,       
-    comentario TEXT NOT NULL);       
+    comentario TEXT NOT NULL);
+    
+    
+    
+INSERT INTO funcionario (nome, cpf, idade, salario, tipo_funcionario) 
+VALUES ('NomeDono', '12345678900', 45, 8000.00, 'Dono');
+
+INSERT INTO funcionario (nome, cpf, idade, salario, tipo_funcionario) 
+VALUES ('NomeCozinheiro', '98765432100', 35, 3000.00, 'Cozinheiro');
+
+INSERT INTO funcionario (nome, cpf, idade, salario, tipo_funcionario) 
+VALUES ('NomeAtendente', '45612378900', 28, 2000.00, 'Atendente');
+
+INSERT INTO mesa (numero, ocupada, valor_gasto, pago) 
+VALUES (101, false, 0.00, false);
+
+INSERT INTO usuario (login, senha, id_funcionario) 
+VALUES ('dono123', 'donosenha123', 1);
+
+INSERT INTO usuario (login, senha, id_funcionario) 
+VALUES ('cozinheiro123', 'cozinhasenha123', 2);
+
+INSERT INTO usuario (login, senha, id_funcionario) 
+VALUES ('atendente123', 'atendentesenha123', 3);
+
+INSERT INTO usuario (login, senha, id_mesa) 
+VALUES ('mesa1', 'mesa1senha', 1);
