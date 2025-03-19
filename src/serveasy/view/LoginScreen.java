@@ -5,6 +5,7 @@
 package serveasy.view;
 
 import javax.swing.JOptionPane;
+import serveasy.control.DonoDAO;
 import serveasy.control.MesasDAO;
 import serveasy.control.UsuarioDAO;
 import serveasy.model.Usuario;
@@ -53,7 +54,14 @@ public class LoginScreen extends javax.swing.JFrame {
         return usuario;
     }
     
-    
+    private boolean isOpen(){
+        if(new DonoDAO().getEstadoRestaurante().equals("aberto")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     
 
     /**
@@ -207,21 +215,39 @@ public class LoginScreen extends javax.swing.JFrame {
                 System.out.println("Usuário autenticado: " + usuario.getLogin());
                 r = new UsuarioDAO().getTipoFuncionarioOuMesa(usuario.getId());
                 if (r.matches("\\d+")) {
-                    new Cardapio(Integer.parseInt(r)).setVisible(true);
-                    new MesasDAO().setOcupada(Integer.parseInt(r), true);
-                    dispose();
+                    if(isOpen()){
+                        new Cardapio(Integer.parseInt(r)).setVisible(true);
+                        new MesasDAO().setOcupada(Integer.parseInt(r), true);
+                        dispose();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(rootPane,"O dono precisa ABRIR o restaurante para você poder acessar.");
+                    }
                 } else {
                     if(r.equals("Dono")){
                         new Inicial().setVisible(true);
                         dispose();
                     }
+                    
                     else if(r.equals("Cozinheiro")){
-                        new Novos_Pedidos().setVisible(true);
-                        dispose();
+                        if(isOpen()){
+                            new Novos_Pedidos().setVisible(true);
+                            dispose();
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(rootPane,"O dono precisa ABRIR o restaurante para você poder acessar.");
+                        }
+                        
                     }
                     else if(r.equals("Atendente")){
-                        new Cardapio().setVisible(true);
-                        dispose();
+                        if(isOpen()){
+                            new Cardapio().setVisible(true);
+                            dispose();
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(rootPane,"O dono precisa ABRIR o restaurante para você poder acessar.");
+                        }
+                        
                     }
                     else{
                         new TelaErro("Não foi possível conectar a nenhum usuário.").setVisible(true);
