@@ -4,6 +4,11 @@
  */
 package serveasy.view.dono;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.PratoDAO;
+import serveasy.model.Prato;
 import serveasy.view.*;
 
 /**
@@ -17,8 +22,47 @@ public class Cardapio_Dono extends javax.swing.JFrame {
      */
     public Cardapio_Dono() {
         initComponents();
-    }
+        
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PratoDAO().listarPratos());
+            }
 
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    
+    private void fillTable(List<Prato> listaPratos){
+        
+        DefaultTableModel tableFilmes = (DefaultTableModel) tblCardapio.getModel(); 
+        
+        tableFilmes.setRowCount(0);
+            
+        for(Prato p : listaPratos){
+            Object[] obj = new Object[] { 
+                        p.getId(),            
+                        p.getNome(),   
+                        p.getPreco(),   
+                        p.getDescricao()
+                    };
+            tableFilmes.addRow(obj);
+        }
+    
+    }
+    
+    
+    private int IdValorSelecionado(){
+        int id,row;
+        row = tblCardapio.getSelectedRow();
+        id = (int)tblCardapio.getValueAt(row, 0);
+        return id;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -69,7 +113,7 @@ public class Cardapio_Dono extends javax.swing.JFrame {
         jScrollPane2.setForeground(new java.awt.Color(204, 204, 204));
 
         tblCardapio.setBackground(new java.awt.Color(225, 165, 0));
-        tblCardapio.setForeground(new java.awt.Color(204, 204, 204));
+        tblCardapio.setForeground(new java.awt.Color(0, 0, 0));
         tblCardapio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -286,7 +330,22 @@ public class Cardapio_Dono extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddPratoActionPerformed
 
     private void btnRemovPratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemovPratoActionPerformed
-        new TelaErro().setVisible(true);
+        String[] options = {"Sim", "Não"};
+        int continuar = JOptionPane.showOptionDialog(rootPane, 
+            "Tem certeza que deseja deletar?", 
+            "Confirmar Deleção", 
+            JOptionPane.DEFAULT_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            options, 
+            options[0]); 
+
+        if (continuar == 0) { 
+            new PratoDAO().delPrato(IdValorSelecionado()); 
+            fillTable(new PratoDAO().listarPratos()); 
+        } else {
+            // pass
+        }
     }//GEN-LAST:event_btnRemovPratoActionPerformed
 
     private void bntInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntInicioActionPerformed

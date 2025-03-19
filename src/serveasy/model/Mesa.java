@@ -11,7 +11,8 @@ public class Mesa {
     private boolean pago;             
 
 
-    public Mesa(int numero) {
+    public Mesa(int id, int numero, boolean ocupada, float valorGasto, boolean pago){
+        this.id = id;
         this.numero = numero;
         this.ocupada = false;
         this.valorGasto = 0.0f;

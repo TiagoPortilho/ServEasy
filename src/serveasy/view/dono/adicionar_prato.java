@@ -4,6 +4,9 @@
  */
 package serveasy.view.dono;
 
+import javax.swing.JOptionPane;
+import serveasy.control.PratoDAO;
+import serveasy.model.Prato;
 import serveasy.view.TelaErro;
 
 /**
@@ -17,6 +20,32 @@ public class adicionar_prato extends javax.swing.JFrame {
      */
     public adicionar_prato() {
         initComponents();
+    }
+    
+    private boolean Verify(){
+        boolean verify = false;
+        if(txtNome.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"Por favor, informe o NOME do prato.");
+        }
+        else if(txtPreco.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"Por favor, informe o PREÇO do prato.");
+        }
+        else if(txtDesc.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"Por favor, informe a DESCRIÇÃO do prato.");
+        }
+        else{
+            if((txtNome.getText().length()) > 255){
+                JOptionPane.showMessageDialog(rootPane,"Limite de caracteres atingidos em NOME.\n(255 Caracteres)");
+            }
+            else if(!(txtPreco.getText().trim().matches("[0-9]+([.][0-9]+)?"))){
+                JOptionPane.showMessageDialog(rootPane,"Por favor, informe o PREÇO corretamente.\nFormatação correta: 23.45 ou 123");
+            }
+            else{
+                verify = true;
+            }
+        }
+                
+        return verify;
     }
 
     /**
@@ -180,7 +209,18 @@ public class adicionar_prato extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPrecoActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
-        new TelaErro().setVisible(true);
+        if(Verify()){
+            String nome,desc;
+            float preco;
+
+            nome = txtNome.getText();
+            preco = Float.parseFloat(txtPreco.getText());
+            desc = txtDesc.getText();
+
+            Prato prato = new Prato(nome,preco,desc);
+            new PratoDAO().addPrato(prato);
+            dispose();
+        }
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

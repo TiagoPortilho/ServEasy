@@ -76,3 +76,14 @@ VALUES ('atendente123', 'atendentesenha123', 3);
 
 INSERT INTO usuario (login, senha, id_mesa) 
 VALUES ('mesa1', 'mesa1senha', 1);
+
+CREATE TABLE processo_dono (
+    id INT PRIMARY KEY,
+    estado_restaurante ENUM('aberto', 'fechado') NOT NULL,
+    total_ganho DECIMAL(10,2) DEFAULT 0.00,
+    ganho_hoje DECIMAL(10, 2) DEFAULT 0.00,
+    nota TEXT DEFAULT NULL 
+);
+
+INSERT INTO processo_dono (id, estado_restaurante, total_ganho, nota)
+VALUES (1, 'fechado', 0.00, NULL);

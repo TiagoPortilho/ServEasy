@@ -4,6 +4,8 @@
  */
 package serveasy.view.dono;
 
+import javax.swing.JOptionPane;
+import serveasy.control.MesasDAO;
 import serveasy.view.TelaErro;
 
 /**
@@ -18,7 +20,24 @@ public class editar_mesas extends javax.swing.JFrame {
     public editar_mesas() {
         initComponents();
     }
-
+    
+    
+    private boolean Verify(){
+        boolean verify = false;
+        if(txtMesas.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"Por favor, informe o NOME do prato.");
+        }
+        else{
+            if(!(txtMesas.getText().matches("^[0-9]{1,3}$"))){
+                JOptionPane.showMessageDialog(rootPane,"Apenas números INTEIROS ente 1 A 3 DIGITOS são aceitos");
+            }
+            else{
+                verify = true;
+            }
+        }
+                
+        return verify;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -137,7 +156,10 @@ public class editar_mesas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        new TelaErro().setVisible(true);
+        if(Verify()){
+            new MesasDAO().criarMesas(Integer.parseInt(txtMesas.getText()));
+            dispose();
+        }
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

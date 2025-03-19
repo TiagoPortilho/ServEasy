@@ -4,6 +4,11 @@
  */
 package serveasy.view.dono;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.FeedbackDAO;
+import serveasy.model.Feedback;
 import serveasy.view.*;
 
 /**
@@ -17,8 +22,43 @@ public class Feedbacks extends javax.swing.JFrame {
      */
     public Feedbacks() {
         initComponents();
-    }
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new FeedbackDAO().listarFeedbacks());
+            }
 
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    private void fillTable(List<Feedback> listaFB){
+        
+        DefaultTableModel tableFilmes = (DefaultTableModel) tblFeedbacks.getModel(); 
+        
+        tableFilmes.setRowCount(0);
+            
+        for(Feedback m : listaFB){
+            Object[] obj = new Object[] {            
+                        m.getId(),   
+                        m.getComentario()
+                        
+                    };
+            tableFilmes.addRow(obj);
+        }
+    
+    }
+    
+    private int IdValorSelecionado(){
+        int id,row;
+        row = tblFeedbacks.getSelectedRow();
+        id = (int)tblFeedbacks.getValueAt(row, 0);
+        return id;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -146,6 +186,7 @@ public class Feedbacks extends javax.swing.JFrame {
                 .addGap(66, 66, 66))
         );
 
+        lblVersao.setForeground(new java.awt.Color(204, 204, 204));
         lblVersao.setText("ServEasy Version 1.0.0");
 
         btnExcluir.setBackground(new java.awt.Color(120, 22, 22));
@@ -172,7 +213,7 @@ public class Feedbacks extends javax.swing.JFrame {
         });
 
         tblFeedbacks.setBackground(new java.awt.Color(225, 165, 0));
-        tblFeedbacks.setForeground(new java.awt.Color(204, 204, 204));
+        tblFeedbacks.setForeground(new java.awt.Color(0, 0, 0));
         tblFeedbacks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
@@ -252,7 +293,22 @@ public class Feedbacks extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        new TelaErro().setVisible(true);
+        String[] options = {"Sim", "Não"};
+        int continuar = JOptionPane.showOptionDialog(rootPane, 
+            "Tem certeza que deseja deletar?", 
+            "Confirmar Deleção", 
+            JOptionPane.DEFAULT_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            options, 
+            options[0]); 
+
+        if (continuar == 0) { 
+            new FeedbackDAO().delFeedback(IdValorSelecionado()); 
+            fillTable(new FeedbackDAO().listarFeedbacks()); 
+        } else {
+            // pass
+        }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved

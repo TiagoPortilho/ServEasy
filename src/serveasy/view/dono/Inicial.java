@@ -4,6 +4,8 @@
  */
 package serveasy.view.dono;
 
+import javax.swing.JOptionPane;
+import serveasy.control.DonoDAO;
 import serveasy.view.*;
 
 /**
@@ -17,6 +19,20 @@ public class Inicial extends javax.swing.JFrame {
      */
     public Inicial() {
         initComponents();
+        
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                lblGanhoT.setText(String.valueOf(new DonoDAO().getTotalGanho()));
+                lblGanhoH.setText(String.valueOf(new DonoDAO().getGanhoHoje()));
+                txtAreaNotas.setText(new DonoDAO().getNota());
+            }
+
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
     }
 
     /**
@@ -46,8 +62,8 @@ public class Inicial extends javax.swing.JFrame {
         pnlGanhos = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        lblGanhoH = new javax.swing.JLabel();
+        lblGanhoT = new javax.swing.JLabel();
         btnAbrirRest = new javax.swing.JButton();
         btnFecharRest = new javax.swing.JButton();
 
@@ -189,19 +205,19 @@ public class Inicial extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel5.setText("Ganhos Totais:");
+        jLabel5.setText("Ganhos Totais: R$");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel6.setText("Ganho hoje:");
+        jLabel6.setText("Ganho hoje: R$");
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel7.setText("R$ 00,00");
+        lblGanhoH.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblGanhoH.setForeground(new java.awt.Color(0, 0, 0));
+        lblGanhoH.setText("00,00");
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel8.setText("R$ 10000,00");
+        lblGanhoT.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblGanhoT.setForeground(new java.awt.Color(0, 0, 0));
+        lblGanhoT.setText("00,00");
 
         javax.swing.GroupLayout pnlGanhosLayout = new javax.swing.GroupLayout(pnlGanhos);
         pnlGanhos.setLayout(pnlGanhosLayout);
@@ -212,13 +228,13 @@ public class Inicial extends javax.swing.JFrame {
                 .addGroup(pnlGanhosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlGanhosLayout.createSequentialGroup()
                         .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel7))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblGanhoH))
                     .addGroup(pnlGanhosLayout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8)))
-                .addContainerGap(57, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblGanhoT)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlGanhosLayout.setVerticalGroup(
             pnlGanhosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,11 +242,11 @@ public class Inicial extends javax.swing.JFrame {
                 .addGap(17, 17, 17)
                 .addGroup(pnlGanhosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel8))
+                    .addComponent(lblGanhoT))
                 .addGap(18, 18, 18)
                 .addGroup(pnlGanhosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jLabel7))
+                    .addComponent(lblGanhoH))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -270,19 +286,19 @@ public class Inicial extends javax.swing.JFrame {
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblPagina)
                             .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(pnlGanhos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(jPanel11Layout.createSequentialGroup()
                                         .addComponent(btnAbrirRest)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnFecharRest)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnFecharRest))
+                                    .addComponent(pnlGanhos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(btnSalvarNotas)
                                     .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(lblNotas)
                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(0, 22, Short.MAX_VALUE))))
+                        .addGap(0, 31, Short.MAX_VALUE))))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -325,11 +341,36 @@ public class Inicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnFecharRestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharRestActionPerformed
-        new TelaErro().setVisible(true);
+        if(new DonoDAO().getEstadoRestaurante().equals("aberto")){
+            String[] options = {"Sim", "Não"};
+            int continuar = JOptionPane.showOptionDialog(rootPane, 
+                "Tem certeza que deseja FECHAR?", 
+                "Confirmar Deleção", 
+                JOptionPane.DEFAULT_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, 
+                null, 
+                options, 
+                options[0]); 
+
+            if (continuar == 0) { 
+                new DonoDAO().setEstadoRestaurante("fechado");
+                new DonoDAO().adicionarGanhoTotal();
+                JOptionPane.showMessageDialog(rootPane,"O restaurante foi FECHADO!");      
+                lblGanhoT.setText(String.valueOf(new DonoDAO().getTotalGanho()));
+                lblGanhoH.setText(String.valueOf(new DonoDAO().getGanhoHoje()));
+            } else {
+                // pass
+            }
+        }
     }//GEN-LAST:event_btnFecharRestActionPerformed
 
     private void btnAbrirRestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirRestActionPerformed
-        new TelaErro().setVisible(true);
+        if(new DonoDAO().getEstadoRestaurante().equals("fechado")){
+            new DonoDAO().setEstadoRestaurante("aberto");
+            JOptionPane.showMessageDialog(rootPane,"O restaurante foi ABERTO!");
+            lblGanhoT.setText(String.valueOf(new DonoDAO().getTotalGanho()));
+            lblGanhoH.setText(String.valueOf(new DonoDAO().getGanhoHoje()));
+        }
     }//GEN-LAST:event_btnAbrirRestActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved
@@ -357,7 +398,9 @@ public class Inicial extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFeedbacksActionPerformed
 
     private void btnSalvarNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarNotasActionPerformed
-        new TelaErro().setVisible(true);
+        String s = txtAreaNotas.getText();
+        new DonoDAO().setNota(s);
+        JOptionPane.showMessageDialog(rootPane,"Suas notas foram ATUALIZADAS!");
     }//GEN-LAST:event_btnSalvarNotasActionPerformed
 
     /**
@@ -407,11 +450,11 @@ public class Inicial extends javax.swing.JFrame {
     private javax.swing.JButton btnSalvarNotas;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblGanhoH;
+    private javax.swing.JLabel lblGanhoT;
     private javax.swing.JLabel lblNotas;
     private javax.swing.JLabel lblPagina;
     private javax.swing.JLabel lblSubTitle;

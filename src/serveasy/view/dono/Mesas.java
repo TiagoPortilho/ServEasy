@@ -4,6 +4,10 @@
  */
 package serveasy.view.dono;
 
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.MesasDAO;
+import serveasy.model.Mesa;
 import serveasy.view.*;
 
 /**
@@ -17,8 +21,40 @@ public class Mesas extends javax.swing.JFrame {
      */
     public Mesas() {
         initComponents();
-    }
+        
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new MesasDAO().listarMesas());
+            }
 
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    
+    
+    private void fillTable(List<Mesa> listaMesas){
+        
+        DefaultTableModel tableFilmes = (DefaultTableModel) tblMesas.getModel(); 
+        
+        tableFilmes.setRowCount(0);
+            
+        for(Mesa m : listaMesas){
+            Object[] obj = new Object[] {            
+                        m.getNumero(),   
+                        m.isOcupada(),
+                        m.getValorGasto(), 
+                        m.isPago(),
+                        
+                    };
+            tableFilmes.addRow(obj);
+        }
+    
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,23 +108,23 @@ public class Mesas extends javax.swing.JFrame {
         });
 
         tblMesas.setBackground(new java.awt.Color(225, 165, 0));
-        tblMesas.setForeground(new java.awt.Color(204, 204, 204));
+        tblMesas.setForeground(new java.awt.Color(0, 0, 0));
         tblMesas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Numero", "Ocupado"
+                "Numero", "Ocupado", "Valor_Gasto", "Pago"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.Boolean.class, java.lang.Float.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -199,6 +235,7 @@ public class Mesas extends javax.swing.JFrame {
                 .addGap(66, 66, 66))
         );
 
+        lblVersao.setForeground(new java.awt.Color(204, 204, 204));
         lblVersao.setText("ServEasy Version 1.0.0");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
