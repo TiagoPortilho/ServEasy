@@ -4,6 +4,12 @@
  */
 package serveasy.view.cliente_atendente;
 
+import javax.swing.JOptionPane;
+import serveasy.control.MesasDAO;
+import serveasy.control.PedidoDAO;
+import serveasy.control.PratoDAO;
+import serveasy.model.Mesa;
+import serveasy.model.Pedido;
 import serveasy.view.TelaErro;
 
 /**
@@ -20,10 +26,17 @@ public class fazer_pedido extends javax.swing.JFrame {
     }
     
     private int num_mesa;
-    public fazer_pedido(int i) {
+    private int id_prato;
+    public fazer_pedido(int num_mesa, int id_prato) {
         initComponents();
-        this.num_mesa = i;
+        this.num_mesa = num_mesa;
+        this.id_prato = id_prato;
+        lblPrato.setText(new PratoDAO().getNomePrato(id_prato));
+        lblPreco.setText(String.valueOf(new PratoDAO().getPrecoPrato(id_prato)));
     }
+    
+   
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -78,7 +91,7 @@ public class fazer_pedido extends javax.swing.JFrame {
 
         lblPrato.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblPrato.setForeground(new java.awt.Color(204, 204, 204));
-        lblPrato.setText("prato 001");
+        lblPrato.setText("error");
 
         lbl1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lbl1.setForeground(new java.awt.Color(204, 204, 204));
@@ -90,7 +103,7 @@ public class fazer_pedido extends javax.swing.JFrame {
 
         lblPreco.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblPreco.setForeground(new java.awt.Color(204, 204, 204));
-        lblPreco.setText("51,00");
+        lblPreco.setText("error");
 
         btnCancelar.setBackground(new java.awt.Color(120, 22, 22));
         btnCancelar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -170,7 +183,10 @@ public class fazer_pedido extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnFazerPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFazerPedidoActionPerformed
-        new TelaErro().setVisible(true);
+        Mesa mesa = new MesasDAO().buscarMesa(num_mesa);
+        Pedido pedido = new Pedido(id_prato,mesa.getId());
+        new PedidoDAO().addPedido(pedido);
+        JOptionPane.showMessageDialog(null, "Pedido enviado com sucesso!");
         dispose();
     }//GEN-LAST:event_btnFazerPedidoActionPerformed
 

@@ -5,6 +5,7 @@
 package serveasy.view;
 
 import javax.swing.JOptionPane;
+import serveasy.control.MesasDAO;
 import serveasy.control.UsuarioDAO;
 import serveasy.model.Usuario;
 import serveasy.view.cliente_atendente.Cardapio;
@@ -207,6 +208,7 @@ public class LoginScreen extends javax.swing.JFrame {
                 r = new UsuarioDAO().getTipoFuncionarioOuMesa(usuario.getId());
                 if (r.matches("\\d+")) {
                     new Cardapio(Integer.parseInt(r)).setVisible(true);
+                    new MesasDAO().setOcupada(Integer.parseInt(r), true);
                     dispose();
                 } else {
                     if(r.equals("Dono")){

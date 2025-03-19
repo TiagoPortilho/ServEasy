@@ -4,6 +4,15 @@
  */
 package serveasy.view.cliente_atendente;
 
+import serveasy.control.MesasDAO;
+import serveasy.control.DonoDAO;
+import serveasy.banco.DbConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import serveasy.control.PedidoDAO;
 import serveasy.view.*;
 
 /**
@@ -24,7 +33,59 @@ public class Pagar_Conta extends javax.swing.JFrame {
         initComponents();
         this.num_mesa = i;
     }
-
+    
+    public void fecharConta(int numMesa) {
+    double total = 0.0;
+    DbConnection dbConnection = new DbConnection();
+    Connection conexao = dbConnection.getConnection();
+    
+    try {
+        // 1. Somar os valores dos pedidos da mesa
+        String sqlSum = "SELECT SUM(pr.preco) AS total " +
+                        "FROM pedido p " +
+                        "JOIN prato pr ON p.id_prato = pr.id " +
+                        "WHERE p.id_mesa = ?";
+        PreparedStatement stmtSum = conexao.prepareStatement(sqlSum);
+        stmtSum.setInt(1, numMesa);
+        ResultSet rs = stmtSum.executeQuery();
+        
+        if (rs.next()) {
+            total = rs.getDouble("total");
+        }
+        
+        // 2. Apagar os pedidos dessa mesa
+        String sqlDelete = "DELETE FROM pedido WHERE id_mesa = ?";
+        PreparedStatement stmtDelete = conexao.prepareStatement(sqlDelete);
+        stmtDelete.setInt(1, numMesa);
+        stmtDelete.executeUpdate();
+        
+    } catch (SQLException ex) {
+        new TelaErro(ex.getMessage()).setVisible(true);
+    } finally {
+        try {
+            if (conexao != null && !conexao.isClosed()) {
+                conexao.close();
+            }
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        }
+    }
+    
+    // 3. Adicionar o valor total ao ganho de hoje
+    DonoDAO donoDAO = new DonoDAO();
+    donoDAO.adicionarGanhoHoje(total);
+    
+    // 4. Definir a mesa como paga
+    // Supondo que você tenha uma classe MesaDAO com o método setPago.
+    MesasDAO mesaDAO = new MesasDAO();
+    mesaDAO.setPago(numMesa, true);
+}
+    
+    
+    
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -259,8 +320,15 @@ public class Pagar_Conta extends javax.swing.JFrame {
     }//GEN-LAST:event_lblPaginaAncestorMoved
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        new LoginScreen().setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new LoginScreen().setVisible(true);
+                new MesasDAO().setOcupada(num_mesa, false);
+                dispose();
+            }
+            else{
+                new LoginScreen().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void lblinstrucaoAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblinstrucaoAncestorMoved
@@ -268,26 +336,83 @@ public class Pagar_Conta extends javax.swing.JFrame {
     }//GEN-LAST:event_lblinstrucaoAncestorMoved
 
     private void btnCardapioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCardapioActionPerformed
-        new Cardapio(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Cardapio(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Cardapio().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnCardapioActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
-        new Seus_Pedidos(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Seus_Pedidos(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Escolher_Mesa(2,0).setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnPedidosActionPerformed
 
     private void btnFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedbackActionPerformed
-        new Dar_Feedback(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Dar_Feedback(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Dar_Feedback().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnFeedbackActionPerformed
 
     private void btnPixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPixActionPerformed
-        new TelaErro().setVisible(true);
+        if(num_mesa != 0){
+                String[] options = {"Sim", "Não"};
+                int continuar = JOptionPane.showOptionDialog(rootPane, 
+                    "Tem certeza que deseja deletar?", 
+                    "Confirmar Deleção", 
+                    JOptionPane.DEFAULT_OPTION, 
+                    JOptionPane.QUESTION_MESSAGE, 
+                    null, 
+                    options, 
+                    options[0]); 
+
+                if (continuar == 0) { 
+                    fecharConta(new MesasDAO().buscarMesa(num_mesa).getId());
+                } else {
+                    // pass
+                }
+            }
+            else{
+                new Escolher_Mesa(3,0).setVisible(true);
+            }
     }//GEN-LAST:event_btnPixActionPerformed
 
     private void btnCartaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCartaoActionPerformed
-        new TelaErro().setVisible(true);
+        if(num_mesa != 0){
+                String[] options = {"Sim", "Não"};
+                int continuar = JOptionPane.showOptionDialog(rootPane, 
+                    "Tem certeza que deseja deletar?", 
+                    "Confirmar Deleção", 
+                    JOptionPane.DEFAULT_OPTION, 
+                    JOptionPane.QUESTION_MESSAGE, 
+                    null, 
+                    options, 
+                    options[0]); 
+
+                if (continuar == 0) { 
+                    fecharConta(new MesasDAO().buscarMesa(num_mesa).getId());
+                } else {
+                    // pass
+                }
+            }
+            else{
+                new Escolher_Mesa(3,0).setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnCartaoActionPerformed
 
     /**

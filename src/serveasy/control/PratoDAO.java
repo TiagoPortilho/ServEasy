@@ -134,4 +134,60 @@ public class PratoDAO {
         }
         return lista;
     }
+    
+    public String getNomePrato(int id) {
+    DbConnection dbConnection = new DbConnection();
+    Connection conexao = dbConnection.getConnection();
+    String nome = null;
+
+    try {
+        String sql = "SELECT nome FROM prato WHERE id = ?";
+        PreparedStatement stmt = conexao.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            nome = rs.getString("nome");
+        }
+    } catch (SQLException ex) {
+        new TelaErro(ex.getMessage()).setVisible(true);
+    } finally {
+        try {
+            if (conexao != null && !conexao.isClosed()) {
+                conexao.close();
+            }
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        }
+    }
+    return nome;
+    }
+    
+    public float getPrecoPrato(int id) {
+    DbConnection dbConnection = new DbConnection();
+    Connection conexao = dbConnection.getConnection();
+    float preco = 0.0f;
+
+    try {
+        String sql = "SELECT preco FROM prato WHERE id = ?";
+        PreparedStatement stmt = conexao.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            preco = rs.getFloat("preco");
+        }
+    } catch (SQLException ex) {
+        new TelaErro(ex.getMessage()).setVisible(true);
+    } finally {
+        try {
+            if (conexao != null && !conexao.isClosed()) {
+                conexao.close();
+            }
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        }
+    }
+    return preco;
+    }
 }

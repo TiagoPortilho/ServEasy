@@ -4,6 +4,12 @@
  */
 package serveasy.view.cliente_atendente;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.MesasDAO;
+import serveasy.control.PratoDAO;
+import serveasy.model.Prato;
 import serveasy.view.*;
 
 /**
@@ -18,12 +24,65 @@ public class Cardapio extends javax.swing.JFrame {
      */
     public Cardapio() {
         initComponents();
+         
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PratoDAO().listarPratos());
+            }
+
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
     }
+    
     
     public Cardapio(int i) {
         initComponents();
         this.num_mesa = i;
+        
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PratoDAO().listarPratos());
+            }
+
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
     }
+    
+    
+    private void fillTable(List<Prato> listaPratos){
+        
+        DefaultTableModel tableFilmes = (DefaultTableModel) tblCardapio.getModel(); 
+        
+        tableFilmes.setRowCount(0);
+            
+        for(Prato p : listaPratos){
+            Object[] obj = new Object[] { 
+                        p.getId(),            
+                        p.getNome(),   
+                        p.getPreco(),   
+                        p.getDescricao()
+                    };
+            tableFilmes.addRow(obj);
+        }
+    
+    }
+    
+    private int IdValorSelecionado(){
+        int id,row;
+        row = tblCardapio.getSelectedRow();
+        id = (int)tblCardapio.getValueAt(row, 0);
+        return id;
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -80,7 +139,7 @@ public class Cardapio extends javax.swing.JFrame {
         lblVersao.setText("ServEasy Version 1.0.0");
 
         tblCardapio.setBackground(new java.awt.Color(225, 165, 0));
-        tblCardapio.setForeground(new java.awt.Color(204, 204, 204));
+        tblCardapio.setForeground(new java.awt.Color(0, 0, 0));
         tblCardapio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -260,7 +319,18 @@ public class Cardapio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnFazerPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFazerPedidoActionPerformed
-        new fazer_pedido(num_mesa).setVisible(true);
+        int row = tblCardapio.getSelectedRow();
+
+        if (row == -1) { 
+            JOptionPane.showMessageDialog(null, "Por favor, selecione seu PRATO.");
+        } else {
+            if(num_mesa != 0){
+                new fazer_pedido(num_mesa, IdValorSelecionado()).setVisible(true);
+            }
+            else{
+                new Escolher_Mesa(1,IdValorSelecionado()).setVisible(true);
+            }
+        }
     }//GEN-LAST:event_btnFazerPedidoActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved
@@ -268,23 +338,51 @@ public class Cardapio extends javax.swing.JFrame {
     }//GEN-LAST:event_lblPaginaAncestorMoved
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        new LoginScreen().setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new LoginScreen().setVisible(true);
+                new MesasDAO().setOcupada(num_mesa, false);
+                dispose();
+            }
+            else{
+                new LoginScreen().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
-        new Seus_Pedidos(num_mesa).setVisible(true);
-        dispose();
+
+            if(num_mesa != 0){
+                new Seus_Pedidos(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Escolher_Mesa(2,0).setVisible(true);
+                dispose();
+            }
+        
     }//GEN-LAST:event_btnPedidosActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        new Pagar_Conta(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Pagar_Conta(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Pagar_Conta().setVisible(true);
+                dispose();
+            }
+        
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedbackActionPerformed
-        new Dar_Feedback(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Dar_Feedback(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Dar_Feedback().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnFeedbackActionPerformed
 
     /**

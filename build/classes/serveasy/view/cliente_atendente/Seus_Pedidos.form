@@ -301,7 +301,7 @@
                   <Table columnCount="3" rowCount="4">
                     <Column editable="false" title="Id_pedido" type="java.lang.Integer"/>
                     <Column editable="false" title="Prato" type="java.lang.String"/>
-                    <Column editable="false" title="Status" type="java.lang.String"/>
+                    <Column editable="false" title="Confirmado" type="java.lang.String"/>
                   </Table>
                 </Property>
               </Properties>

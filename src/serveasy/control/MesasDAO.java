@@ -246,4 +246,41 @@ public class MesasDAO {
             }
         }
     }
+    
+    public Mesa buscarMesa(int numeroMesa) {
+    DbConnection dbConnection = new DbConnection();
+    Connection conexao = dbConnection.getConnection();
+    Mesa mesa = null;
+
+    try {
+        String sql = "SELECT * FROM mesa WHERE numero = ?";
+        PreparedStatement stmt = conexao.prepareStatement(sql);
+        stmt.setInt(1, numeroMesa);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            mesa = new Mesa(
+                rs.getInt("id"),
+                rs.getInt("numero"),
+                rs.getBoolean("ocupada"),
+                rs.getFloat("valor_gasto"),
+                rs.getBoolean("pago")
+            );
+        }
+    } catch (SQLException ex) {
+        new TelaErro(ex.getMessage()).setVisible(true);
+    } finally {
+        try {
+            if (conexao != null && !conexao.isClosed()) {
+                conexao.close();
+            }
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        }
+    }
+    return mesa;
+    }
+    
+    
+    
 }

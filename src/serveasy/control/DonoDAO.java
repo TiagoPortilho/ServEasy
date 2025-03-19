@@ -235,4 +235,40 @@ public class DonoDAO {
             }
         }
     }
+    
+    public void adicionarGanhoHoje(double valor) {
+    DbConnection dbConnection = new DbConnection();
+    Connection conexao = dbConnection.getConnection();
+
+    try {
+        // Recupera o ganho_hoje atual
+        String selectSql = "SELECT ganho_hoje FROM processo_dono WHERE id = 1";
+        PreparedStatement stmtSelect = conexao.prepareStatement(selectSql);
+        ResultSet rs = stmtSelect.executeQuery();
+
+        if (rs.next()) {
+            double ganhoHojeAtual = rs.getDouble("ganho_hoje");
+            // Soma o valor passado ao ganho_hoje atual
+            ganhoHojeAtual += valor;
+
+            // Atualiza o ganho_hoje no banco
+            String updateSql = "UPDATE processo_dono SET ganho_hoje = ? WHERE id = 1";
+            PreparedStatement stmtUpdate = conexao.prepareStatement(updateSql);
+            stmtUpdate.setDouble(1, ganhoHojeAtual);
+            stmtUpdate.executeUpdate();
+        }
+    } catch (SQLException ex) {
+        new TelaErro(ex.getMessage()).setVisible(true);
+    } finally {
+        try {
+            if (conexao != null && !conexao.isClosed()) {
+                conexao.close();
+            }
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        }
+    }
+    }
+    
+    
 }

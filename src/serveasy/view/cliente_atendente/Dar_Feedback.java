@@ -4,6 +4,9 @@
  */
 package serveasy.view.cliente_atendente;
 
+import javax.swing.JOptionPane;
+import serveasy.control.FeedbackDAO;
+import serveasy.control.MesasDAO;
 import serveasy.view.*;
 
 /**
@@ -24,7 +27,20 @@ public class Dar_Feedback extends javax.swing.JFrame {
         initComponents();
         this.num_mesa = i;
     }
+    
+    private boolean Verify(){
+        boolean verify = false;
 
+        if(txtFeedback.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"Seu feedback não pode estar vazio.");
+        }
+        else{
+                verify = true;
+        }
+        return verify;
+        }
+       
+        
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -254,8 +270,15 @@ public class Dar_Feedback extends javax.swing.JFrame {
     }//GEN-LAST:event_lblPaginaAncestorMoved
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        new LoginScreen().setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new LoginScreen().setVisible(true);
+                new MesasDAO().setOcupada(num_mesa, false);
+                dispose();
+            }
+            else{
+                new LoginScreen().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void lblinstrucaoAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblinstrucaoAncestorMoved
@@ -263,22 +286,43 @@ public class Dar_Feedback extends javax.swing.JFrame {
     }//GEN-LAST:event_lblinstrucaoAncestorMoved
 
     private void btnCardapioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCardapioActionPerformed
-        new Cardapio(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Cardapio(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Cardapio().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnCardapioActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
-        new Seus_Pedidos(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Seus_Pedidos(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Escolher_Mesa(2,0).setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnPedidosActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        new Pagar_Conta(num_mesa).setVisible(true);
-        dispose();
+       if(num_mesa != 0){
+                new Pagar_Conta(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Pagar_Conta().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        new TelaErro().setVisible(true);
+        if(Verify()){
+            new FeedbackDAO().addFeedback(txtFeedback.getText());
+            JOptionPane.showMessageDialog(rootPane,"Feedback enviado com sucesso!");
+        }
     }//GEN-LAST:event_btnEnviarActionPerformed
 
     /**

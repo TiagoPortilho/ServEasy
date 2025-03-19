@@ -2,30 +2,46 @@ package serveasy.model;
 
 public class Pedido {
     private int id;
-    private Prato prato;
-    private Mesa numMesa;
+    private int id_prato;
+    private int id_mesa;
     private boolean confirmado;
-
-    public Pedido(Prato prato, Mesa numMesa) {
-        this.prato = prato;
-        this.numMesa = numMesa;
-        this.confirmado = false;
+    private String nomePrato;  
+    
+    
+    public Pedido(int id_prato, int id_mesa) {
+        this.id_prato = id_prato;
+        this.id_mesa = id_mesa;
+    }
+    
+    public Pedido(int id, int id_prato, int id_mesa, boolean confirmado) {
+        this.id = id;
+        this.id_prato = id_prato;
+        this.id_mesa = id_mesa;
+        this.confirmado = confirmado;
     }
 
-    public Prato getPrato() {
-        return prato;
+    public int getId() {
+        return id;
     }
 
-    public void setPrato(Prato prato) {
-        this.prato = prato;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Mesa getNumMesa() {
-        return numMesa;
+    public int getIdPrato() {
+        return id_prato;
     }
 
-    public void setNumMesa(Mesa numMesa) {
-        this.numMesa = numMesa;
+    public void setIdPrato(int id_prato) {
+        this.id_prato = id_prato;
+    }
+
+    public int getIdMesa() {
+        return id_mesa;
+    }
+
+    public void setIdMesa(int id_mesa) {
+        this.id_mesa = id_mesa;
     }
 
     public boolean isConfirmado() {
@@ -34,5 +50,13 @@ public class Pedido {
 
     public void setConfirmado(boolean confirmado) {
         this.confirmado = confirmado;
+    }
+
+    public String getNomePrato() {
+        return nomePrato;
+    }
+
+    public void setNomePrato(String nomePrato) {
+        this.nomePrato = nomePrato;
     }
 }

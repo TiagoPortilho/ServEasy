@@ -45,11 +45,7 @@ public class Mesas extends javax.swing.JFrame {
             
         for(Mesa m : listaMesas){
             Object[] obj = new Object[] {            
-                        m.getNumero(),   
-                        m.isOcupada(),
-                        m.getValorGasto(), 
-                        m.isPago(),
-                        
+                        m.getNumero(),    
                     };
             tableFilmes.addRow(obj);
         }
@@ -111,20 +107,20 @@ public class Mesas extends javax.swing.JFrame {
         tblMesas.setForeground(new java.awt.Color(0, 0, 0));
         tblMesas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null},
+                {null},
+                {null},
+                {null}
             },
             new String [] {
-                "Numero", "Ocupado", "Valor_Gasto", "Pago"
+                "Numero"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Boolean.class, java.lang.Float.class, java.lang.Boolean.class
+                java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false
             };
 
             public Class getColumnClass(int columnIndex) {

@@ -4,6 +4,15 @@
  */
 package serveasy.view.cliente_atendente;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.MesasDAO;
+import serveasy.control.PedidoDAO;
+import serveasy.control.PratoDAO;
+import serveasy.model.Mesa;
+import serveasy.model.Pedido;
+import serveasy.model.Prato;
 import serveasy.view.*;
 
 /**
@@ -20,9 +29,69 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     }
     
     private int num_mesa;
+    private int atendente_mesa;
+    
     public Seus_Pedidos(int i) {
         initComponents();
         this.num_mesa = i;
+        this.atendente_mesa = num_mesa;
+        Mesa m = new MesasDAO().buscarMesa(num_mesa);
+        
+        
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PedidoDAO().listarPedidoStatus(m.getId()));
+            }
+
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    public Seus_Pedidos(int i, int a) {
+        initComponents();
+        this.atendente_mesa = i;
+        
+        Mesa m = new MesasDAO().buscarMesa(atendente_mesa);
+        
+        
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PedidoDAO().listarPedidoStatus(m.getId()));
+            }
+
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    
+    private void fillTable(List<Pedido> listaPedidos){
+    DefaultTableModel tableFilmes = (DefaultTableModel) tblPedidos.getModel(); 
+    tableFilmes.setRowCount(0);
+        
+    for(Pedido p : listaPedidos){
+        Object[] obj = new Object[] { 
+                    p.getId(),          
+                    p.getNomePrato(),   
+                    p.isConfirmado()
+                };
+        tableFilmes.addRow(obj);
+    }
+    }
+    
+    
+    private int IdValorSelecionado(){
+        int id,row;
+        row = tblPedidos.getSelectedRow();
+        id = (int)tblPedidos.getValueAt(row, 0);
+        return id;
     }
 
     /**
@@ -188,7 +257,7 @@ public class Seus_Pedidos extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "Id_pedido", "Prato", "Status"
+                "Id_pedido", "Prato", "Confirmado"
             }
         ) {
             Class[] types = new Class [] {
@@ -258,7 +327,22 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        new TelaErro().setVisible(true);
+        String[] options = {"Sim", "Não"};
+        int continuar = JOptionPane.showOptionDialog(rootPane, 
+            "Tem certeza que deseja deletar?", 
+            "Confirmar Deleção", 
+            JOptionPane.DEFAULT_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            options, 
+            options[0]); 
+
+        if (continuar == 0) { 
+            new PedidoDAO().delPedido(IdValorSelecionado()); 
+            fillTable(new PedidoDAO().listarPedidoStatus(new MesasDAO().buscarMesa(atendente_mesa).getId()));
+        } else {
+            // pass
+        }
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved
@@ -266,23 +350,48 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_lblPaginaAncestorMoved
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        new LoginScreen().setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new LoginScreen().setVisible(true);
+                new MesasDAO().setOcupada(num_mesa, false);
+                dispose();
+            }
+            else{
+                new LoginScreen().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        new Pagar_Conta(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Pagar_Conta(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Pagar_Conta().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void bntCardapioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntCardapioActionPerformed
-        new Cardapio(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Cardapio(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Cardapio().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_bntCardapioActionPerformed
 
     private void btnFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedbackActionPerformed
-        new Dar_Feedback(num_mesa).setVisible(true);
-        dispose();
+        if(num_mesa != 0){
+                new Dar_Feedback(num_mesa).setVisible(true);
+                dispose();
+            }
+            else{
+                new Dar_Feedback().setVisible(true);
+                dispose();
+            }
     }//GEN-LAST:event_btnFeedbackActionPerformed
 
     /**
