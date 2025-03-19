@@ -6,12 +6,22 @@ public class Funcionario {
     private String cpf;
     private int idade;
     private double salario;
+    private String tipoFuncionario;
 
-    public Funcionario(String nome, String cpf, int idade, double salario) {
+    public Funcionario(String nome, String cpf, int idade, double salario, String tipoFuncionario) {
         this.nome = nome;
         this.cpf = cpf;
         this.idade = idade;
         this.salario = salario;
+        this.tipoFuncionario = tipoFuncionario;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -44,5 +54,13 @@ public class Funcionario {
 
     public void setSalario(double salario) {
         this.salario = salario;
+    }
+
+    public String getTipoFuncionario() {
+        return tipoFuncionario;
+    }
+
+    public void setTipoFuncionario(String tipoFuncionario) {
+        this.tipoFuncionario = tipoFuncionario;
     }
 }

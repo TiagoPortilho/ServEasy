@@ -8,7 +8,8 @@ public class Usuario {
     private int idMesa;
 
     
-    public Usuario(String login, String senha, Integer idFuncionario, Integer idMesa) {
+    public Usuario(int id, String login, String senha, Integer idFuncionario, Integer idMesa) {
+        this.id = id;
         this.login = login;
         this.senha = senha;
         this.idFuncionario = idFuncionario;

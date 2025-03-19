@@ -1,3 +1,5 @@
+package serveasy.banco;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,7 +23,7 @@ public class DbConnection {
     
     public Connection getConnection() {
         try {
-            Connection conexao = DriverManager.getConnection("jdbc:mysql://localhost/auction_house?useSSL=false", "root", "300807");
+            Connection conexao = DriverManager.getConnection("jdbc:mysql://localhost/serveasy?useSSL=false", "root", "300807");
             return conexao;
         } catch (SQLException ex) {
             Logger.getLogger(DbConnection.class.getName()).log(Level.SEVERE, null, ex);

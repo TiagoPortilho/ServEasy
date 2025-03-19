@@ -10,7 +10,7 @@ public class Mesa {
     private float valorGasto;         
     private boolean pago;             
 
-    // Construtor
+
     public Mesa(int numero) {
         this.numero = numero;
         this.ocupada = false;
@@ -18,7 +18,6 @@ public class Mesa {
         this.pago = false;
     }
 
-    // Getters e Setters
     public int getId() {
         return id;
     }
