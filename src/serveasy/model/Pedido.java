@@ -5,8 +5,9 @@ public class Pedido {
     private int id_prato;
     private int id_mesa;
     private boolean confirmado;
-    private String nomePrato;  
-    
+    private String nomePrato;
+    private int numeroMesa;
+           
     
     public Pedido(int id_prato, int id_mesa) {
         this.id_prato = id_prato;
@@ -58,5 +59,13 @@ public class Pedido {
 
     public void setNomePrato(String nomePrato) {
         this.nomePrato = nomePrato;
+    }
+    
+    public int getNumeroMesa() {
+        return numeroMesa;
+    }
+
+    public void setNumeroMesa(int numeroMesa) {
+        this.numeroMesa = numeroMesa;
     }
 }

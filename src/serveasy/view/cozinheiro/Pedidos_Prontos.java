@@ -31,7 +31,6 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
 
         jPanel2 = new javax.swing.JPanel();
         lblVersao = new javax.swing.JLabel();
-        btnEntregar = new javax.swing.JButton();
         lblPaginas = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
@@ -51,16 +50,6 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
 
         lblVersao.setForeground(new java.awt.Color(204, 204, 204));
         lblVersao.setText("ServEasy Version 1.0.0");
-
-        btnEntregar.setBackground(new java.awt.Color(0, 153, 10));
-        btnEntregar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnEntregar.setForeground(new java.awt.Color(255, 255, 255));
-        btnEntregar.setText("Entregar Pedido");
-        btnEntregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEntregarActionPerformed(evt);
-            }
-        });
 
         lblPaginas.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         lblPaginas.setForeground(new java.awt.Color(204, 204, 204));
@@ -162,22 +151,23 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
         );
 
         tblPedidosProntos.setBackground(new java.awt.Color(225, 165, 0));
+        tblPedidosProntos.setForeground(new java.awt.Color(0, 0, 0));
         tblPedidosProntos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Id_pedidos", "Numero_mesa", "Prato", "Hora"
+                "Id_pedidos", "Numero_mesa", "Prato"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -203,11 +193,9 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnEntregar, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblPaginas)))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPaginas))
                         .addGap(0, 20, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -218,9 +206,7 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
                 .addComponent(lblPaginas)
                 .addGap(28, 28, 28)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnEntregar, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
                 .addComponent(lblVersao)
                 .addContainerGap())
         );
@@ -238,10 +224,6 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEntregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntregarActionPerformed
-        new TelaErro().setVisible(true);
-    }//GEN-LAST:event_btnEntregarActionPerformed
 
     private void lblPaginasAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginasAncestorMoved
         // TODO add your handling code here:
@@ -299,7 +281,6 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAndamento;
-    private javax.swing.JButton btnEntregar;
     private javax.swing.JButton btnNovosPedidos;
     private javax.swing.JButton btnProntos;
     private javax.swing.JButton btnSair;

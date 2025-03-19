@@ -74,7 +74,7 @@ public class Novos_Pedidos extends javax.swing.JFrame {
         });
 
         tblNovosPedidos.setBackground(new java.awt.Color(225, 165, 0));
-        tblNovosPedidos.setForeground(new java.awt.Color(204, 204, 204));
+        tblNovosPedidos.setForeground(new java.awt.Color(0, 0, 0));
         tblNovosPedidos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},

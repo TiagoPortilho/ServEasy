@@ -73,8 +73,8 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     
     
     private void fillTable(List<Pedido> listaPedidos){
-    DefaultTableModel tableFilmes = (DefaultTableModel) tblPedidos.getModel(); 
-    tableFilmes.setRowCount(0);
+    DefaultTableModel tablePedidos = (DefaultTableModel) tblPedidos.getModel(); 
+    tablePedidos.setRowCount(0);
         
     for(Pedido p : listaPedidos){
         Object[] obj = new Object[] { 
@@ -82,7 +82,7 @@ public class Seus_Pedidos extends javax.swing.JFrame {
                     p.getNomePrato(),   
                     p.isConfirmado()
                 };
-        tableFilmes.addRow(obj);
+        tablePedidos.addRow(obj);
     }
     }
     

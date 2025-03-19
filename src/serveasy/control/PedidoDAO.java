@@ -89,23 +89,27 @@ public class PedidoDAO {
         return pedido;
     }
 
-   public List<Pedido> listarPedidos(int id_mesa) {
+   public List<Pedido> listarPedidos() {
     DbConnection dbConnection = new DbConnection();
     Connection conexao = dbConnection.getConnection();
     List<Pedido> lista = new ArrayList<>();
 
     try {
-        String sql = "SELECT * FROM pedido WHERE id_mesa = ?";
+        String sql = "SELECT p.id AS id_pedido, m.numero AS numero_mesa, pr.nome AS nome_prato, p.confirmado " +
+                     "FROM pedido p " +
+                     "JOIN mesa m ON p.id_mesa = m.id " +
+                     "JOIN prato pr ON p.id_prato = pr.id";
         PreparedStatement stmt = conexao.prepareStatement(sql);
-        stmt.setInt(1, id_mesa);
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
-            int id = rs.getInt("id");
-            int idPrato = rs.getInt("id_prato");
-            int idMesa = rs.getInt("id_mesa");
+            int idPedido = rs.getInt("id_pedido");
+            int numeroMesa = rs.getInt("numero_mesa");
+            String nomePrato = rs.getString("nome_prato");
             boolean confirmado = rs.getBoolean("confirmado");
-            Pedido pedido = new Pedido(id, idPrato, idMesa, confirmado);
+            
+            Pedido pedido = new Pedido(idPedido, 0, numeroMesa, confirmado);
+            pedido.setNomePrato(nomePrato);
             lista.add(pedido);
         }
     } catch (SQLException ex) {

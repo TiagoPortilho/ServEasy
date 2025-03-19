@@ -39,15 +39,15 @@ public class Mesas extends javax.swing.JFrame {
     
     private void fillTable(List<Mesa> listaMesas){
         
-        DefaultTableModel tableFilmes = (DefaultTableModel) tblMesas.getModel(); 
+        DefaultTableModel tablePedidos = (DefaultTableModel) tblMesas.getModel(); 
         
-        tableFilmes.setRowCount(0);
+        tablePedidos.setRowCount(0);
             
         for(Mesa m : listaMesas){
             Object[] obj = new Object[] {            
                         m.getNumero(),    
                     };
-            tableFilmes.addRow(obj);
+            tablePedidos.addRow(obj);
         }
     
     }
