@@ -216,7 +216,7 @@ public class LoginScreen extends javax.swing.JFrame {
                         dispose();
                     }
                     else if(r.equals("Cozinheiro")){
-                        new Em_Andamento().setVisible(true);
+                        new Novos_Pedidos().setVisible(true);
                         dispose();
                     }
                     else if(r.equals("Atendente")){

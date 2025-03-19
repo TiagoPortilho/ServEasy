@@ -59,9 +59,9 @@ public class Cardapio extends javax.swing.JFrame {
     
     private void fillTable(List<Prato> listaPratos){
         
-        DefaultTableModel tableFilmes = (DefaultTableModel) tblCardapio.getModel(); 
+        DefaultTableModel tablePedidos = (DefaultTableModel) tblCardapio.getModel(); 
         
-        tableFilmes.setRowCount(0);
+        tablePedidos.setRowCount(0);
             
         for(Prato p : listaPratos){
             Object[] obj = new Object[] { 
@@ -70,7 +70,7 @@ public class Cardapio extends javax.swing.JFrame {
                         p.getPreco(),   
                         p.getDescricao()
                     };
-            tableFilmes.addRow(obj);
+            tablePedidos.addRow(obj);
         }
     
     }

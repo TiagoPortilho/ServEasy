@@ -87,3 +87,5 @@ CREATE TABLE processo_dono (
 
 INSERT INTO processo_dono (id, estado_restaurante, total_ganho, nota)
 VALUES (1, 'fechado', 0.00, NULL);
+
+ALTER TABLE pedido ADD COLUMN entregue BOOLEAN DEFAULT FALSE;

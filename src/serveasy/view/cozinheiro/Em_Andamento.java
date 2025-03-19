@@ -4,6 +4,11 @@
  */
 package serveasy.view.cozinheiro;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.PedidoDAO;
+import serveasy.model.Pedido;
 import serveasy.view.*;
 
 /**
@@ -17,8 +22,42 @@ public class Em_Andamento extends javax.swing.JFrame {
      */
     public Em_Andamento() {
         initComponents();
-    }
+    this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PedidoDAO().listarPedidos());
+            }
 
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    
+    private void fillTable(List<Pedido> listaPedidos){
+        DefaultTableModel tablePedidos = (DefaultTableModel) tblPedidosAndamento.getModel(); 
+        tablePedidos.setRowCount(0);
+
+        for(Pedido p : listaPedidos){
+            if(p.isConfirmado() && !(p.isEntregue())){
+                Object[] obj = new Object[] { 
+                        p.getId(),          
+                        p.getNumeroMesa(),
+                        p.getNomePrato()
+                    };
+                tablePedidos.addRow(obj);
+            }
+        }
+    }
+    
+     private int IdValorSelecionado(){
+        int id,row;
+        row = tblPedidosAndamento.getSelectedRow();
+        id = (int)tblPedidosAndamento.getValueAt(row, 0);
+        return id;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -134,7 +173,7 @@ public class Em_Andamento extends javax.swing.JFrame {
         );
 
         tblPedidosAndamento.setBackground(new java.awt.Color(225, 165, 0));
-        tblPedidosAndamento.setForeground(new java.awt.Color(204, 204, 204));
+        tblPedidosAndamento.setForeground(new java.awt.Color(0, 0, 0));
         tblPedidosAndamento.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
@@ -239,7 +278,8 @@ public class Em_Andamento extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEntregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntregarActionPerformed
-        new TelaErro().setVisible(true);
+        new PedidoDAO().setEntregue(IdValorSelecionado(), true);
+        JOptionPane.showMessageDialog(rootPane,"Prato entregado com sucesso!");
     }//GEN-LAST:event_btnEntregarActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved

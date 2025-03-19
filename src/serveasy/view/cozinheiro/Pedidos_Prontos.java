@@ -4,6 +4,10 @@
  */
 package serveasy.view.cozinheiro;
 
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.PedidoDAO;
+import serveasy.model.Pedido;
 import serveasy.view.LoginScreen;
 import serveasy.view.TelaErro;
 
@@ -18,6 +22,33 @@ public class Pedidos_Prontos extends javax.swing.JFrame {
      */
     public Pedidos_Prontos() {
         initComponents();
+        this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PedidoDAO().listarPedidos());
+            }
+
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    private void fillTable(List<Pedido> listaPedidos){
+        DefaultTableModel tablePedidos = (DefaultTableModel) tblPedidosProntos.getModel(); 
+        tablePedidos.setRowCount(0);
+
+        for(Pedido p : listaPedidos){
+            if(p.isEntregue()){
+                Object[] obj = new Object[] { 
+                        p.getId(),          
+                        p.getNumeroMesa(),
+                        p.getNomePrato()
+                    };
+                tablePedidos.addRow(obj);
+            }
+        }
     }
 
     /**

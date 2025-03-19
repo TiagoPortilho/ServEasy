@@ -93,6 +93,17 @@ public class Seus_Pedidos extends javax.swing.JFrame {
         id = (int)tblPedidos.getValueAt(row, 0);
         return id;
     }
+    
+    private boolean isPedidoConfirmado() {
+    int row = tblPedidos.getSelectedRow();
+
+    if (row == -1) {
+        JOptionPane.showMessageDialog(rootPane, "Selecione um pedido!", "Erro", JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
+
+    return (boolean) tblPedidos.getValueAt(row, 2);
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -327,6 +338,11 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        if (isPedidoConfirmado()) {
+            JOptionPane.showMessageDialog(rootPane, "Não é possível cancelar um pedido já confirmado!", "Atenção", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String[] options = {"Sim", "Não"};
         int continuar = JOptionPane.showOptionDialog(rootPane, 
             "Tem certeza que deseja deletar?", 
@@ -340,8 +356,6 @@ public class Seus_Pedidos extends javax.swing.JFrame {
         if (continuar == 0) { 
             new PedidoDAO().delPedido(IdValorSelecionado()); 
             fillTable(new PedidoDAO().listarPedidoStatus(new MesasDAO().buscarMesa(atendente_mesa).getId()));
-        } else {
-            // pass
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
 

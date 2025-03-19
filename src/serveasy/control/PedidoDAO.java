@@ -59,35 +59,36 @@ public class PedidoDAO {
     }
 
     public Pedido getPedido(int id) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-        Pedido pedido = null;
+    DbConnection dbConnection = new DbConnection();
+    Connection conexao = dbConnection.getConnection();
+    Pedido pedido = null;
 
+    try {
+        String sql = "SELECT * FROM pedido WHERE id = ?";
+        PreparedStatement stmt = conexao.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            int idPrato = rs.getInt("id_prato");
+            int idMesa = rs.getInt("id_mesa");
+            boolean confirmado = rs.getBoolean("confirmado");
+            boolean entregue = rs.getBoolean("entregue");
+            pedido = new Pedido(id, idPrato, idMesa, confirmado, entregue);
+        }
+    } catch (SQLException ex) {
+        new TelaErro(ex.getMessage()).setVisible(true);
+    } finally {
         try {
-            String sql = "SELECT * FROM pedido WHERE id = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int idPrato = rs.getInt("id_prato");
-                int idMesa = rs.getInt("id_mesa");
-                boolean confirmado = rs.getBoolean("confirmado");
-                pedido = new Pedido(id, idPrato, idMesa, confirmado);
+            if (conexao != null && !conexao.isClosed()) {
+                conexao.close();
             }
         } catch (SQLException ex) {
             new TelaErro(ex.getMessage()).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                new TelaErro(ex.getMessage()).setVisible(true);
-            }
         }
-        return pedido;
     }
+    return pedido;
+}
 
    public List<Pedido> listarPedidos() {
     DbConnection dbConnection = new DbConnection();
@@ -95,7 +96,7 @@ public class PedidoDAO {
     List<Pedido> lista = new ArrayList<>();
 
     try {
-        String sql = "SELECT p.id AS id_pedido, m.numero AS numero_mesa, pr.nome AS nome_prato, p.confirmado " +
+        String sql = "SELECT p.id AS id_pedido, m.numero AS numero_mesa, pr.nome AS nome_prato, p.confirmado, p.entregue " +
                      "FROM pedido p " +
                      "JOIN mesa m ON p.id_mesa = m.id " +
                      "JOIN prato pr ON p.id_prato = pr.id";
@@ -107,8 +108,9 @@ public class PedidoDAO {
             int numeroMesa = rs.getInt("numero_mesa");
             String nomePrato = rs.getString("nome_prato");
             boolean confirmado = rs.getBoolean("confirmado");
-            
-            Pedido pedido = new Pedido(idPedido, 0, numeroMesa, confirmado);
+            boolean entregue = rs.getBoolean("entregue"); // Novo campo
+
+            Pedido pedido = new Pedido(idPedido, 0, numeroMesa, confirmado, entregue);
             pedido.setNomePrato(nomePrato);
             lista.add(pedido);
         }
@@ -151,17 +153,63 @@ public class PedidoDAO {
             pedido.setNomePrato(nomePrato);
             lista.add(pedido);
         }
-    } catch (SQLException ex) {
-        new TelaErro(ex.getMessage()).setVisible(true);
-    } finally {
-        try {
-            if (conexao != null && !conexao.isClosed()) {
-                conexao.close();
-            }
         } catch (SQLException ex) {
             new TelaErro(ex.getMessage()).setVisible(true);
+        } finally {
+            try {
+                if (conexao != null && !conexao.isClosed()) {
+                    conexao.close();
+                }
+            } catch (SQLException ex) {
+                new TelaErro(ex.getMessage()).setVisible(true);
+            }
+        }
+        return lista;
+    }
+    
+    public void setConfirmado(int id, boolean confirmado) {
+        DbConnection dbConnection = new DbConnection();
+        Connection conexao = dbConnection.getConnection();
+
+        try {
+            String sql = "UPDATE pedido SET confirmado = ? WHERE id = ?";
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            stmt.setBoolean(1, confirmado);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        } finally {
+            try {
+                if (conexao != null && !conexao.isClosed()) {
+                    conexao.close();
+                }
+            } catch (SQLException ex) {
+                new TelaErro(ex.getMessage()).setVisible(true);
+            }
         }
     }
-    return lista;
-}
+    
+    public void setEntregue(int id, boolean entregue) {
+        DbConnection dbConnection = new DbConnection();
+        Connection conexao = dbConnection.getConnection();
+
+        try {
+            String sql = "UPDATE pedido SET entregue = ? WHERE id = ?";
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            stmt.setBoolean(1, entregue);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+        } finally {
+            try {
+                if (conexao != null && !conexao.isClosed()) {
+                    conexao.close();
+                }
+            } catch (SQLException ex) {
+                new TelaErro(ex.getMessage()).setVisible(true);
+            }
+        }
+    }
 }

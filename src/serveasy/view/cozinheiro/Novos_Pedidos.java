@@ -4,6 +4,11 @@
  */
 package serveasy.view.cozinheiro;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import serveasy.control.PedidoDAO;
+import serveasy.model.Pedido;
 import serveasy.view.*;
 
 /**
@@ -17,8 +22,45 @@ public class Novos_Pedidos extends javax.swing.JFrame {
      */
     public Novos_Pedidos() {
         initComponents();
-    }
+    this.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                fillTable(new PedidoDAO().listarPedidos());
+            }
 
+        @Override
+        public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            
+        }
+    });
+    }
+    
+    
+    private void fillTable(List<Pedido> listaPedidos){
+    DefaultTableModel tablePedidos = (DefaultTableModel) tblNovosPedidos.getModel(); 
+    tablePedidos.setRowCount(0);
+        
+    for(Pedido p : listaPedidos){
+        if(!p.isConfirmado()){
+            Object[] obj = new Object[] { 
+                    p.getId(),          
+                    p.getNumeroMesa(),
+                    p.getNomePrato(),
+                    p.isConfirmado()
+                };
+            tablePedidos.addRow(obj);
+        }
+    }
+}
+    
+     private int IdValorSelecionado(){
+        int id,row;
+        row = tblNovosPedidos.getSelectedRow();
+        id = (int)tblNovosPedidos.getValueAt(row, 0);
+        return id;
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -83,7 +125,7 @@ public class Novos_Pedidos extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Id_pedido", "Numero_mesa", "Prato", "Status"
+                "Id_pedido", "Numero_mesa", "Prato", "Confirmado"
             }
         ) {
             Class[] types = new Class [] {
@@ -250,7 +292,9 @@ public class Novos_Pedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-        new TelaErro().setVisible(true);
+        new PedidoDAO().setConfirmado(IdValorSelecionado(), true);
+        JOptionPane.showMessageDialog(rootPane,"Prato confirmado com sucesso!");
+        
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved

@@ -37,9 +37,9 @@ public class Feedbacks extends javax.swing.JFrame {
     
     private void fillTable(List<Feedback> listaFB){
         
-        DefaultTableModel tableFilmes = (DefaultTableModel) tblFeedbacks.getModel(); 
+        DefaultTableModel tablePedidos = (DefaultTableModel) tblFeedbacks.getModel(); 
         
-        tableFilmes.setRowCount(0);
+        tablePedidos.setRowCount(0);
             
         for(Feedback m : listaFB){
             Object[] obj = new Object[] {            
@@ -47,7 +47,7 @@ public class Feedbacks extends javax.swing.JFrame {
                         m.getComentario()
                         
                     };
-            tableFilmes.addRow(obj);
+            tablePedidos.addRow(obj);
         }
     
     }

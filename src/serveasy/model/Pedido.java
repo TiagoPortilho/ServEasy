@@ -7,6 +7,7 @@ public class Pedido {
     private boolean confirmado;
     private String nomePrato;
     private int numeroMesa;
+    private boolean entregue;
            
     
     public Pedido(int id_prato, int id_mesa) {
@@ -19,6 +20,14 @@ public class Pedido {
         this.id_prato = id_prato;
         this.id_mesa = id_mesa;
         this.confirmado = confirmado;
+    }
+    
+    public Pedido(int id, int idPrato, int numeroMesa, boolean confirmado, boolean entregue) {
+        this.id = id;
+        this.id_prato = idPrato;
+        this.numeroMesa = numeroMesa;
+        this.confirmado = confirmado;
+        this.entregue = entregue;
     }
 
     public int getId() {
@@ -67,5 +76,13 @@ public class Pedido {
 
     public void setNumeroMesa(int numeroMesa) {
         this.numeroMesa = numeroMesa;
+    }
+    
+    public boolean isEntregue() {
+        return entregue; 
+    }
+    
+    public void setEntregue(boolean entregue) {
+        this.entregue = entregue; 
     }
 }
