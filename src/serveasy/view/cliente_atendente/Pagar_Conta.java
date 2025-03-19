@@ -18,6 +18,12 @@ public class Pagar_Conta extends javax.swing.JFrame {
     public Pagar_Conta() {
         initComponents();
     }
+    
+    private int num_mesa;
+    public Pagar_Conta(int i) {
+        initComponents();
+        this.num_mesa = i;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -262,17 +268,17 @@ public class Pagar_Conta extends javax.swing.JFrame {
     }//GEN-LAST:event_lblinstrucaoAncestorMoved
 
     private void btnCardapioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCardapioActionPerformed
-        new Cardapio().setVisible(true);
+        new Cardapio(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnCardapioActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
-        new Seus_Pedidos().setVisible(true);
+        new Seus_Pedidos(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPedidosActionPerformed
 
     private void btnFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedbackActionPerformed
-        new Dar_Feedback().setVisible(true);
+        new Dar_Feedback(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnFeedbackActionPerformed
 

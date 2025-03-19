@@ -4,7 +4,11 @@
  */
 package serveasy.view;
 
+import javax.swing.JOptionPane;
+import serveasy.control.UsuarioDAO;
+import serveasy.model.Usuario;
 import serveasy.view.cliente_atendente.Cardapio;
+import serveasy.view.cozinheiro.Em_Andamento;
 import serveasy.view.cozinheiro.Novos_Pedidos;
 import serveasy.view.dono.Inicial;
 
@@ -22,26 +26,34 @@ public class LoginScreen extends javax.swing.JFrame {
     }
     
     
-    //apenas para entrar nas telas
-    private void loginTest(){
-        String login,senha;
-        login = txtLogin.getText();
-        senha = txtSenha.getText();
-        
-        if(login.equals("dono") && senha.equals("dono123")){
-            new Inicial().setVisible(true);
-            dispose();
+    private boolean Verify(){
+        boolean verify = false;
+        if(txtLogin.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"O campo LOGIN está em branco.");
         }
-        if(login.equals("cozinheiro") && senha.equals("cozinheiro123")){
-            new Novos_Pedidos().setVisible(true);
-            dispose();
+        else if(txtSenha.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane,"O campo SENHA está em branco.");
         }
-        if(login.equals("cliente") && senha.equals("cliente123")){
-            new Cardapio().setVisible(true);
-            dispose();
+        else{
+            verify = true;
         }
-        
+                
+        return verify;
     }
+    
+     private Usuario getValues(boolean verify){
+        String login, senha;
+                  
+        login = txtLogin.getText().trim();
+        senha = txtSenha.getText().trim();
+        
+        Usuario usuario = new Usuario(login,senha);
+        usuario = new UsuarioDAO().autenticar(usuario);
+        return usuario;
+    }
+    
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -186,7 +198,39 @@ public class LoginScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        loginTest();
+        Usuario usuario = getValues(Verify());
+        String r;
+        if (usuario != null) { 
+            usuario = new UsuarioDAO().autenticar(usuario);
+            if (usuario != null) {
+                System.out.println("Usuário autenticado: " + usuario.getLogin());
+                r = new UsuarioDAO().getTipoFuncionarioOuMesa(usuario.getId());
+                if (r.matches("\\d+")) {
+                    new Cardapio(Integer.parseInt(r)).setVisible(true);
+                    dispose();
+                } else {
+                    if(r.equals("Dono")){
+                        new Inicial().setVisible(true);
+                        dispose();
+                    }
+                    else if(r.equals("Cozinheiro")){
+                        new Em_Andamento().setVisible(true);
+                        dispose();
+                    }
+                    else if(r.equals("Atendente")){
+                        new Cardapio().setVisible(true);
+                        dispose();
+                    }
+                    else{
+                        new TelaErro("Não foi possível conectar a nenhum usuário.").setVisible(true);
+                    }
+                }
+            } else {
+            JOptionPane.showMessageDialog(this, "Login ou senha inválidos.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Login ou senha inválidos.");
+        }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     /**

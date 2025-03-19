@@ -69,7 +69,7 @@ INSERT INTO usuario (login, senha, id_funcionario)
 VALUES ('dono123', 'donosenha123', 1);
 
 INSERT INTO usuario (login, senha, id_funcionario) 
-VALUES ('cozinheiro123', 'cozinhasenha123', 2);
+VALUES ('cozinheiro123', 'cozinheirosenha123', 2);
 
 INSERT INTO usuario (login, senha, id_funcionario) 
 VALUES ('atendente123', 'atendentesenha123', 3);

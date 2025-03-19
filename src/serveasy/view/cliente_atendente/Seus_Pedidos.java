@@ -18,6 +18,12 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     public Seus_Pedidos() {
         initComponents();
     }
+    
+    private int num_mesa;
+    public Seus_Pedidos(int i) {
+        initComponents();
+        this.num_mesa = i;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -265,17 +271,17 @@ public class Seus_Pedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        new Pagar_Conta().setVisible(true);
+        new Pagar_Conta(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void bntCardapioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntCardapioActionPerformed
-        new Cardapio().setVisible(true);
+        new Cardapio(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_bntCardapioActionPerformed
 
     private void btnFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedbackActionPerformed
-        new Dar_Feedback().setVisible(true);
+        new Dar_Feedback(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnFeedbackActionPerformed
 

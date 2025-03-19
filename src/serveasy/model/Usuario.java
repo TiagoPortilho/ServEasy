@@ -7,6 +7,10 @@ public class Usuario {
     private int idFuncionario;
     private int idMesa;
 
+    public Usuario(String login, String senha){
+        this.login = login;
+        this.senha = senha;
+    }
     
     public Usuario(int id, String login, String senha, Integer idFuncionario, Integer idMesa) {
         this.id = id;

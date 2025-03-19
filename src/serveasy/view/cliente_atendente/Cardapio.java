@@ -11,14 +11,19 @@ import serveasy.view.*;
  * @author Tingos
  */
 public class Cardapio extends javax.swing.JFrame {
-
+    private int num_mesa;
+    
     /**
      * Creates new form Cardapio
      */
     public Cardapio() {
         initComponents();
     }
-
+    
+    public Cardapio(int i) {
+        initComponents();
+        this.num_mesa = i;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -255,7 +260,7 @@ public class Cardapio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnFazerPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFazerPedidoActionPerformed
-        new fazer_pedido().setVisible(true);
+        new fazer_pedido(num_mesa).setVisible(true);
     }//GEN-LAST:event_btnFazerPedidoActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved
@@ -268,17 +273,17 @@ public class Cardapio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
-        new Seus_Pedidos().setVisible(true);
+        new Seus_Pedidos(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPedidosActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        new Pagar_Conta().setVisible(true);
+        new Pagar_Conta(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnFeedbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedbackActionPerformed
-        new Dar_Feedback().setVisible(true);
+        new Dar_Feedback(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnFeedbackActionPerformed
 

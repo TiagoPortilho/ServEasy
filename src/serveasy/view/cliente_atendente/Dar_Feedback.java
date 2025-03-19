@@ -11,12 +11,18 @@ import serveasy.view.*;
  * @author Tingos
  */
 public class Dar_Feedback extends javax.swing.JFrame {
-
+    private int num_mesa;
+    
     /**
      * Creates new form Dar_Feedback
      */
     public Dar_Feedback() {
         initComponents();
+    }
+    
+    public Dar_Feedback(int i) {
+        initComponents();
+        this.num_mesa = i;
     }
 
     /**
@@ -257,17 +263,17 @@ public class Dar_Feedback extends javax.swing.JFrame {
     }//GEN-LAST:event_lblinstrucaoAncestorMoved
 
     private void btnCardapioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCardapioActionPerformed
-        new Cardapio().setVisible(true);
+        new Cardapio(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnCardapioActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
-        new Seus_Pedidos().setVisible(true);
+        new Seus_Pedidos(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPedidosActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        new Pagar_Conta().setVisible(true);
+        new Pagar_Conta(num_mesa).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPagarActionPerformed
 

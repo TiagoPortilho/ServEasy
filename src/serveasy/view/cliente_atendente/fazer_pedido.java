@@ -18,6 +18,12 @@ public class fazer_pedido extends javax.swing.JFrame {
     public fazer_pedido() {
         initComponents();
     }
+    
+    private int num_mesa;
+    public fazer_pedido(int i) {
+        initComponents();
+        this.num_mesa = i;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
