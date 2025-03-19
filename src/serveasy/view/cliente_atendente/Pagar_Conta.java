@@ -372,7 +372,7 @@ public class Pagar_Conta extends javax.swing.JFrame {
         if(num_mesa != 0){
                 String[] options = {"Sim", "Não"};
                 int continuar = JOptionPane.showOptionDialog(rootPane, 
-                    "Tem certeza que deseja deletar?", 
+                    "Tem certeza que fechar a conta?", 
                     "Confirmar Deleção", 
                     JOptionPane.DEFAULT_OPTION, 
                     JOptionPane.QUESTION_MESSAGE, 

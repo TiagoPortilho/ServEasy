@@ -279,7 +279,7 @@ public class Em_Andamento extends javax.swing.JFrame {
 
     private void btnEntregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntregarActionPerformed
         new PedidoDAO().setEntregue(IdValorSelecionado(), true);
-        JOptionPane.showMessageDialog(rootPane,"Prato entregado com sucesso!");
+        JOptionPane.showMessageDialog(rootPane,"Prato entregue com sucesso!");
     }//GEN-LAST:event_btnEntregarActionPerformed
 
     private void lblPaginaAncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lblPaginaAncestorMoved
