@@ -8,279 +8,124 @@ import java.util.ArrayList;
 import java.util.List;
 import serveasy.banco.DbConnection;
 import serveasy.model.Mesa;
-import serveasy.view.TelaErro;
 
 public class MesasDAO {
 
-     public List<Mesa> listarMesas() {
-        List<Mesa> lista = new ArrayList<>();
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
+    @FunctionalInterface
+    interface ResultSetMapper<T> {
 
-        try {
-            String sql = "SELECT * FROM mesa";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
+        T map(ResultSet rs) throws SQLException;
+    }
 
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                int numero = rs.getInt("numero");
-                boolean ocupada = rs.getBoolean("ocupada");
-                float valorGasto = rs.getFloat("valor_gasto");
-                boolean pago = rs.getBoolean("pago");
+    private <T> List<T> executarQueryLista(String sql, Object[] params, ResultSetMapper<T> mapper) throws SQLException {
+        List<T> lista = new ArrayList<>();
+        try (Connection conexao = new DbConnection().getConnection(); PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-                
-                Mesa mesa = new Mesa(id, numero, ocupada, valorGasto, pago);
-                lista.add(mesa);
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
             }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-            new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapper.map(rs));
                 }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
             }
         }
         return lista;
     }
 
+    private <T> T executarQueryUnica(String sql, Object[] params, ResultSetMapper<T> mapper) throws SQLException {
+        try (Connection conexao = new DbConnection().getConnection(); PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-    public void criarMesas(int quantidade) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sqlDelete = "DELETE FROM mesa WHERE id != 1";
-            PreparedStatement stmtDelete = conexao.prepareStatement(sqlDelete);
-            stmtDelete.executeUpdate();
-
-            for (int i = 0; i < quantidade; i++) {
-                int numeroMesa = (int) (Math.random() * 900) + 100;
-
-                String sqlInsert = "INSERT INTO mesa (numero, ocupada, valor_gasto, pago) VALUES (?, false, 0.0, false)";
-                PreparedStatement stmtInsert = conexao.prepareStatement(sqlInsert);
-                stmtInsert.setInt(1, numeroMesa);
-                stmtInsert.executeUpdate();
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
             }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapper.map(rs);
                 }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
+                return null;
             }
         }
     }
 
-    public boolean getOcupada(int numero) {
-        boolean ocupada = false;
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
+    private void executarUpdate(String sql, Object... params) throws SQLException {
+        try (Connection conexao = new DbConnection().getConnection(); PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-        try {
-            String sql = "SELECT ocupada FROM mesa WHERE numero = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setInt(1, numero);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                ocupada = rs.getBoolean("ocupada");
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
             }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-        return ocupada;
-    }
-
-    public void setOcupada(int numero, boolean ocupada) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sql = "UPDATE mesa SET ocupada = ? WHERE numero = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setBoolean(1, ocupada);
-            stmt.setInt(2, numero);
             stmt.executeUpdate();
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
         }
     }
 
-    public boolean getPago(int numero) {
-        boolean pago = false;
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sql = "SELECT pago FROM mesa WHERE numero = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setInt(1, numero);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                pago = rs.getBoolean("pago");
-            }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-        return pago;
-    }
-
-    public void setPago(int numero, boolean pago) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sql = "UPDATE mesa SET pago = ? WHERE numero = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setBoolean(1, pago);
-            stmt.setInt(2, numero);
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-    }
-
-    public float getValorGasto(int numero) {
-        float valorGasto = 0.0f;
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sql = "SELECT valor_gasto FROM mesa WHERE numero = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setInt(1, numero);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                valorGasto = rs.getFloat("valor_gasto");
-            }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-        return valorGasto;
-    }
-
-    public void setValorGasto(int numero, float valorGasto) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sql = "UPDATE mesa SET valor_gasto = ? WHERE numero = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setFloat(1, valorGasto);
-            stmt.setInt(2, numero);
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-    }
-    
-    public Mesa buscarMesa(int numeroMesa) {
-    DbConnection dbConnection = new DbConnection();
-    Connection conexao = dbConnection.getConnection();
-    Mesa mesa = null;
-
-    try {
-        String sql = "SELECT * FROM mesa WHERE numero = ?";
-        PreparedStatement stmt = conexao.prepareStatement(sql);
-        stmt.setInt(1, numeroMesa);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            mesa = new Mesa(
+    public List<Mesa> listarMesas() throws SQLException {
+        String sql = "SELECT * FROM mesa";
+        return executarQueryLista(sql, new Object[]{}, rs -> new Mesa(
                 rs.getInt("id"),
                 rs.getInt("numero"),
                 rs.getBoolean("ocupada"),
                 rs.getFloat("valor_gasto"),
                 rs.getBoolean("pago")
-            );
-        }
-    } catch (SQLException ex) {
-        new TelaErro(ex.getMessage()).setVisible(true);
-    } finally {
-        try {
-            if (conexao != null && !conexao.isClosed()) {
-                conexao.close();
-            }
-        } catch (SQLException ex) {
-            new TelaErro(ex.getMessage()).setVisible(true);
+        ));
+    }
+
+    public void criarMesas(int quantidade) throws SQLException {
+        executarUpdate("DELETE FROM mesa WHERE id != 1");
+
+        for (int i = 0; i < quantidade; i++) {
+            int numeroMesa = (int) (Math.random() * 900) + 100;
+            executarUpdate("INSERT INTO mesa (numero, ocupada, valor_gasto, pago) VALUES (?, false, 0.0, false)", numeroMesa);
         }
     }
-    return mesa;
+
+    public Mesa buscarMesa(int numeroMesa) throws SQLException {
+        String sql = "SELECT * FROM mesa WHERE numero = ?";
+        return executarQueryUnica(sql, new Object[]{numeroMesa}, rs -> new Mesa(
+                rs.getInt("id"),
+                rs.getInt("numero"),
+                rs.getBoolean("ocupada"),
+                rs.getFloat("valor_gasto"),
+                rs.getBoolean("pago")
+        ));
     }
-    
-    
-    
+
+    private boolean getBooleanColuna(int numero, String coluna) throws SQLException {
+        String sql = "SELECT " + coluna + " FROM mesa WHERE numero = ?";
+        Boolean resultado = executarQueryUnica(sql, new Object[]{numero}, rs -> rs.getBoolean(coluna));
+        return resultado != null && resultado;
+    }
+
+    private void setBooleanColuna(int numero, String coluna, boolean valor) throws SQLException {
+        String sql = "UPDATE mesa SET " + coluna + " = ? WHERE numero = ?";
+        executarUpdate(sql, valor, numero);
+    }
+
+    public boolean getOcupada(int numero) throws SQLException {
+        return getBooleanColuna(numero, "ocupada");
+    }
+
+    public void setOcupada(int numero, boolean ocupada) throws SQLException {
+        setBooleanColuna(numero, "ocupada", ocupada);
+    }
+
+    public boolean getPago(int numero) throws SQLException {
+        return getBooleanColuna(numero, "pago");
+    }
+
+    public void setPago(int numero, boolean pago) throws SQLException {
+        setBooleanColuna(numero, "pago", pago);
+    }
+
+    public float getValorGasto(int numero) throws SQLException {
+        String sql = "SELECT valor_gasto FROM mesa WHERE numero = ?";
+        Float resultado = executarQueryUnica(sql, new Object[]{numero}, rs -> rs.getFloat("valor_gasto"));
+        return resultado != null ? resultado : 0.0f;
+    }
+
+    public void setValorGasto(int numero, float valorGasto) throws SQLException {
+        String sql = "UPDATE mesa SET valor_gasto = ? WHERE numero = ?";
+        executarUpdate(sql, valorGasto, numero);
+    }
 }

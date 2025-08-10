@@ -1,6 +1,7 @@
 package serveasy.model;
 
 public class Pedido {
+
     private int id;
     private int id_prato;
     private int id_mesa;
@@ -8,20 +9,19 @@ public class Pedido {
     private String nomePrato;
     private int numeroMesa;
     private boolean entregue;
-           
-    
+
     public Pedido(int id_prato, int id_mesa) {
         this.id_prato = id_prato;
         this.id_mesa = id_mesa;
     }
-    
+
     public Pedido(int id, int id_prato, int id_mesa, boolean confirmado) {
         this.id = id;
         this.id_prato = id_prato;
         this.id_mesa = id_mesa;
         this.confirmado = confirmado;
     }
-    
+
     public Pedido(int id, int idPrato, int numeroMesa, boolean confirmado, boolean entregue) {
         this.id = id;
         this.id_prato = idPrato;
@@ -69,7 +69,7 @@ public class Pedido {
     public void setNomePrato(String nomePrato) {
         this.nomePrato = nomePrato;
     }
-    
+
     public int getNumeroMesa() {
         return numeroMesa;
     }
@@ -77,12 +77,12 @@ public class Pedido {
     public void setNumeroMesa(int numeroMesa) {
         this.numeroMesa = numeroMesa;
     }
-    
+
     public boolean isEntregue() {
-        return entregue; 
+        return entregue;
     }
-    
+
     public void setEntregue(boolean entregue) {
-        this.entregue = entregue; 
+        this.entregue = entregue;
     }
 }

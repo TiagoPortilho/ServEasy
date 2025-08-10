@@ -3,15 +3,15 @@ package serveasy.model;
 import java.util.List;
 
 public class Mesa {
-    private int id;                   
-    private int numero;               
-    private boolean ocupada;          
-    private List<Pedido> pedidos;     
-    private float valorGasto;         
-    private boolean pago;             
 
+    private int id;
+    private int numero;
+    private boolean ocupada;
+    private List<Pedido> pedidos;
+    private float valorGasto;
+    private boolean pago;
 
-    public Mesa(int id, int numero, boolean ocupada, float valorGasto, boolean pago){
+    public Mesa(int id, int numero, boolean ocupada, float valorGasto, boolean pago) {
         this.id = id;
         this.numero = numero;
         this.ocupada = false;

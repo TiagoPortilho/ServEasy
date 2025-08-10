@@ -1,17 +1,18 @@
 package serveasy.model;
 
 public class Usuario {
+
     private int id;
     private String login;
     private String senha;
     private int idFuncionario;
     private int idMesa;
 
-    public Usuario(String login, String senha){
+    public Usuario(String login, String senha) {
         this.login = login;
         this.senha = senha;
     }
-    
+
     public Usuario(int id, String login, String senha, Integer idFuncionario, Integer idMesa) {
         this.id = id;
         this.login = login;
@@ -20,7 +21,6 @@ public class Usuario {
         this.idMesa = idMesa;
     }
 
-    
     public int getId() {
         return id;
     }

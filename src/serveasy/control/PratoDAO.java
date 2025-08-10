@@ -1,9 +1,6 @@
 package serveasy.control;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import serveasy.banco.DbConnection;
@@ -12,182 +9,97 @@ import serveasy.view.TelaErro;
 
 public class PratoDAO {
 
-    public void addPrato(Prato prato) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-        String nome,descricao;
-        float preco;
-        nome = prato.getNome();
-        preco = prato.getPreco();
-        descricao = prato.getDescricao();
+    @FunctionalInterface
+    private interface PreparedStatementSetter {
 
-        try {
-            String sql = "INSERT INTO prato (nome, preco, descricao) VALUES (?, ?, ?)";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setString(1, nome);
-            stmt.setFloat(2, preco);
-            stmt.setString(3, descricao);
+        void setParameters(PreparedStatement stmt) throws SQLException;
+    }
+
+    @FunctionalInterface
+    private interface ResultSetHandler<T> {
+
+        T handle(ResultSet rs) throws SQLException;
+    }
+
+    private void executarUpdate(String sql, PreparedStatementSetter pss) throws SQLException {
+        DbConnection dbConnection = new DbConnection();
+        try (Connection conexao = dbConnection.getConnection(); PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            pss.setParameters(stmt);
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            String e = ex.getMessage();
-            new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
+            new TelaErro(ex.getMessage()).setVisible(true);
+            throw ex;
         }
     }
 
-    public void delPrato(int id) {
+    private <T> T executarQueryUnica(String sql, PreparedStatementSetter pss, ResultSetHandler<T> rsh) throws SQLException {
         DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-
-        try {
-            String sql = "DELETE FROM prato WHERE id = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-            new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
+        try (Connection conexao = dbConnection.getConnection(); PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            if (pss != null) {
+                pss.setParameters(stmt);
             }
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rsh.handle(rs);
+            }
+        } catch (SQLException ex) {
+            new TelaErro(ex.getMessage()).setVisible(true);
+            throw ex;
         }
     }
 
-    
-    public Prato getPrato(int id) {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-        Prato prato = null;
+    public void addPrato(Prato prato) throws SQLException {
+        String sql = "INSERT INTO prato (nome, preco, descricao) VALUES (?, ?, ?)";
+        executarUpdate(sql, stmt -> {
+            stmt.setString(1, prato.getNome());
+            stmt.setFloat(2, prato.getPreco());
+            stmt.setString(3, prato.getDescricao());
+        });
+    }
 
-        try {
-            String sql = "SELECT * FROM prato WHERE id = ?";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+    public void delPrato(int id) throws SQLException {
+        String sql = "DELETE FROM prato WHERE id = ?";
+        executarUpdate(sql, stmt -> stmt.setInt(1, id));
+    }
 
+    public Prato getPrato(int id) throws SQLException {
+        String sql = "SELECT * FROM prato WHERE id = ?";
+        return executarQueryUnica(sql, stmt -> stmt.setInt(1, id), rs -> {
             if (rs.next()) {
-                String nome = rs.getString("nome");
-                float preco = rs.getFloat("preco");
-                String descricao = rs.getString("descricao");
-                prato = new Prato(id, nome, preco, descricao);
+                return new Prato(
+                        id,
+                        rs.getString("nome"),
+                        rs.getFloat("preco"),
+                        rs.getString("descricao")
+                );
             }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-        return prato;
+            return null;
+        });
     }
 
-    public List<Prato> listarPratos() {
-        DbConnection dbConnection = new DbConnection();
-        Connection conexao = dbConnection.getConnection();
-        List<Prato> lista = new ArrayList<>();
-
-        try {
-            String sql = "SELECT * FROM prato";
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-
+    public List<Prato> listarPratos() throws SQLException {
+        String sql = "SELECT * FROM prato";
+        return executarQueryUnica(sql, null, rs -> {
+            List<Prato> lista = new ArrayList<>();
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String nome = rs.getString("nome");
-                float preco = rs.getFloat("preco");
-                String descricao = rs.getString("descricao");
-                Prato prato = new Prato(id, nome, preco, descricao);
+                Prato prato = new Prato(
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getFloat("preco"),
+                        rs.getString("descricao")
+                );
                 lista.add(prato);
             }
-        } catch (SQLException ex) {
-            String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-        } finally {
-            try {
-                if (conexao != null && !conexao.isClosed()) {
-                    conexao.close();
-                }
-            } catch (SQLException ex) {
-                String e = ex.getMessage();
-                new TelaErro(e).setVisible(true);
-            }
-        }
-        return lista;
+            return lista;
+        });
     }
-    
-    public String getNomePrato(int id) {
-    DbConnection dbConnection = new DbConnection();
-    Connection conexao = dbConnection.getConnection();
-    String nome = null;
 
-    try {
+    public String getNomePrato(int id) throws SQLException {
         String sql = "SELECT nome FROM prato WHERE id = ?";
-        PreparedStatement stmt = conexao.prepareStatement(sql);
-        stmt.setInt(1, id);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            nome = rs.getString("nome");
-        }
-    } catch (SQLException ex) {
-        new TelaErro(ex.getMessage()).setVisible(true);
-    } finally {
-        try {
-            if (conexao != null && !conexao.isClosed()) {
-                conexao.close();
-            }
-        } catch (SQLException ex) {
-            new TelaErro(ex.getMessage()).setVisible(true);
-        }
+        return executarQueryUnica(sql, stmt -> stmt.setInt(1, id), rs -> rs.next() ? rs.getString("nome") : null);
     }
-    return nome;
-    }
-    
-    public float getPrecoPrato(int id) {
-    DbConnection dbConnection = new DbConnection();
-    Connection conexao = dbConnection.getConnection();
-    float preco = 0.0f;
 
-    try {
+    public float getPrecoPrato(int id) throws SQLException {
         String sql = "SELECT preco FROM prato WHERE id = ?";
-        PreparedStatement stmt = conexao.prepareStatement(sql);
-        stmt.setInt(1, id);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            preco = rs.getFloat("preco");
-        }
-    } catch (SQLException ex) {
-        new TelaErro(ex.getMessage()).setVisible(true);
-    } finally {
-        try {
-            if (conexao != null && !conexao.isClosed()) {
-                conexao.close();
-            }
-        } catch (SQLException ex) {
-            new TelaErro(ex.getMessage()).setVisible(true);
-        }
-    }
-    return preco;
+        return executarQueryUnica(sql, stmt -> stmt.setInt(1, id), rs -> rs.next() ? rs.getFloat("preco") : 0.0f);
     }
 }
