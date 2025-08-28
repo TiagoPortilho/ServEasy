@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ServEasy - Menu</title>
+
+    <!-- Bootstrap (apenas utilitários) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Fonte Elegante -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/menu-styles.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="Sidebar de navegação">
+        <div class="header-box" role="banner">
+          <div style="display:flex; align-items:center; gap:0.9rem;">
+            <div style="width:46px; height:46px; border-radius:10px; background:linear-gradient(90deg,var(--btn-bg), var(--btn-hover-end)); box-shadow:0 6px 18px var(--btn-shadow);"></div>
+            <div>
+              <div class="title">ServEasy</div>
+              <div class="subtitle">Services.</div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Navegação principal">
+          <a href="dashboard.html"><button class="nav-btn">
+          <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
+            Dashboard
+          </button></a>
+          <button class="nav-btn" aria-current="page">
+            <div class="dot" aria-hidden="true"></div>
+            Cardápio
+          </button>
+          <button class="nav-btn">
+            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
+            Relatórios
+          </button>
+          <button class="nav-btn">
+            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
+            Configurações
+          </button>
+        </nav>
+
+        <div class="logout">
+          <button class="nav-btn" id="logoutBtn" title="Sair">
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="main-header">
+            <h1>Cardápio</h1>
+            <button class="add-btn">+ Adicionar prato</button>
+        </div>
+
+        <div class="menu-grid">
+  <!-- Exemplo de prato -->
+  <div class="dish-card">
+    <button class="remove-btn">×</button>
+    <img src="../assets/menu-img/pizza-margherita.jpg" alt="Pizza Margherita" class="dish-img" />
+    <h2 class="dish-name">Pizza Margherita</h2>
+    <div class="dish-price">R$ 35,00</div>
+    <p class="dish-desc">
+      Clássica pizza italiana com molho de tomate e mussarela.
+    </p>
+    <div class="dish-ingredients">
+      Ingredientes: tomate, mussarela, manjericão, azeite
+    </div>
+  </div>
+
+  <div class="dish-card">
+    <button class="remove-btn">×</button>
+    <img src="../assets/menu-img/hamburguer-artesanal.jpg" alt="Hambúrguer Artesanal" class="dish-img" />
+    <h2 class="dish-name">Hambúrguer Artesanal</h2>
+    <div class="dish-price">R$ 28,00</div>
+    <p class="dish-desc">
+      Pão brioche, carne angus 180g e queijo cheddar.
+    </p>
+    <div class="dish-ingredients">
+      Ingredientes: pão brioche, carne angus, cheddar, alface, tomate
+    </div>
+  </div>
+</div>
+
+        <!-- Modal fictício -->
+        <div id="modalOverlay" class="modal-overlay">
+          <div class="modal">
+            <h2>Adicionar prato</h2>
+            
+            <input type="text" id="dishName" placeholder="Nome do prato" />
+            <input type="text" id="dishPrice" placeholder="Preço (R$)" />
+            <textarea id="dishDesc" placeholder="Descrição"></textarea>
+            <input type="text" id="dishIngr" placeholder="Ingredientes" />
+
+            <div class="modal-actions">
+              <button id="cancelBtn" class="btn cancel">Cancelar</button>
+              <button id="saveBtn" class="btn save">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../scripts/menu.js"></script>
+  </body>
+</html>
+  </body>
+</html>

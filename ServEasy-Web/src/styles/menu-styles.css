@@ -37,6 +37,14 @@
 * {
   box-sizing: border-box;
 }
+
+/* Remover estilo de links */
+a {
+  text-decoration: none;
+  color: inherit;
+  display: contents;
+}
+
 html,
 body {
   height: 100%;
@@ -50,13 +58,6 @@ body {
     #141418 55%,
     #0f0f0f 100%
   );
-}
-
-/* Remover estilo de links */
-a {
-  text-decoration: none;
-  color: inherit;
-  display: contents;
 }
 
 /* Page layout */
@@ -162,185 +163,216 @@ a {
   overflow: auto;
 }
 
+/* Header com botão adicionar */
 .main-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
-
-.main h1 {
-  font-size: 2.2rem;
-  font-weight: 500;
-  margin: 0;
-  color: var(--body-text);
-}
-
-/* GRID layout for panels */
-.grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr 380px;
-  grid-template-rows: 220px 300px 300px;
-  grid-template-areas:
-    "ganhos notas"
-    "estatisticas log"
-    "abrir log";
-}
-
-.panel {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(255, 255, 255, 0.01)
-  );
-  border-radius: 12px;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
-  color: var(--body-text);
-}
-
-.ganhos {
-  grid-area: ganhos;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-.ganhos .value {
-  font-size: 2.6rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-.ganhos .meta {
-  font-size: 0.95rem;
-  opacity: 0.9;
-}
-.spark {
-  height: 60px;
-  border-radius: 8px;
-  background: linear-gradient(
-    90deg,
-    rgba(252, 163, 17, 0.12),
-    rgba(252, 163, 17, 0.06)
-  );
-}
-
-.notas {
-  grid-area: notas;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.notas textarea {
-  width: 100%;
-  height: 100%;
-  min-height: 140px;
-  background: transparent;
-  color: var(--body-text);
-  border: 1px dashed rgba(255, 255, 255, 0.06);
-  padding: 0.85rem;
-  border-radius: 8px;
-  resize: vertical;
-}
-
-.estatisticas {
-  grid-area: estatisticas;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.8rem;
-}
-.stat-card {
-  background: rgba(255, 255, 255, 0.01);
-  border-radius: 10px;
-  padding: 0.9rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.stat-card .n {
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-.stat-card .l {
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-.abrir {
-  grid-area: abrir;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  justify-content: space-between;
-}
-/* Botão principal */
-.toggle-btn {
-  padding: 0.9rem 1rem;
+.add-btn {
+  padding: 0.6rem 1rem;
   border-radius: 10px;
   border: none;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
   color: var(--btn-text);
-  box-shadow: 0 0 20px var(--btn-shadow);
-  transition: all 0.2s ease-in-out;
-
-  /* Brilho pulsando */
-  animation: glowPulse 2s infinite alternate;
-}
-
-/* Estado desligado */
-.toggle-btn.off {
-  background: transparent;
-  color: var(--body-text);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: none;
-  animation: none;
-}
-
-/* Hover */
-.toggle-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px var(--btn-shadow);
-}
-
-/* Click */
-.toggle-btn:active {
-  transform: scale(0.95);
-  background: linear-gradient(
-    90deg,
-    var(--btn-active-start),
-    var(--btn-active-end)
-  );
   box-shadow: 0 0 15px var(--btn-shadow);
+  transition: all 0.2s ease-in-out;
+}
+.add-btn:hover {
+  transform: scale(1.05);
+}
+.add-btn:active {
+  transform: scale(0.95);
 }
 
-/* Animação de brilho */
-@keyframes glowPulse {
-  from {
-    box-shadow: 0 0 12px var(--btn-shadow);
-  }
-  to {
-    box-shadow: 0 0 28px var(--btn-shadow);
-  }
+/* Grid dos pratos */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
 }
 
-.log {
-  grid-area: log;
+/* Card de prato */
+.dish-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  overflow: auto;
 }
-.log .entry {
-  padding: 0.7rem;
+.dish-card:hover {
+  transform: translateY(-3px);
+  transition: 0.2s ease;
+}
+
+/* Botão remover */
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--body-text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+.remove-btn:hover {
+  background: rgba(252, 163, 17, 0.9);
+  color: black;
+}
+
+/* Imagem */
+.dish-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  font-size: 0.9rem;
+}
+
+/* Nome do prato */
+.dish-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Preço */
+.dish-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--btn-bg);
+}
+
+/* Descrição */
+.dish-desc {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Ingredientes */
+.dish-ingredients {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Caixa do modal */
+.modal {
+  background: #1c1c1c;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  color: var(--body-text);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  animation: slideDown 0.3s ease;
+}
+
+/* Título */
+.modal h2 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--btn-hover-end);
+}
+
+/* Inputs */
+.modal input,
+.modal textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 0.9rem;
+  border-radius: 10px;
+  border: none;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.2s;
+}
+
+.modal input:focus,
+.modal textarea:focus {
+  background: #333;
+  box-shadow: 0 0 0 2px var(--btn-hover-end);
+}
+
+/* Área de botões */
+.modal-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+/* Botões */
+.btn {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+/* Cancelar */
+.btn.cancel {
+  background: #333;
+  color: #aaa;
+}
+.btn.cancel:hover {
+  background: #444;
+  color: #fff;
+}
+
+/* Salvar */
+.btn.save {
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: var(--btn-text);
+  box-shadow: 0 6px 16px var(--btn-shadow);
+}
+.btn.save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px var(--btn-shadow);
+}
+.btn.save:active {
+  transform: scale(0.95);
+}
+
+/* Animação */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
