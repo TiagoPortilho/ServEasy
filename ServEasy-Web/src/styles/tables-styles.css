@@ -1,0 +1,487 @@
+:root {
+  /* Gradiente de fundo */
+  --gradient-start: #1e1f24;
+  --gradient-end: #fca311;
+
+  /* Cores do login container */
+  --login-bg: #181818;
+
+  /* Header */
+  --header-bg: #fca311;
+  --header-text: #000000;
+
+  /* Inputs */
+  --input-border: #e5e5e5;
+  --input-focus-border: #fca311;
+  --input-focus-shadow: rgba(252, 163, 17, 0.25);
+  --input-text: #ffffff;
+
+  /* Botões */
+  --btn-bg: #fca311;
+  --btn-text: #000000;
+  --btn-hover-start: #e58f00;
+  --btn-hover-end: #fca311;
+  --btn-active-start: #ff9d01;
+  --btn-active-end: #fca71f;
+  --btn-shadow: rgba(252, 163, 17, 0.5);
+
+  /* Texto */
+  --body-text: #ffffff;
+
+  /* Layout sizes */
+  --sidebar-w: 280px;
+  --gap: 1rem;
+}
+
+/* Reset / base */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Roboto Flex", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: var(--body-text);
+  background: linear-gradient(
+    180deg,
+    var(--gradient-start) 100%,
+    #141418 55%,
+    #0f0f0f 100%
+  );
+}
+
+/* Remover estilo de links */
+a {
+  text-decoration: none;
+  color: inherit;
+  display: contents;
+}
+
+/* Page layout */
+.app {
+  display: flex;
+  min-height: 100vh;
+  gap: var(--gap);
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* header-box (sua especificação) */
+.header-box {
+  background-color: var(--header-bg);
+  text-align: center;
+  padding: 2rem 1rem 2rem 1rem;
+  margin: 0 auto 20px auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  max-width: 240px;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--header-text);
+  margin-right: 35px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  font-weight: 200;
+  color: var(--header-text);
+  margin-right: 105px;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--body-text);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  text-align: left;
+  font-weight: 500;
+  transition: all 180ms ease;
+}
+.nav-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.nav-btn .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  box-shadow: 0 6px 18px var(--btn-shadow);
+}
+
+.logout {
+  margin-top: auto;
+}
+.logout .nav-btn {
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: var(--btn-text);
+  width: 100%;
+  font-weight: 500;
+  justify-content: center;
+}
+
+
+/* small polish for scrollbars */
+.log::-webkit-scrollbar,
+.main::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.log::-webkit-scrollbar-thumb,
+.main::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+/* MAIN content */
+.main {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: auto;
+}
+
+/* Header com botão adicionar */
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.add-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: var(--btn-text);
+  box-shadow: 0 0 15px var(--btn-shadow);
+  transition: all 0.2s ease-in-out;
+}
+
+.add-btn:hover {
+  transform: scale(1.05);
+}
+
+.add-btn:active {
+  transform: scale(0.95);
+}
+
+/* Grid de mesas */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card de mesa */
+.table-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 2rem;
+  min-height: 240px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.table-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Número da mesa */
+.table-number {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--btn-bg);
+  margin: 1rem 0;
+}
+
+/* Status da mesa */
+.table-status {
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 0.5rem 0;
+}
+
+/* Cores de status */
+.status-vazio .table-status {
+  background: rgba(128, 128, 128, 0.2);
+  color: #808080;
+}
+
+.status-ocupado .table-status {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+.status-pedido-feito .table-status {
+  background: rgba(255, 149, 0, 0.2);
+  color: #ff9500;
+}
+
+.status-pedido-entregue .table-status {
+  background: rgba(52, 199, 89, 0.2);
+  color: #34c759;
+}
+
+.status-pedido-pago .table-status {
+  background: rgba(0, 122, 255, 0.2);
+  color: #007aff;
+}
+
+.status-pedido-nao-pago .table-status {
+  background: rgba(255, 45, 85, 0.2);
+  color: #ff2d55;
+}
+
+/* Botões de ação */
+.table-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-status {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: var(--btn-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-status:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+
+/* Botão remover */
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--body-text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.remove-btn:hover {
+  background: rgba(252, 163, 17, 0.9);
+  color: black;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-container {
+  width: 90%;
+  max-width: 500px;
+  margin: 20px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid var(--btn-bg);
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.modal-content h2 {
+  color: var(--btn-bg);
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--btn-bg);
+  outline: none;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel,
+.btn-save {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel {
+  background: #333;
+  color: #fff;
+}
+
+.btn-save {
+  background: var(--btn-bg);
+  color: black;
+}
+
+.btn-cancel:hover,
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Confirm Modal */
+.confirm-modal {
+  max-width: 400px;
+}
+
+.confirm-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.confirm-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 16px;
+  background: linear-gradient(45deg, var(--btn-hover-start), var(--btn-hover-end));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #000;
+  box-shadow: 0 4px 15px var(--btn-shadow);
+}
+
+.confirm-content h3 {
+  color: var(--btn-bg);
+  margin: 0 0 12px;
+  font-size: 1.4rem;
+}
+
+.confirm-content p {
+  color: #ddd;
+  margin: 0 0 24px;
+  font-size: 1rem;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-confirm {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: black;
+  transition: all 0.3s ease;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--btn-shadow);
+}
