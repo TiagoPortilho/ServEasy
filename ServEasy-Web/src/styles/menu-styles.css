@@ -135,6 +135,8 @@ body {
 .nav-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  background: rgba(252, 163, 17, 0.15);
+  color: var(--btn-bg);
 }
 
 .nav-btn .dot {

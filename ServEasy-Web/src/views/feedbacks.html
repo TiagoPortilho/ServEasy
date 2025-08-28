@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ServEasy - Mesas</title>
+  <title>ServEasy - Feedbacks</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles/tables-styles.css">
+  <link rel="stylesheet" href="../styles/feedbacks.css">
 </head>
 
 <body>
@@ -29,21 +29,19 @@
       <a href="dashboard.html"><button class="nav-btn">
         <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Dashboard
       </button></a>
-
       <a href="menu.html"><button class="nav-btn">
         <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Cardápio
       </button></a>
-
-      <button class="nav-btn" aria-current="page">
-        <div class="dot" aria-hidden="true"></div>Mesas
-      </button>
-
+      <a href="mesas.html"><button class="nav-btn">
+        <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Mesas
+      </button></a>
       <a href="stock.html"><button class="nav-btn">
         <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Estoque
       </button></a>
-      <a href="feedbacks.html"><button class="nav-btn">
-            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Feedbacks
-          </button></a>
+      <button class="nav-btn" aria-current="page">
+            <div class="dot" aria-hidden="true"></div>
+            Feedbacks
+          </button>
     </nav>
 
     <div class="logout">
@@ -53,50 +51,22 @@
 
   <main class="main">
     <div class="main-header">
-      <h1>Mesas</h1>
-      <button class="add-btn" id="openAdd">+ Adicionar mesa</button>
+      <h1>Feedbacks</h1>
     </div>
 
-    <div class="tables-grid">
-      <!-- Mesas aparecerão aqui -->
-    </div>
-
-    <!-- Modal de Inserção -->
-    <div class="modal-overlay" id="modalOverlay">
-      <div class="modal-container">
-        <div class="modal-content">
-          <h2>Adicionar Mesa</h2>
+    <div class="feedback-table-container">
+      <table class="feedback-table">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Comentário</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="feedbackBody">
           
-          <div class="form-group">
-            <div class="input-group">
-              <label>Número da Mesa</label>
-              <input type="text" id="tableNumber" placeholder="Ex: 15" />
-            </div>
-
-            <!-- Status inicial será removido no produto final -->
-            <div class="input-group"> 
-              <label>Status Inicial</label>
-              <select id="tableStatus">
-                <option value="vazio">Vazio</option>
-                <option value="ocupado">Ocupado</option>
-                <option value="pedido-feito">Pedido feito</option>
-                <option value="pedido-pago">Pedido pago</option>
-                <option value="pedido-nao-pago">Pedido não pago</option>
-                <option value="pedido-entregue">Pedido entregue</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button id="cancelBtn" class="btn-cancel">
-              <i class="fas fa-times"></i> Cancelar
-            </button>
-            <button id="saveBtn" class="btn-save">
-              <i class="fas fa-check"></i> Salvar
-            </button>
-          </div>
-        </div>
-      </div>
+        </tbody>
+      </table>
     </div>
 
     <!-- Modal de Confirmação -->
@@ -104,8 +74,8 @@
       <div class="modal-container confirm-modal">
         <div class="confirm-content">
           <div class="confirm-icon">!</div>
-          <h3 id="confirmTitle">Remover mesa</h3>
-          <p id="confirmMessage">Tem certeza que deseja remover esta mesa?</p>
+          <h3 id="confirmTitle">Remover feedback</h3>
+          <p id="confirmMessage">Tem certeza que deseja remover este feedback?</p>
           <div class="confirm-actions">
             <button id="confirmCancel" class="btn-cancel">Cancelar</button>
             <button id="confirmOk" class="btn-confirm">Confirmar</button>
@@ -113,9 +83,10 @@
         </div>
       </div>
     </div>
+
   </main>
 </div>
 
-<script src="../scripts/tables.js"></script>
+<script src="../scripts/feedbacks.js"></script>
 </body>
 </html>
