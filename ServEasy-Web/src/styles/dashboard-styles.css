@@ -98,7 +98,7 @@ a {
   font-weight: 300;
   line-height: 1.2;
   color: var(--header-text);
-  margin-right: 30px;
+  margin-right: 35px;
   margin-bottom: 0;
   padding-bottom: 0;
 }
@@ -107,7 +107,7 @@ a {
   font-size: 1.05rem;
   font-weight: 200;
   color: var(--header-text);
-  margin-right: 100px;
+  margin-right: 105px;
 }
 
 .nav-list {

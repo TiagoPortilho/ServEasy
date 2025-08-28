@@ -99,7 +99,7 @@ body {
   font-weight: 300;
   line-height: 1.2;
   color: var(--header-text);
-  margin-right: 30px;
+  margin-right: 35px;
   margin-bottom: 0;
   padding-bottom: 0;
 }
@@ -108,7 +108,7 @@ body {
   font-size: 1.05rem;
   font-weight: 200;
   color: var(--header-text);
-  margin-right: 100px;
+  margin-right: 105px;
 }
 
 .nav-list {
@@ -270,100 +270,168 @@ body {
   font-style: italic;
 }
 
-/* Modal overlay */
+/* modal overlay (escurece tela) */
 .modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
-  display: none;
+  display: none;              /* ativado via .open */
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
 }
 
-/* Caixa do modal */
-.modal {
-  background: #1c1c1c;
-  padding: 2rem;
-  border-radius: 16px;
+/* mostra overlay */
+.modal-overlay.open { display: flex; }
+
+/* Novo CSS do Modal - Simples e Garantido */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 420px;
-  color: var(--body-text);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-  animation: slideDown 0.3s ease;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
 }
 
-/* Título */
-.modal h2 {
-  margin: 0 0 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--btn-hover-end);
-}
-
-/* Inputs */
-.modal input,
-.modal textarea {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 0.9rem;
-  border-radius: 10px;
-  border: none;
-  background: #2a2a2a;
-  color: #fff;
-  font-size: 0.95rem;
-  outline: none;
-  transition: 0.2s;
-}
-
-.modal input:focus,
-.modal textarea:focus {
-  background: #333;
-  box-shadow: 0 0 0 2px var(--btn-hover-end);
-}
-
-/* Área de botões */
-.modal-actions {
+.modal-backdrop.open {
   display: flex;
-  gap: 0.6rem;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Botões */
-.btn {
-  padding: 0.7rem 1.2rem;
+.modal-container {
+  width: 90%;
+  max-width: 500px;
+  margin: 20px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid var(--btn-bg);
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.modal-content h2 {
+  color: var(--btn-bg);
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--btn-bg);
+  outline: none;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel,
+.btn-save {
+  padding: 10px 20px;
+  border-radius: 6px;
   border: none;
-  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.25s;
 }
 
-/* Cancelar */
-.btn.cancel {
+.btn-cancel {
   background: #333;
-  color: #aaa;
-}
-.btn.cancel:hover {
-  background: #444;
   color: #fff;
 }
 
-/* Salvar */
-.btn.save {
-  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
-  color: var(--btn-text);
-  box-shadow: 0 6px 16px var(--btn-shadow);
-}
-.btn.save:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px var(--btn-shadow);
-}
-.btn.save:active {
-  transform: scale(0.95);
+.btn-save {
+  background: var(--btn-bg);
+  color: black;
 }
 
-/* Animação */
+/* Modal de Confirmação */
+.confirm-modal {
+  max-width: 400px;
+  animation: confirmIn 0.3s cubic-bezier(0.2, 0, 0.1, 1);
+}
+
+.confirm-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.confirm-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 16px;
+  background: linear-gradient(45deg, var(--btn-hover-start), var(--btn-hover-end));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #000;
+  box-shadow: 0 4px 15px rgba(252, 163, 17, 0.3);
+}
+
+.confirm-content h3 {
+  color: var(--btn-bg);
+  margin: 0 0 12px;
+  font-size: 1.4rem;
+}
+
+.confirm-content p {
+  color: #ddd;
+  margin: 0 0 24px;
+  font-size: 1rem;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-confirm {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: black;
+  transition: all 0.3s ease;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(252, 163, 17, 0.2);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -375,6 +443,64 @@ body {
   }
 }
 
+/* Animações dos botões */
+.btn-cancel,
+.btn-save,
+.img-upload label {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0.1, 1);
+}
+
+.btn-cancel:hover,
+.btn-save:hover,
+.img-upload label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cancel:active,
+.btn-save:active,
+.img-upload label:active {
+  transform: scale(0.98) translateY(0);
+}
+
+.btn-save,
+.img-upload label {
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+}
+
+.btn-save::before,
+.img-upload label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.btn-save:hover::before,
+.img-upload label:hover::before {
+  left: 100%;
+}
+
+.btn-cancel {
+  background: #333;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-cancel:hover {
+  background: #444;
+  border-color: rgba(255, 255, 255, 0.2);
+}
 
 /* small polish for scrollbars */
 .log::-webkit-scrollbar,
@@ -386,4 +512,61 @@ body {
 .main::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 8px;
+}
+
+/* Campo de imagem */
+.img-upload {
+  margin-top: 16px;
+}
+
+.img-upload label {
+  display: inline-block;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, var(--btn-bg), var(--btn-hover-end));
+  color: var(--btn-text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.img-upload label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(252, 163, 17, 0.2);
+}
+
+.img-upload input[type="file"] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  position: absolute;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.preview-area {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px dashed rgba(252, 163, 17, 0.2);
+}
+
+#imgPreview {
+  display: none;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--btn-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#previewName {
+  color: #ddd;
+  font-size: 0.9rem;
 }

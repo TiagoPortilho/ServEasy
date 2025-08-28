@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>ServEasy - Menu</title>
 
-    <!-- Bootstrap (apenas utilitários) -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <!-- Bootstrap utilitários -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Fonte Elegante -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..300&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../styles/menu-styles.css" />
+    <!-- Fonte -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..300&display=swap" rel="stylesheet">
+
+    <!-- Estilos do projeto -->
+    <link rel="stylesheet" href="../styles/menu-styles.css">
   </head>
 
   <body>
@@ -36,17 +32,20 @@
 
         <nav class="nav-list" aria-label="Navegação principal">
           <a href="dashboard.html"><button class="nav-btn">
-          <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
+            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
             Dashboard
           </button></a>
+
           <button class="nav-btn" aria-current="page">
             <div class="dot" aria-hidden="true"></div>
             Cardápio
           </button>
+
           <button class="nav-btn">
             <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
             Relatórios
           </button>
+
           <button class="nav-btn">
             <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
             Configurações
@@ -54,60 +53,79 @@
         </nav>
 
         <div class="logout">
-          <button class="nav-btn" id="logoutBtn" title="Sair">
-            Sair
-          </button>
+          <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
         </div>
       </aside>
 
       <main class="main">
         <div class="main-header">
             <h1>Cardápio</h1>
-            <button class="add-btn">+ Adicionar prato</button>
+            <button class="add-btn" type="button">+ Adicionar prato</button>
         </div>
 
         <div class="menu-grid">
-  <!-- Exemplo de prato -->
-  <div class="dish-card">
-    <button class="remove-btn">×</button>
-    <img src="../assets/menu-img/pizza-margherita.jpg" alt="Pizza Margherita" class="dish-img" />
-    <h2 class="dish-name">Pizza Margherita</h2>
-    <div class="dish-price">R$ 35,00</div>
-    <p class="dish-desc">
-      Clássica pizza italiana com molho de tomate e mussarela.
-    </p>
-    <div class="dish-ingredients">
-      Ingredientes: tomate, mussarela, manjericão, azeite
-    </div>
-  </div>
+          <!-- Exemplo de pratos -->
+          <div class="dish-card">
+            <button class="remove-btn" title="Remover">×</button>
+            <img src="../assets/menu-img/pizza-margherita.jpg" alt="Pizza Margherita" class="dish-img" />
+            <h2 class="dish-name">Pizza Margherita</h2>
+            <div class="dish-price">R$ 35,00</div>
+            <p class="dish-desc">Clássica pizza italiana com molho de tomate e mussarela.</p>
+            <div class="dish-ingredients">Ingredientes: tomate, mussarela, manjericão, azeite</div>
+          </div>
 
-  <div class="dish-card">
-    <button class="remove-btn">×</button>
-    <img src="../assets/menu-img/hamburguer-artesanal.jpg" alt="Hambúrguer Artesanal" class="dish-img" />
-    <h2 class="dish-name">Hambúrguer Artesanal</h2>
-    <div class="dish-price">R$ 28,00</div>
-    <p class="dish-desc">
-      Pão brioche, carne angus 180g e queijo cheddar.
-    </p>
-    <div class="dish-ingredients">
-      Ingredientes: pão brioche, carne angus, cheddar, alface, tomate
-    </div>
-  </div>
-</div>
+          <div class="dish-card">
+            <button class="remove-btn" title="Remover">×</button>
+            <img src="../assets/menu-img/hamburguer-artesanal.jpg" alt="Hambúrguer Artesanal" class="dish-img" />
+            <h2 class="dish-name">Hambúrguer Artesanal</h2>
+            <div class="dish-price">R$ 28,00</div>
+            <p class="dish-desc">Pão brioche, carne angus 180g e queijo cheddar.</p>
+            <div class="dish-ingredients">Ingredientes: pão brioche, carne angus, cheddar, alface, tomate</div>
+          </div>
+        </div>
 
-        <!-- Modal fictício -->
-        <div id="modalOverlay" class="modal-overlay">
-          <div class="modal">
-            <h2>Adicionar prato</h2>
-            
-            <input type="text" id="dishName" placeholder="Nome do prato" />
-            <input type="text" id="dishPrice" placeholder="Preço (R$)" />
-            <textarea id="dishDesc" placeholder="Descrição"></textarea>
-            <input type="text" id="dishIngr" placeholder="Ingredientes" />
+        <!-- Modal Novo e Simplificado -->
+        <div class="modal-backdrop" id="modalOverlay">
+          <div class="modal-container">
+            <div class="modal-content">
+              <h2>Adicionar Prato</h2>
+              
+              <div class="form-group">
+                <input type="text" id="dishName" placeholder="Nome do prato" />
+                <input type="text" id="dishPrice" placeholder="Preço (R$)" />
+                <textarea id="dishDesc" placeholder="Descrição"></textarea>
+                <input type="text" id="dishIngr" placeholder="Ingredientes" />
+                
+                <!-- Campo de imagem -->
+                <div class="img-upload">
+                  <label for="dishImage">Imagem do prato (opcional)</label>
+                  <input type="file" id="dishImage" accept="image/*" />
+                  <div class="preview-area">
+                    <img id="imgPreview" alt="Preview" />
+                    <span id="previewName">Nenhuma imagem selecionada</span>
+                  </div>
+                </div>
+              </div>
 
-            <div class="modal-actions">
-              <button id="cancelBtn" class="btn cancel">Cancelar</button>
-              <button id="saveBtn" class="btn save">Salvar</button>
+              <div class="modal-footer">
+                <button id="cancelBtn" class="btn-cancel">Cancelar</button>
+                <button id="saveBtn" class="btn-save">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Confirmação -->
+        <div id="confirmModal" class="modal-overlay">
+          <div class="modal-container confirm-modal">
+            <div class="confirm-content">
+              <div class="confirm-icon">!</div>
+              <h3 id="confirmTitle">Remover prato</h3>
+              <p id="confirmMessage">Tem certeza que deseja remover este prato do cardápio?</p>
+              <div class="confirm-actions">
+                <button id="confirmCancel" class="btn-cancel">Cancelar</button>
+                <button id="confirmOk" class="btn-confirm">Confirmar</button>
+              </div>
             </div>
           </div>
         </div>
@@ -115,7 +133,5 @@
     </div>
 
     <script src="../scripts/menu.js"></script>
-  </body>
-</html>
   </body>
 </html>
