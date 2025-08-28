@@ -183,6 +183,7 @@ body {
 }
 .add-btn:hover {
   transform: scale(1.05);
+  box-shadow: 0 0 20px var(--btn-shadow);
 }
 .add-btn:active {
   transform: scale(0.95);
@@ -343,8 +344,16 @@ body {
 
 .form-group input:focus,
 .form-group textarea:focus {
-  border-color: var(--btn-bg);
+  border-color: #fca311;
   outline: none;
+  box-shadow: 0 0 10px rgba(252, 163, 17, 0.4);
+  animation: border-glow 0.4s ease;
+}
+
+.form-group input:hover,
+.form-group textarea:hover {
+  border-color: var(--btn-bg);
+  background: rgba(252, 163, 17, 0.08);
 }
 
 .modal-footer {
