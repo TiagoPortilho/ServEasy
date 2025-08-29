@@ -11,13 +11,7 @@
       rel="stylesheet"
     />
 
-    <!-- Fonte Elegante -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..300&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Estilos do projeto -->
     <link rel="stylesheet" href="../styles/dashboard-styles.css" />
   </head>
 
@@ -25,8 +19,20 @@
     <div class="app">
       <aside class="sidebar" aria-label="Sidebar de navegação">
         <div class="header-box" role="banner">
-          <div style="display:flex; align-items:center; gap:0.9rem;">
-            <div style="width:46px; height:46px; border-radius:10px; background:linear-gradient(90deg,var(--btn-bg), var(--btn-hover-end)); box-shadow:0 6px 18px var(--btn-shadow);"></div>
+          <div style="display: flex; align-items: center; gap: 0.9rem">
+            <div
+              style="
+                width: 46px;
+                height: 46px;
+                border-radius: 10px;
+                background: linear-gradient(
+                  90deg,
+                  var(--btn-bg),
+                  var(--btn-hover-end)
+                );
+                box-shadow: 0 6px 18px var(--btn-shadow);
+              "
+            ></div>
             <div>
               <div class="title">ServEasy</div>
               <div class="subtitle">Services.</div>
@@ -39,26 +45,64 @@
             <div class="dot" aria-hidden="true"></div>
             Dashboard
           </button>
-          <a href="menu.html"><button class="nav-btn">
-            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
-            Cardápio
-          </button></a>
-          <a href="tables.html"><button class="nav-btn">
-            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>
-            Mesas
-          </button></a>
-          <a href="stock.html"><button class="nav-btn">
-            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Estoque
-          </button></a>
-          <a href="feedbacks.html"><button class="nav-btn">
-            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Feedbacks
-          </button></a>
+          <a href="menu.html"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Cardápio
+            </button></a
+          >
+          <a href="tables.html"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Mesas
+            </button></a
+          >
+          <a href="stock.html"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Estoque
+            </button></a
+          >
+          <a href="feedbacks.html"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Feedbacks
+            </button></a
+          >
         </nav>
 
         <div class="logout">
-          <button class="nav-btn" id="logoutBtn" title="Sair">
-            Sair
-          </button>
+          <a href="login.html">
+            <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
+          </a>
         </div>
       </aside>
 
@@ -66,9 +110,19 @@
         <div class="main-header">
           <h1>Dashboard</h1>
           <!-- Espaço para ações rápidas -->
-          <div style="display:flex; gap:0.5rem;">
-            <button class="nav-btn" style="padding:0.5rem 0.8rem; font-weight:600;">Exportar</button>
-            <button class="nav-btn" style="padding:0.5rem 0.8rem; font-weight:600;">Novo</button>
+          <div style="display: flex; gap: 0.5rem">
+            <button
+              class="nav-btn"
+              style="padding: 0.5rem 0.8rem; font-weight: 600"
+            >
+              Exportar
+            </button>
+            <button
+              class="nav-btn"
+              style="padding: 0.5rem 0.8rem; font-weight: 600"
+            >
+              Novo
+            </button>
           </div>
         </div>
 
@@ -76,32 +130,59 @@
           <!-- Ganhos -->
           <div class="panel ganhos">
             <div>
-              <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                "
+              >
                 <div>
-                  <div style="font-size:0.95rem; opacity:0.9">Ganhos do dia</div>
+                  <div style="font-size: 0.95rem; opacity: 0.9">
+                    Ganhos do dia
+                  </div>
                   <div class="value" id="ganhosValor">R$ 0,00</div>
                 </div>
-                <div style="text-align:right;">
-                  <div style="font-size:0.8rem; opacity:0.8">Hoje</div>
-                  <div style="font-size:0.85rem; opacity:0.85" id="ganhosHora">—</div>
+                <div style="text-align: right">
+                  <div style="font-size: 0.8rem; opacity: 0.8">Hoje</div>
+                  <div
+                    style="font-size: 0.85rem; opacity: 0.85"
+                    id="ganhosHora"
+                  >
+                    —
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="spark" aria-hidden="true"></div>
-            <div style="display:flex; gap:0.6rem; font-size:0.9rem;">
-              <div class="meta">Pedidos: <strong id="metaPedidos">0</strong></div>
-              <div class="meta">Ticket Médio: <strong id="metaTicket">R$ 0,00</strong></div>
+            <div style="display: flex; gap: 0.6rem; font-size: 0.9rem">
+              <div class="meta">
+                Pedidos: <strong id="metaPedidos">0</strong>
+              </div>
+              <div class="meta">
+                Ticket Médio: <strong id="metaTicket">R$ 0,00</strong>
+              </div>
             </div>
           </div>
 
           <!-- Notas -->
           <div class="panel notas">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-weight:700">NOTAS</div>
-              <div style="font-size:0.85rem; opacity:0.8">Rascunho rápido</div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div style="font-weight: 700">NOTAS</div>
+              <div style="font-size: 0.85rem; opacity: 0.8">
+                Rascunho rápido
+              </div>
             </div>
-            <textarea placeholder="Digite uma nota rápida... (fictício)"></textarea>
+            <textarea
+              placeholder="Digite uma nota rápida... (fictício)"
+            ></textarea>
           </div>
 
           <!-- Estatísticas -->
@@ -109,41 +190,93 @@
             <div class="stat-card">
               <div class="n" id="statVendas">0</div>
               <div class="l">Vendas (hoje)</div>
-              <div style="height:6px; background:linear-gradient(90deg,var(--btn-bg), transparent); border-radius:6px; margin-top:auto;"></div>
+              <div
+                style="
+                  height: 6px;
+                  background: linear-gradient(
+                    90deg,
+                    var(--btn-bg),
+                    transparent
+                  );
+                  border-radius: 6px;
+                  margin-top: auto;
+                "
+              ></div>
             </div>
 
             <div class="stat-card">
               <div class="n" id="statClientes">0</div>
               <div class="l">Clientes</div>
-              <div style="height:6px; background:linear-gradient(90deg,var(--btn-bg), transparent); border-radius:6px; margin-top:auto;"></div>
+              <div
+                style="
+                  height: 6px;
+                  background: linear-gradient(
+                    90deg,
+                    var(--btn-bg),
+                    transparent
+                  );
+                  border-radius: 6px;
+                  margin-top: auto;
+                "
+              ></div>
             </div>
 
             <div class="stat-card">
               <div class="n" id="statCancel">0</div>
               <div class="l">Cancelamentos</div>
-              <div style="height:6px; background:linear-gradient(90deg,var(--btn-bg), transparent); border-radius:6px; margin-top:auto;"></div>
+              <div
+                style="
+                  height: 6px;
+                  background: linear-gradient(
+                    90deg,
+                    var(--btn-bg),
+                    transparent
+                  );
+                  border-radius: 6px;
+                  margin-top: auto;
+                "
+              ></div>
             </div>
           </div>
 
           <!-- Log de ações -->
-          <div class="panel log" aria-label="Log de ações do sistema" id="logArea">
-            <div style="font-weight:700; margin-bottom:0.25rem;">Log de Ações</div>
+          <div
+            class="panel log"
+            aria-label="Log de ações do sistema"
+            id="logArea"
+          >
+            <div style="font-weight: 700; margin-bottom: 0.25rem">
+              Log de Ações
+            </div>
             <!-- entradas serão inseridas via JS -->
           </div>
 
           <!-- Abrir/Fechar restaurante -->
           <div class="panel abrir">
             <div>
-              <div style="font-weight:700; font-size:1.05rem;">Abrir / Fechar Restaurante</div>
-              <div style="opacity:0.9; margin-top:0.35rem;">Controla operações — somente demonstrativo.</div>
+              <div style="font-weight: 700; font-size: 1.05rem">
+                Abrir / Fechar Restaurante
+              </div>
+              <div style="opacity: 0.9; margin-top: 0.35rem">
+                Controla operações — somente demonstrativo.
+              </div>
             </div>
 
-            <div style="display:flex; gap:0.6rem; align-items:center;">
-              <button id="toggleOps" class="toggle-btn">Iniciar Operações</button>
-              <div id="opsState" style="font-weight:700; margin-left:8px; opacity:0.95;">Fechado</div>
+            <div style="display: flex; gap: 0.6rem; align-items: center">
+              <button id="toggleOps" class="toggle-btn">
+                Iniciar Operações
+              </button>
+              <div
+                id="opsState"
+                style="font-weight: 700; margin-left: 8px; opacity: 0.95"
+              >
+                Fechado
+              </div>
             </div>
 
-            <div style="font-size:0.9rem; opacity:0.85;">Última mudança: <span id="lastChange">—</span></div>
+            <div style="font-size: 0.9rem; opacity: 0.85">
+              Última mudança: <span id="lastChange">—</span>
+            </div>
           </div>
         </section>
       </main>

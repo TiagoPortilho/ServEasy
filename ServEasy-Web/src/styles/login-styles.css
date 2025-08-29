@@ -29,9 +29,17 @@
   --body-text: #ffffff;
 }
 
+@font-face {
+  font-family: "TASA Orbiter";
+  src: url('../assets/fonts/TASAOrbiter-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   background: linear-gradient(150deg, var(--gradient-start) 20%, var(--gradient-end) 260%);
   background-size: 300% 300%;
+  font-family: "TASA Orbiter", sans-serif;
   color: var(--body-text);
   animation: gradientMove 8s linear infinite;
   min-height: 100vh;

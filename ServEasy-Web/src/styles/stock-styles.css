@@ -33,6 +33,14 @@
   --gap: 1rem;
 }
 
+@font-face {
+  font-family: "TASA Orbiter";
+  src: url('../assets/fonts/TASAOrbiter-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 /* Reset / base */
 * {
   box-sizing: border-box;
@@ -41,8 +49,7 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family: "Roboto Flex", system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial;
+  font-family: "TASA Orbiter", sans-serif;
   color: var(--body-text);
   background: linear-gradient(
     180deg,
