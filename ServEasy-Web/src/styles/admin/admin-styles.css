@@ -222,7 +222,7 @@ a {
   gap: 0.75rem;
 }
 .ganhos .value {
-  font-size: 2.6rem;
+  font-size: 2.8rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -273,7 +273,7 @@ a {
   gap: 0.5rem;
 }
 .stat-card .n {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 .stat-card .l {
@@ -435,7 +435,7 @@ a {
 
 /* Nome do prato */
 .dish-name {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
   margin: 0;
 }
@@ -492,7 +492,7 @@ a {
 
 /* Número da mesa */
 .table-number {
-  font-size: 3rem;
+  font-size: 3.2rem;
   font-weight: 700;
   text-align: center;
   color: var(--btn-bg);

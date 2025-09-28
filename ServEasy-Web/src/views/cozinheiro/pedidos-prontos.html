@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServEasy - Pedidos Prontos</title>
+    <link rel="stylesheet" href="../../styles/cozinheiro/cozinheiro-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" aria-label="Sidebar de navegação">
+            <div class="header-box" role="banner">
+                <div style="display: flex; align-items: center; gap: 0.9rem">
+                    <div
+                        style="
+                            width: 46px;
+                            height: 46px;
+                            border-radius: 10px;
+                            background: linear-gradient(
+                                90deg,
+                                var(--btn-bg),
+                                var(--btn-hover-end)
+                            );
+                            box-shadow: 0 6px 18px var(--btn-shadow);
+                        "
+                    ></div>
+                    <div>
+                        <div class="title">ServEasy</div>
+                        <div class="subtitle">Services.</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-list" aria-label="Navegação principal">
+                <a href="novos-pedidos.html">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Novos Pedidos
+                    </button>
+                </a>
+                <a href="pedidos-andamento.html">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Em Andamento
+                    </button>
+                </a>
+                <button class="nav-btn" aria-current="page">
+                    <div class="dot" aria-hidden="true"></div>
+                    Pedidos Prontos
+                </button>
+            </nav>
+
+            <div class="logout">
+                <a href="../login.html">
+                    <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main" role="main">
+            <div class="main-header">
+                <h1>Pedidos Prontos</h1>
+                <p style="color: #cccccc; margin: 0;">Pedidos finalizados aguardando retirada</p>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar por mesa, pedido ou item...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="aguardando">Aguardando</button>
+                    <button class="filter-btn" data-filter="antigos">Mais Antigos</button>
+                </div>
+            </div>
+
+            <!-- Grid de Pedidos -->
+            <div class="pedidos-grid" id="pedidosGrid">
+                <!-- Pedidos serão carregados dinamicamente -->
+            </div>
+
+            <!-- Mensagem vazia -->
+            <div id="emptyMessage" class="text-center mt-20 hidden">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
+                <h3 style="color: #666;">Nenhum pedido pronto</h3>
+                <p style="color: #999;">Todos os pedidos foram entregues!</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Confirmar Entrega -->
+    <div id="modalConfirmarEntrega" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-utensils"></i> Confirmar Entrega</h3>
+                <span class="close" onclick="fecharModal('modalConfirmarEntrega')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Confirmar que este pedido foi <strong>ENTREGUE</strong> ao cliente?</p>
+                <div id="detalhesPedidoEntregar"></div>
+                <p style="color: #28a745; margin-top: 15px;">
+                    <i class="fas fa-info-circle"></i> 
+                    O pedido será removido da lista e marcado como concluído no sistema.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal('modalConfirmarEntrega')">Cancelar</button>
+                <button class="btn btn-success" onclick="confirmarEntregarPedido()">
+                    <i class="fas fa-check"></i> Confirmar Entrega
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Descartar Pedido -->
+    <div id="modalDescartarPedido" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash"></i> Descartar Pedido</h3>
+                <span class="close" onclick="fecharModal('modalDescartarPedido')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>ATENÇÃO:</strong> Esta ação irá descartar completamente o pedido e remover do banco de dados.</p>
+                <div id="detalhesPedidoDescartar"></div>
+                
+                <div style="background: #dc354520; border: 1px solid #dc3545; border-radius: 8px; padding: 15px; margin: 15px 0;">
+                    <p style="color: #dc3545; margin: 0;">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <strong>Esta ação é IRREVERSÍVEL!</strong>
+                    </p>
+                    <p style="color: #dc3545; margin: 5px 0 0 0; font-size: 0.9rem;">
+                        O pedido será completamente removido do sistema e não poderá ser recuperado.
+                    </p>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <label style="color: #cccccc; margin-bottom: 10px; display: block;">
+                        Motivo do descarte:
+                    </label>
+                    <select id="motivoDescarte" style="width: 100%; padding: 10px; background: #333; border: 1px solid #555; border-radius: 6px; color: #fff;">
+                        <option value="">Selecione um motivo...</option>
+                        <option value="cliente_nao_retirou">Cliente não retirou</option>
+                        <option value="pedido_esfriou">Pedido esfriou/estragou</option>
+                        <option value="erro_preparo">Erro no preparo</option>
+                        <option value="cliente_cancelou">Cliente cancelou</option>
+                        <option value="outros">Outros motivos</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal('modalDescartarPedido')">Voltar</button>
+                <button class="btn btn-danger" onclick="confirmarDescartarPedido()">
+                    <i class="fas fa-trash"></i> Descartar Definitivamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../scripts/cozinheiro/pedidos-prontos.js"></script>
+</body>
+</html>

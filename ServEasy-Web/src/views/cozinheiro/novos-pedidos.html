@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServEasy - Novos Pedidos</title>
+    <link rel="stylesheet" href="../../styles/cozinheiro/cozinheiro-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" aria-label="Sidebar de navegação">
+            <div class="header-box" role="banner">
+                <div style="display: flex; align-items: center; gap: 0.9rem">
+                    <div
+                        style="
+                            width: 46px;
+                            height: 46px;
+                            border-radius: 10px;
+                            background: linear-gradient(
+                                90deg,
+                                var(--btn-bg),
+                                var(--btn-hover-end)
+                            );
+                            box-shadow: 0 6px 18px var(--btn-shadow);
+                        "
+                    ></div>
+                    <div>
+                        <div class="title">ServEasy</div>
+                        <div class="subtitle">Services.</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-list" aria-label="Navegação principal">
+                <button class="nav-btn" aria-current="page">
+                    <div class="dot" aria-hidden="true"></div>
+                    Novos Pedidos
+                </button>
+                <a href="pedidos-andamento.html">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Em Andamento
+                    </button>
+                </a>
+                <a href="pedidos-prontos.html">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Pedidos Prontos
+                    </button>
+                </a>
+            </nav>
+
+            <div class="logout">
+                <a href="../login.html">
+                    <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main" role="main">
+            <div class="main-header">
+                <h1>Novos Pedidos</h1>
+                <p style="color: #cccccc; margin: 0;">Pedidos aguardando confirmação do cozinheiro</p>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar por mesa, pedido ou item...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="prioridade">Prioridade</button>
+                    <button class="filter-btn" data-filter="recentes">Mais Recentes</button>
+                </div>
+            </div>
+
+            <!-- Grid de Pedidos -->
+            <div class="pedidos-grid" id="pedidosGrid">
+                <!-- Pedidos serão carregados dinamicamente -->
+            </div>
+
+            <!-- Mensagem vazia -->
+            <div id="emptyMessage" class="text-center mt-20 hidden">
+                <i class="fas fa-clipboard-list" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
+                <h3 style="color: #666;">Nenhum pedido novo encontrado</h3>
+                <p style="color: #999;">Todos os pedidos foram processados!</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Aceitar Pedido -->
+    <div id="modalAceitarPedido" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Aceitar Pedido</h3>
+                <span class="close" onclick="fecharModal('modalAceitarPedido')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Deseja aceitar este pedido e movê-lo para "Em Andamento"?</p>
+                <div id="detalhesPedidoAceitar"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal('modalAceitarPedido')">Cancelar</button>
+                <button class="btn btn-success" onclick="confirmarAceitarPedido()">
+                    <i class="fas fa-check"></i> Aceitar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cancelar Pedido -->
+    <div id="modalCancelarPedido" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-times-circle"></i> Cancelar Pedido</h3>
+                <span class="close" onclick="fecharModal('modalCancelarPedido')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>Atenção:</strong> Cancelar um pedido novo não descartará nenhum ingrediente, pois ainda não foi iniciado o preparo.</p>
+                <div id="detalhesPedidoCancelar"></div>
+                <p style="color: #fca311; margin-top: 15px;">
+                    <i class="fas fa-info-circle"></i> 
+                    O pedido será removido da lista e o cliente será notificado.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal('modalCancelarPedido')">Voltar</button>
+                <button class="btn btn-danger" onclick="confirmarCancelarPedido()">
+                    <i class="fas fa-times"></i> Cancelar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../scripts/cozinheiro/novos-pedidos.js"></script>
+</body>
+</html>
