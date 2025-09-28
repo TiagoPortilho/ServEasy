@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ServEasy - Estoque</title>
 
@@ -11,7 +11,7 @@
     />
 
 
-    <link rel="stylesheet" href="../styles/stock-styles.css" />
+    <link rel="stylesheet" href="../../styles/admin/admin-styles.css" />
   </head>
 
   <body>
@@ -92,7 +92,7 @@
         </nav>
 
         <div class="logout">
-          <a href="login.html">
+          <a href="../login.html">
           <button class="nav-btn" id="logoutBtn" title="Sair">
             Sair
           </button>
@@ -150,13 +150,15 @@
               <div class="form-group">
                 <div class="form-item">
                   <label for="itemCategory">Categoria</label>
-                  <select id="itemCategory" required>
-                    <option value="">Selecione uma categoria</option>
-                    <option value="Hortifruti">Hortifruti</option>
-                    <option value="Laticínios">Laticínios</option>
-                    <option value="Bebidas">Bebidas</option>
-                    <option value="Embalagens">Embalagens</option>
-                  </select>
+                  <div class="select-wrapper">
+                    <select id="itemCategory" required>
+                      <option value="">Selecione uma categoria</option>
+                      <option value="Hortifruti">Hortifruti</option>
+                      <option value="Laticínios">Laticínios</option>
+                      <option value="Bebidas">Bebidas</option>
+                      <option value="Embalagens">Embalagens</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div class="form-item">
@@ -177,14 +179,14 @@
                         <button
                           type="button"
                           onclick="this.parentElement.previousElementSibling.stepUp()"
+                          title="Aumentar quantidade"
                         >
-                          ▲
                         </button>
                         <button
                           type="button"
                           onclick="this.parentElement.previousElementSibling.stepDown()"
+                          title="Diminuir quantidade"
                         >
-                          ▼
                         </button>
                       </div>
                     </div>
@@ -230,6 +232,6 @@
       </main>
     </div>
 
-    <script src="../scripts/stock.js"></script>
+    <script src="../../scripts/admin/stock.js"></script>
   </body>
 </html>

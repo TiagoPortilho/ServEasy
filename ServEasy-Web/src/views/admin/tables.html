@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ServEasy - Mesas</title>
 
@@ -12,7 +12,7 @@
 
     
 
-    <link rel="stylesheet" href="../styles/tables-styles.css" />
+    <link rel="stylesheet" href="../../styles/admin/admin-styles.css" />
   </head>
 
   <body>
@@ -103,7 +103,7 @@
         </nav>
 
         <div class="logout">
-          <a href="login.html">
+          <a href="../login.html">
             <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
           </a>
         </div>
@@ -134,14 +134,16 @@
                 <!-- Status inicial será removido no produto final -->
                 <div class="input-group">
                   <label>Status Inicial</label>
-                  <select id="tableStatus">
-                    <option value="vazio">Vazio</option>
-                    <option value="ocupado">Ocupado</option>
-                    <option value="pedido-feito">Pedido feito</option>
-                    <option value="pedido-pago">Pedido pago</option>
-                    <option value="pedido-nao-pago">Pedido não pago</option>
-                    <option value="pedido-entregue">Pedido entregue</option>
-                  </select>
+                  <div class="select-wrapper">
+                    <select id="tableStatus">
+                      <option value="vazio">Vazio</option>
+                      <option value="ocupado">Ocupado</option>
+                      <option value="pedido-feito">Pedido feito</option>
+                      <option value="pedido-pago">Pedido pago</option>
+                      <option value="pedido-nao-pago">Pedido não pago</option>
+                      <option value="pedido-entregue">Pedido entregue</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -176,6 +178,6 @@
       </main>
     </div>
 
-    <script src="../scripts/tables.js"></script>
+    <script src="../../scripts/admin/tables.js"></script>
   </body>
 </html>
