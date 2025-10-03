@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServEasy - Seus Pedidos</title>
+    <link rel="stylesheet" href="../../styles/cliente-atendente/cliente-atendente-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" aria-label="Sidebar de navegação">
+            <div class="header-box" role="banner">
+                <div style="display: flex; align-items: center; gap: 0.9rem">
+                    <div
+                        style="
+                            width: 46px;
+                            height: 46px;
+                            border-radius: 10px;
+                            background: linear-gradient(
+                                90deg,
+                                var(--btn-bg),
+                                var(--btn-hover-end)
+                            );
+                            box-shadow: 0 6px 18px var(--btn-shadow);
+                        "
+                    ></div>
+                    <div>
+                        <div class="title">ServEasy</div>
+                        <div class="subtitle">Services.</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-list" aria-label="Navegação principal">
+                <a href="cardapio.html">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Cardápio
+                    </button>
+                </a>
+                <button class="nav-btn" aria-current="page">
+                    <div class="dot" aria-hidden="true"></div>
+                    Seus Pedidos
+                </button>
+                <a href="feedback.html">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Feedback & Ajuda
+                    </button>
+                </a>
+            </nav>
+
+            <div class="logout">
+                <a href="../login.html">
+                    <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main" role="main">
+            <div class="main-header">
+                <h1>Seus Pedidos</h1>
+                <div class="mesa-ativa" id="mesaAtiva" style="display: none;">
+                    <i class="fas fa-table"></i>
+                    <span id="mesaNumero">Mesa 0</span>
+                </div>
+            </div>
+
+            <!-- Filtros de Status -->
+            <div class="filtros-container">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="pendente">Pendentes</button>
+                    <button class="filter-btn" data-filter="preparando">Preparando</button>
+                    <button class="filter-btn" data-filter="pronto">Prontos</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar por número do pedido...">
+                </div>
+            </div>
+
+            <!-- Resumo Financeiro -->
+            <div class="resumo-financeiro">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                    <div>
+                        <h3 style="color: #fca311; margin: 0 0 5px 0;">Total Geral</h3>
+                        <p style="font-size: 2rem; font-weight: 700; color: #28a745; margin: 0;" id="totalGeral">R$ 0,00</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h4 style="color: #cccccc; margin: 0 0 5px 0;">Pedidos Ativos</h4>
+                        <p style="font-size: 1.5rem; font-weight: 600; color: #fca311; margin: 0;" id="pedidosAtivos">0</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h4 style="color: #cccccc; margin: 0 0 5px 0;">Prontos para Entrega</h4>
+                        <p style="font-size: 1.5rem; font-weight: 600; color: #28a745; margin: 0;" id="pedidosProntos">0</p>
+                    </div>
+                    <button class="btn-fechar-conta" onclick="fecharConta()" id="btnFecharConta" disabled>
+                        <i class="fas fa-receipt"></i>
+                        Fechar Conta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid de Pedidos -->
+            <div class="pedidos-grid" id="pedidosGrid">
+                <!-- Pedidos serão carregados dinamicamente -->
+            </div>
+
+            <!-- Mensagem vazia -->
+            <div id="emptyMessage" class="text-center mt-20 hidden">
+                <i class="fas fa-clipboard-list" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
+                <h3 style="color: #666;">Nenhum pedido encontrado</h3>
+                <p style="color: #999;">Que tal fazer um pedido? Vá para o cardápio e escolha algo delicioso!</p>
+                <a href="cardapio.html">
+                    <button class="add-btn" style="margin-top: 15px;">
+                        <i class="fas fa-utensils"></i>
+                        Ver Cardápio
+                    </button>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Fechamento de Conta -->
+    <div id="modalFecharConta" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> Fechar Conta</h2>
+                <p style="color: #cccccc; margin: 0;">Resumo final da conta</p>
+            </div>
+            
+            <div id="resumoConta" style="margin: 20px 0;">
+                <!-- Resumo da conta aparecerá aqui -->
+            </div>
+            
+            <div class="form-group">
+                <label>Método de Pagamento</label>
+                <div class="select-wrapper">
+                    <select id="metodoPagamento">
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="cartao">Cartão</option>
+                        <option value="pix">PIX</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Observações (opcional)</label>
+                <textarea id="observacoesPagamento" placeholder="Observações sobre o pagamento..." style="background: #2a2a2a; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; min-height: 80px; resize: vertical;"></textarea>
+            </div>
+            
+            <div class="modal-buttons">
+                <button onclick="cancelarFechamento()" class="btn-secondary">
+                    Cancelar
+                </button>
+                <button onclick="confirmarFechamento()" class="btn-success">
+                    <i class="fas fa-check"></i>
+                    Confirmar Fechamento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Pedido -->
+    <div id="modalDetalhesPedido" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> Detalhes do Pedido</h2>
+                <button onclick="fecharDetalhes()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #999; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            
+            <div id="conteudoDetalhes">
+                <!-- Detalhes do pedido aparecerão aqui -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../../scripts/cliente-atendente/seus-pedidos.js"></script>
+</body>
+</html>
