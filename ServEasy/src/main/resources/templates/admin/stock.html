@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ServEasy - Estoque</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+
+    <link rel="stylesheet" th:href="@{/styles/admin/admin-styles.css}" />
+  </head>
+
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="Sidebar de navegação">
+        <div class="header-box" role="banner">
+          <div style="display: flex; align-items: center; gap: 0.9rem">
+            <div
+              style="
+                width: 46px;
+                height: 46px;
+                border-radius: 10px;
+                background: linear-gradient(
+                  90deg,
+                  var(--btn-bg),
+                  var(--btn-hover-end)
+                );
+                box-shadow: 0 6px 18px var(--btn-shadow);
+              "
+            ></div>
+            <div>
+              <div class="title">ServEasy</div>
+              <div class="subtitle">Services.</div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <a th:href="@{/admin/dashboard}"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Dashboard
+            </button></a
+          >
+
+          <a th:href="@{/admin/menu}"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Cardápio
+            </button></a
+          >
+
+          <a th:href="@{/admin/tables}"
+            ><button class="nav-btn">
+              <div
+                style="
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50%;
+                  background: #6b7280;
+                "
+              ></div>
+              Mesas
+            </button></a
+          >
+
+          <button class="nav-btn" aria-current="page">
+            <div class="dot" aria-hidden="true"></div>
+            Estoque
+          </button>
+          <a th:href="@{/admin/feedbacks}"><button class="nav-btn">
+            <div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div>Feedbacks
+          </button></a>
+        </nav>
+
+        <div class="logout">
+          <a th:href="@{/login}">
+          <button class="nav-btn" id="logoutBtn" title="Sair">
+            Sair
+          </button>
+          </a>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="main-header">
+          <h1>Estoque</h1>
+          <button class="add-btn" type="button">+ Adicionar Item</button>
+        </div>
+
+        <div class="table-container">
+          <table class="stock-table">
+            <thead>
+              <tr>
+                <th>Categoria</th>
+                <th>Nome</th>
+                <th>Preço Unit.</th>
+                <th>Quantidade</th>
+                <th>Unidade</th>
+                <th>Valor Total</th>
+                <th>Data Entrada</th>
+                <th>Validade</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dados serão carregados dinamicamente via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Modal Adicionar/Editar -->
+        <div class="modal-backdrop" id="modalOverlay">
+          <div class="modal-container">
+            <div class="modal-content">
+              <h2 id="modalTitle">Adicionar Item</h2>
+
+              <div class="form-group">
+                <div class="form-item">
+                  <label for="itemCategory">Categoria</label>
+                  <div class="select-wrapper">
+                    <select id="itemCategory" required>
+                      <option value="">Selecione uma categoria</option>
+                      <option value="Hortifruti">Hortifruti</option>
+                      <option value="Laticínios">Laticínios</option>
+                      <option value="Bebidas">Bebidas</option>
+                      <option value="Embalagens">Embalagens</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-item">
+                  <label for="itemName">Nome do Item</label>
+                  <input type="text" id="itemName" required />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-item">
+                    <label for="itemPrice">Preço Unitário (R$)</label>
+                    <input type="text" id="itemPrice" required />
+                  </div>
+                  <div class="form-item">
+                    <label for="itemQuantity">Quantidade</label>
+                    <div class="number-wrapper">
+                      <input type="number" id="itemQuantity" required />
+                      <div class="spinner">
+                        <button
+                          type="button"
+                          onclick="this.parentElement.previousElementSibling.stepUp()"
+                          title="Aumentar quantidade"
+                        >
+                        </button>
+                        <button
+                          type="button"
+                          onclick="this.parentElement.previousElementSibling.stepDown()"
+                          title="Diminuir quantidade"
+                        >
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-item">
+                    <label for="itemUnit">Unidade de Medida</label>
+                    <div class="select-wrapper">
+                      <select id="itemUnit" required>
+                        <option value="">Selecione uma unidade</option>
+                        <option value="kg">Quilograma (kg)</option>
+                        <option value="g">Grama (g)</option>
+                        <option value="L">Litro (L)</option>
+                        <option value="ml">Mililitro (ml)</option>
+                        <option value="unidades">Unidades</option>
+                        <option value="pacotes">Pacotes</option>
+                        <option value="caixas">Caixas</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-item">
+                    <label for="itemMinQuantity">Quantidade Mínima</label>
+                    <input type="number" id="itemMinQuantity" required />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-item">
+                    <label for="itemEntry">Data de Entrada</label>
+                    <input type="date" id="itemEntry" />
+                  </div>
+                  <div class="form-item">
+                    <label for="itemExpiry">Data de Validade</label>
+                    <input type="date" id="itemExpiry" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button id="cancelBtn" class="btn-cancel">Cancelar</button>
+                <button id="saveBtn" class="btn-save">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Confirmação -->
+        <div id="confirmModal" class="modal-backdrop">
+          <div class="modal-container confirm-modal">
+            <div class="confirm-content">
+              <div class="confirm-icon">!</div>
+              <h3>Remover Item</h3>
+              <p id="confirmMessage">
+                Tem certeza que deseja remover este item do estoque?
+              </p>
+              <div class="confirm-actions">
+                <button id="confirmCancel" class="btn-cancel">Cancelar</button>
+                <button id="confirmOk" class="btn-confirm">Confirmar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script th:src="@{/scripts/admin/stock.js}"></script>
+  </body>
+</html>

@@ -1,0 +1,138 @@
+:root {
+  /* Gradiente de fundo */
+  --gradient-start: #1e1f24;
+  --gradient-end: #fca311;
+
+  /* Cores do login container */
+  --login-bg: #181818;
+
+  /* Header */
+  --header-bg: #fca311;
+  --header-text: #000000;
+
+  /* Inputs */
+  --input-border: #e5e5e5;
+  --input-focus-border: #fca311;
+  --input-focus-shadow: rgba(252, 163, 17, 0.25);
+  --input-text: #ffffff;
+
+  /* Botões */
+  --btn-bg: #fca311;
+  --btn-text: #000000;
+  --btn-hover-start: #e58f00;
+  --btn-hover-end: #fca311;
+  --btn-active-start: #ff9d01;
+  --btn-active-end: #fca71f;
+  --btn-shadow: rgba(252, 163, 17, 0.5);
+
+  /* Texto */
+  --body-text: #ffffff;
+}
+
+/* Fonte removida - usando fontes do sistema
+@font-face {
+  font-family: "TASA Orbiter";
+  src: url('../assets/fonts/TASAOrbiter-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+
+body {
+  background: linear-gradient(150deg, var(--gradient-start) 20%, var(--gradient-end) 260%);
+  background-size: 300% 300%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--body-text);
+  animation: gradientMove 8s linear infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.login-container {
+  background-color: var(--login-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Header laranja */
+.header-box {
+  background-color: var(--header-bg);
+  text-align: center;
+  padding: 2rem 1rem 1.5rem 1rem;
+  margin-bottom: 25px;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--header-text);
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  font-weight: 200;
+  color: var(--header-text);
+  margin-right: 90px;
+}
+
+form {
+  padding: 2rem;
+}
+
+.form-control {
+  color: var(--input-text);
+  border: 1px solid var(--input-focus-border);
+  background-color: #272829;
+}
+
+form input {
+  margin-bottom: 30px;
+}
+
+.form-control:focus {
+    background-color: #272829;
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 0.2rem var(--input-focus-shadow);
+  color: var(--input-text);
+}
+
+.btn-login {
+  background-color: var(--btn-bg);
+  border: none;
+  color: var(--btn-text);
+  width: 100%;
+}
+
+.btn-login:hover, .btn-login:focus {
+  background: linear-gradient(90deg, var(--btn-hover-start), var(--btn-hover-end));
+  color: var(--btn-text);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+
+.btn-login:active {
+  background: linear-gradient(90deg, var(--btn-active-start), var(--btn-active-end));
+  color: var(--btn-text);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}

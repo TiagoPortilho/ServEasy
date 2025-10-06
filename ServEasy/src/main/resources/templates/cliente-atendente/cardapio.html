@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServEasy - Cardápio</title>
+    <link rel="stylesheet" th:href="@{/styles/cliente-atendente/cliente-atendente-styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" aria-label="Sidebar de navegação">
+            <div class="header-box" role="banner">
+                <div style="display: flex; align-items: center; gap: 0.9rem">
+                    <div
+                        style="
+                            width: 46px;
+                            height: 46px;
+                            border-radius: 10px;
+                            background: linear-gradient(
+                                90deg,
+                                var(--btn-bg),
+                                var(--btn-hover-end)
+                            );
+                            box-shadow: 0 6px 18px var(--btn-shadow);
+                        "
+                    ></div>
+                    <div>
+                        <div class="title">ServEasy</div>
+                        <div class="subtitle">Services.</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-list" aria-label="Navegação principal">
+                <button class="nav-btn" aria-current="page">
+                    <div class="dot" aria-hidden="true"></div>
+                    Cardápio
+                </button>
+                <a th:href="@{/cliente-atendente/seus-pedidos}">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Seus Pedidos
+                    </button>
+                </a>
+                <a th:href="@{/cliente-atendente/feedback}">
+                    <button class="nav-btn">
+                        <div
+                            style="
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                background: #6b7280;
+                            "
+                        ></div>
+                        Feedback & Ajuda
+                    </button>
+                </a>
+            </nav>
+
+            <div class="logout">
+                <a th:href="@{/login}">
+                    <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main" role="main">
+            <div class="main-header">
+                <h1>Cardápio</h1>
+                <div class="mesa-ativa" id="mesaAtiva" style="display: none;">
+                    <i class="fas fa-table"></i>
+                    <span id="mesaNumero">Mesa 0</span>
+                    <button onclick="trocarMesa()" style="background: none; border: none; color: white; margin-left: 8px; cursor: pointer;">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <button class="add-btn" onclick="selecionarMesa()" id="btnSelecionarMesa">
+                    <i class="fas fa-table"></i>
+                    Selecionar Mesa
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar por produto, ingrediente ou categoria...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="bebidas">Bebidas</button>
+                    <button class="filter-btn" data-filter="pratos">Pratos Principais</button>
+                    <button class="filter-btn" data-filter="sobremesas">Sobremesas</button>
+                    <button class="filter-btn" data-filter="entradas">Entradas</button>
+                </div>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div class="produtos-grid" id="produtosGrid">
+                <!-- Produtos serão carregados dinamicamente -->
+            </div>
+
+            <!-- Mensagem vazia -->
+            <div id="emptyMessage" class="text-center mt-20 hidden">
+                <i class="fas fa-utensils" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
+                <h3 style="color: #666;">Nenhum produto encontrado</h3>
+                <p style="color: #999;">Tente ajustar os filtros ou buscar por outros termos.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Seleção de Mesa -->
+    <div id="modalMesa" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-table"></i> Selecionar Mesa</h2>
+                <p style="color: #cccccc; margin: 0;">Escolha uma mesa disponível para começar o atendimento</p>
+            </div>
+            
+            <div class="mesas-grid" id="mesasGrid">
+                <!-- Mesas serão carregadas dinamicamente -->
+            </div>
+            
+            <div class="modal-buttons">
+                <button onclick="cancelarSelecaoMesa()" class="btn-secondary">
+                    Cancelar
+                </button>
+                <button onclick="confirmarMesa()" id="btnConfirmarMesa" disabled class="btn-primary">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Pedido -->
+    <div id="modalPedido" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-cart"></i> Confirmar Pedido</h2>
+                <p style="color: #cccccc; margin: 0;">Revise os detalhes do seu pedido antes de confirmar</p>
+            </div>
+            
+            <div id="detalhesPedido">
+                <!-- Detalhes do pedido aparecerão aqui -->
+            </div>
+            
+            <div class="modal-buttons">
+                <button onclick="cancelarPedido()" class="btn-secondary">
+                    Cancelar
+                </button>
+                <button onclick="confirmarPedido()" class="btn-success">
+                    <i class="fas fa-check"></i>
+                    Confirmar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/scripts/cliente-atendente/cardapio_new.js}"></script>
+</body>
+</html>
