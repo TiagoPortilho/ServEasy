@@ -2,7 +2,7 @@ package com.tiagoportilho.ServEasy.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,13 +22,17 @@ public class Order {
     private Long id;
 
     @NotNull(message = "Número da mesa é obrigatório")
+    @Min(value = 1, message = "Número da mesa deve ser maior que zero")
     @Column(name = "table_number")
     private Integer tableNumber;
 
+    @NotBlank(message = "Nome do cliente é obrigatório")
+    @Size(min = 2, max = 100, message = "Nome do cliente deve ter entre 2 e 100 caracteres")
     @Column(name = "customer_name")
     private String customerName;
 
     @NotNull(message = "Total é obrigatório")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Total deve ser maior que zero")
     private BigDecimal total;
 
     @Enumerated(EnumType.STRING)

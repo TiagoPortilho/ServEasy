@@ -59,19 +59,45 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
+        // 🔧 BUG FIX: Validar dados de entrada obrigatórios
+        if (orderRequest.getTableNumber() == null || orderRequest.getTableNumber() <= 0) {
+            throw new IllegalArgumentException("Número da mesa é obrigatório e deve ser maior que zero");
+        }
+        
+        if (orderRequest.getCustomerName() == null || orderRequest.getCustomerName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do cliente é obrigatório");
+        }
+        
+        if (orderRequest.getItems() == null || orderRequest.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Pelo menos um item deve ser adicionado ao pedido");
+        }
+
         Order order = new Order();
         order.setTableNumber(orderRequest.getTableNumber());
-        order.setCustomerName(orderRequest.getCustomerName());
+        order.setCustomerName(orderRequest.getCustomerName().trim());
         order.setNotes(orderRequest.getObservations());
         order.setStatus(Order.OrderStatus.NOVO);
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
+        int validItemsCount = 0;
 
         for (OrderRequest.OrderItemRequest itemRequest : orderRequest.getItems()) {
+            // 🔧 BUG FIX: Validar quantidade positiva
+            if (itemRequest.getQuantity() == null || itemRequest.getQuantity() <= 0) {
+                throw new IllegalArgumentException(
+                    "Quantidade deve ser maior que zero para o item ID: " + itemRequest.getMenuItemId());
+            }
+            
             Optional<MenuItem> menuItemOpt = menuItemRepository.findById(itemRequest.getMenuItemId());
             if (menuItemOpt.isPresent()) {
                 MenuItem menuItem = menuItemOpt.get();
+                
+                // 🔧 BUG FIX: Verificar se o item está disponível
+                if (menuItem.getIsAvailable() == null || !menuItem.getIsAvailable()) {
+                    throw new IllegalArgumentException(
+                        "Item não disponível: " + menuItem.getName());
+                }
                 
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
@@ -85,7 +111,16 @@ public class OrderService {
                 total = total.add(subtotal);
                 
                 orderItems.add(orderItem);
+                validItemsCount++;
+            } else {
+                throw new IllegalArgumentException(
+                    "Item não encontrado no cardápio com ID: " + itemRequest.getMenuItemId());
             }
+        }
+
+        // 🔧 BUG FIX: Garantir que pelo menos um item válido foi adicionado
+        if (validItemsCount == 0) {
+            throw new IllegalArgumentException("Nenhum item válido foi encontrado para criar o pedido");
         }
 
         order.setItems(orderItems);
@@ -98,6 +133,14 @@ public class OrderService {
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isPresent()) {
             Order order = orderOpt.get();
+            
+            // 🔧 BUG FIX: Validar transições de status permitidas
+            if (!isValidStatusTransition(order.getStatus(), newStatus)) {
+                throw new IllegalStateException(
+                    String.format("Transição inválida de %s para %s", 
+                        order.getStatus(), newStatus));
+            }
+            
             order.setStatus(newStatus);
             return orderRepository.save(order);
         }
@@ -105,6 +148,17 @@ public class OrderService {
     }
 
     public void cancelOrder(Long orderId) {
+        // 🔧 BUG FIX: Verificar se pode cancelar antes de tentar
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isPresent()) {
+            Order order = orderOpt.get();
+            if (order.getStatus() == Order.OrderStatus.ENTREGUE) {
+                throw new IllegalStateException("Não é possível cancelar um pedido já entregue");
+            }
+            if (order.getStatus() == Order.OrderStatus.CANCELADO) {
+                throw new IllegalStateException("Pedido já está cancelado");
+            }
+        }
         updateOrderStatus(orderId, Order.OrderStatus.CANCELADO);
     }
 
@@ -118,5 +172,30 @@ public class OrderService {
 
     public Order markAsDelivered(Long orderId) {
         return updateOrderStatus(orderId, Order.OrderStatus.ENTREGUE);
+    }
+    
+    // 🔧 BUG FIX: Método para validar transições de status
+    private boolean isValidStatusTransition(Order.OrderStatus currentStatus, Order.OrderStatus newStatus) {
+        // Se é o mesmo status, permite
+        if (currentStatus == newStatus) {
+            return true;
+        }
+        
+        return switch (currentStatus) {
+            case NOVO -> newStatus == Order.OrderStatus.EM_ANDAMENTO || 
+                        newStatus == Order.OrderStatus.CANCELADO;
+            
+            case EM_ANDAMENTO -> newStatus == Order.OrderStatus.PRONTO || 
+                               newStatus == Order.OrderStatus.CANCELADO;
+            
+            case PRONTO -> newStatus == Order.OrderStatus.ENTREGUE || 
+                          newStatus == Order.OrderStatus.CANCELADO;
+            
+            case ENTREGUE -> false; // Pedidos entregues não podem mudar de status
+            
+            case CANCELADO -> false; // Pedidos cancelados não podem mudar de status
+            
+            default -> false;
+        };
     }
 }

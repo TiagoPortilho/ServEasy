@@ -2,8 +2,7 @@ package com.tiagoportilho.ServEasy.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,13 +30,16 @@ public class OrderItem {
 
     @NotNull(message = "Quantidade é obrigatória")
     @Min(value = 1, message = "Quantidade deve ser pelo menos 1")
+    @Max(value = 100, message = "Quantidade não pode exceder 100 unidades")
     private Integer quantity;
 
     @NotNull(message = "Preço unitário é obrigatório")
+    @DecimalMin(value = "0.01", message = "Preço unitário deve ser maior que zero")
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
 
     @NotNull(message = "Subtotal é obrigatório")
+    @DecimalMin(value = "0.01", message = "Subtotal deve ser maior que zero")
     private BigDecimal subtotal;
 
     private String notes;
