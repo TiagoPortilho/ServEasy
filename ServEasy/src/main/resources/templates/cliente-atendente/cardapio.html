@@ -75,17 +75,29 @@
         <main class="main" role="main">
             <div class="main-header">
                 <h1>Cardápio</h1>
-                <div class="mesa-ativa" id="mesaAtiva" style="display: none;">
-                    <i class="fas fa-table"></i>
-                    <span id="mesaNumero">Mesa 0</span>
-                    <button onclick="trocarMesa()" style="background: none; border: none; color: white; margin-left: 8px; cursor: pointer;">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                <div class="header-right">
+                    <div class="mesa-ativa" id="mesaAtiva" style="display: none;">
+                        <i class="fas fa-table"></i>
+                        <span id="mesaNumero">Mesa 0</span>
+                        <button onclick="trocarMesa()" style="background: none; border: none; color: white; margin-left: 8px; cursor: pointer;" title="Trocar mesa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="liberarMesa()" style="background: none; border: none; color: white; margin-left: 4px; cursor: pointer;" title="Liberar mesa">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="header-actions">
+                        <button class="add-btn" onclick="selecionarMesa()" id="btnSelecionarMesa">
+                            <i class="fas fa-table"></i>
+                            Selecionar Mesa
+                        </button>
+                        <button class="add-btn btn-finalizar" onclick="finalizarPedido()" id="btnFinalizarPedido" style="display: none;">
+                            <i class="fas fa-shopping-cart"></i>
+                            Finalizar Pedido
+                            <span class="contador-carrinho" id="contadorCarrinho" style="display: none;">0</span>
+                        </button>
+                    </div>
                 </div>
-                <button class="add-btn" onclick="selecionarMesa()" id="btnSelecionarMesa">
-                    <i class="fas fa-table"></i>
-                    Selecionar Mesa
-                </button>
             </div>
 
             <!-- Filtros -->
@@ -163,6 +175,25 @@
         </div>
     </div>
 
-    <script th:src="@{/scripts/cliente-atendente/cardapio_new.js}"></script>
+    <script th:src="@{/scripts/cliente-atendente/cardapio.js}"></script>
+    <script>
+        // Script para logout
+        document.getElementById('logoutBtn')?.addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                window.location.href = '/logout';
+            }
+        });
+        
+        // Melhorar navegação entre as páginas
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
 </body>
 </html>

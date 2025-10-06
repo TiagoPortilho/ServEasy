@@ -129,4 +129,39 @@ public class TableController {
                     .body(ApiResponse.error("Erro ao atualizar status: " + e.getMessage()));
         }
     }
+
+    @PostMapping("/occupy/{tableNumber}")
+    public ResponseEntity<ApiResponse<RestaurantTable>> occupyTable(
+            @PathVariable Integer tableNumber,
+            @RequestParam(required = false) String customerName) {
+        try {
+            Optional<RestaurantTable> tableOpt = tableService.getTableByNumber(tableNumber);
+            if (tableOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            RestaurantTable table = tableOpt.get();
+            
+            if (table.getStatus() == RestaurantTable.TableStatus.OCUPADA) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Mesa já está ocupada"));
+            }
+            
+            if (table.getStatus() == RestaurantTable.TableStatus.RESERVADA) {
+                // Se está reservada, precisa confirmar com nome do cliente
+                if (customerName == null || customerName.trim().isEmpty()) {
+                    return ResponseEntity.badRequest()
+                            .body(ApiResponse.error("Mesa reservada. Informe o nome do cliente para confirmar a reserva."));
+                }
+                // Aqui poderia validar o nome com o sistema de reservas
+                // Por agora, vamos apenas aceitar qualquer nome não vazio
+            }
+            
+            RestaurantTable updatedTable = tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.OCUPADA);
+            return ResponseEntity.ok(ApiResponse.success("Mesa ocupada com sucesso", updatedTable));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Erro ao ocupar mesa: " + e.getMessage()));
+        }
+    }
 }

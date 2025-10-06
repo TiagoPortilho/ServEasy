@@ -33,7 +33,7 @@
             </div>
 
             <nav class="nav-list" aria-label="Navegação principal">
-                <a href="cardapio.html">
+                <a th:href="@{/cliente-atendente/cardapio}">
                     <button class="nav-btn">
                         <div
                             style="
@@ -46,7 +46,7 @@
                         Cardápio
                     </button>
                 </a>
-                <a href="seus-pedidos.html">
+                <a th:href="@{/cliente-atendente/seus-pedidos}">
                     <button class="nav-btn">
                         <div
                             style="
@@ -66,7 +66,7 @@
             </nav>
 
             <div class="logout">
-                <a href="../login.html">
+                <a th:href="@{/login}">
                     <button class="nav-btn" id="logoutBtn" title="Sair">Sair</button>
                 </a>
             </div>
@@ -225,6 +225,25 @@
     </div>
 
     <script src="../../scripts/cliente-atendente/feedback.js"></script>
+    <script>
+        // Script para logout
+        document.getElementById('logoutBtn')?.addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                window.location.href = '/logout';
+            }
+        });
+        
+        // Melhorar navegação entre as páginas
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
     <style>
         .tab-btn {
             background: rgba(255, 255, 255, 0.02);
@@ -303,5 +322,24 @@
             color: #17a2b8;
         }
     </style>
+    <script>
+        // Script para logout
+        document.getElementById('logoutBtn')?.addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                window.location.href = '/logout';
+            }
+        });
+        
+        // Melhorar navegação entre as páginas
+        const navButtonsMain = document.querySelectorAll('.nav-btn');
+        navButtonsMain.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
 </body>
 </html>

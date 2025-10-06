@@ -37,7 +37,7 @@ public class MenuService {
     }
 
     public List<MenuItem> getAvailableMenuItems() {
-        return menuItemRepository.findByIsAvailableTrue();
+        return menuItemRepository.findAvailableMenuItemsWithIngredients();
     }
 
     public List<MenuItem> getMenuItemsByCategory(MenuItem.Category category) {

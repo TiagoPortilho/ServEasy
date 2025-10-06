@@ -62,7 +62,7 @@ public class OrderService {
         Order order = new Order();
         order.setTableNumber(orderRequest.getTableNumber());
         order.setCustomerName(orderRequest.getCustomerName());
-        order.setNotes(orderRequest.getNotes());
+        order.setNotes(orderRequest.getObservations());
         order.setStatus(Order.OrderStatus.NOVO);
 
         List<OrderItem> orderItems = new ArrayList<>();

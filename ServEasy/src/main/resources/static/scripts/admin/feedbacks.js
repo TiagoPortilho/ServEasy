@@ -1,298 +1,313 @@
-document.addEventListener("DOMContentLoaded", async () => {// feedbacks.js (fictício) - gerencia listagem e remoção com confirmação
+/**
+ * Feedback Manager - Gerencia listagem, exibição e exclusão de feedbacks
+ * Implementado com princípios SOLID
+ */
 
-    const feedbackBody = document.getElementById("feedbackBody");document.addEventListener("DOMContentLoaded", () => {
+// Módulo de API - Responsável pela comunicação com o servidor
+const FeedbackAPI = {
+  async getFeedbacks() {
+    try {
+      console.log('Fazendo requisição para /api/feedbacks...');
+      const response = await fetch('/api/feedbacks');
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const apiResponse = await response.json();
+      console.log('API Response completa:', apiResponse);
+      
+      // A resposta da API tem a estrutura: { status: 'success', message: '', data: [...] }
+      if (apiResponse.status === 'success') {
+        console.log('Feedbacks extraídos:', apiResponse.data);
+        return apiResponse.data; // Retornar apenas os dados dos feedbacks
+      } else {
+        throw new Error(apiResponse.message || 'Erro na resposta da API');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar feedbacks:', error);
+      throw error;
+    }
+  },
 
-    const confirmModal = document.getElementById("confirmModal");  const feedbackBody = document.getElementById("feedbackBody");
+  async deleteFeedback(id) {
+    try {
+      const response = await fetch(`/api/feedbacks/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return true;
+    } catch (error) {
+      console.error('Erro ao remover feedback:', error);
+      throw error;
+    }
+  }
+};
 
-    const confirmCancel = document.getElementById("confirmCancel");  const confirmModal = document.getElementById("confirmModal");
+// Módulo de UI - Responsável pela renderização dos feedbacks
+const FeedbackUI = {
+  elements: {
+    feedbackBody: null,
+    confirmModal: null,
+    confirmCancel: null,
+    confirmOk: null,
+    confirmTitle: null,
+    confirmMessage: null
+  },
 
-    const confirmOk = document.getElementById("confirmOk");  const confirmCancel = document.getElementById("confirmCancel");
+  initialize() {
+    // Capturar elementos DOM uma única vez
+    this.elements.feedbackBody = document.getElementById("feedbackBody");
+    this.elements.confirmModal = document.getElementById("confirmModal");
+    this.elements.confirmCancel = document.getElementById("confirmCancel");
+    this.elements.confirmOk = document.getElementById("confirmOk");
+    this.elements.confirmTitle = document.getElementById("confirmTitle");
+    this.elements.confirmMessage = document.getElementById("confirmMessage");
+  },
 
-    const confirmMessage = document.getElementById("confirmMessage");  const confirmOk = document.getElementById("confirmOk");
+  render(feedbacks) {
+    console.log('FeedbackUI.render: Iniciando renderização com dados:', feedbacks);
+    const { feedbackBody } = this.elements;
+    
+    if (!feedbackBody) {
+      console.error('FeedbackUI.render: Elemento feedbackBody não encontrado!');
+      return;
+    }
+    
+    feedbackBody.innerHTML = "";
 
-    const confirmTitle = document.getElementById("confirmTitle");  const confirmMessage = document.getElementById("confirmMessage");
+    if (!feedbacks || feedbacks.length === 0) {
+      console.log('FeedbackUI.render: Nenhum feedback encontrado');
+      feedbackBody.innerHTML = `
+        <tr>
+          <td colspan="4" style="padding:2rem;text-align:center;color:#ccc">
+            Nenhum feedback registrado.
+          </td>
+        </tr>`;
+      return;
+    }
 
-  const confirmTitle = document.getElementById("confirmTitle");
-
-    let toDeleteId = null;
-
-  // dados fictícios
-
-    // Carregar feedbacks da API  let feedbacks = [
-
-    await loadFeedbacks();    { id: "f1", user: "Ana R.", text: "Ótimo atendimento! Recomendo.", date: "2025-08-10" },
-
-    { id: "f2", user: "Lucas M.", text: "Comida boa mas demorou um pouco.", date: "2025-08-09" },
-
-    // Atualizar automaticamente a cada 30 segundos    { id: "f3", user: "Mariana P.", text: "Preço justo e ambiente agradável.", date: "2025-08-08" }
-
-    setInterval(loadFeedbacks, 30000);  ];
-
-
-
-    async function loadFeedbacks() {  let toDeleteId = null;
-
-        try {
-
-            const response = await fetch('/api/feedbacks');  function render() {
-
-                feedbackBody.innerHTML = "";
-
-            if (!response.ok) {    if (!feedbacks.length) {
-
-                throw new Error(`HTTP error! status: ${response.status}`);      const tr = document.createElement("tr");
-
-            }      tr.innerHTML = `<td colspan="3" style="padding:2rem;text-align:center;color:#ccc">Nenhum feedback registrado.</td>`;
-
-                  feedbackBody.appendChild(tr);
-
-            const feedbacks = await response.json();      return;
-
-            renderFeedbacks(feedbacks);    }
-
-            
-
-        } catch (error) {    feedbacks.forEach(f => {
-
-            console.error('Erro ao carregar feedbacks:', error);      const tr = document.createElement("tr");
-
-            showError('Erro ao carregar feedbacks');      tr.innerHTML = `
-
-        }        <td>
-
-    }          <div class="feedback-user">
-
-            <div class="feedback-avatar">${escapeInitials(f.user)}</div>
-
-    function renderFeedbacks(feedbacks) {            <div>
-
-        feedbackBody.innerHTML = "";              <div class="feedback-name">${escapeHtml(f.user)}</div>
-
-                      <div class="feedback-meta">${formatDate(f.date)}</div>
-
-        if (!feedbacks || feedbacks.length === 0) {            </div>
-
-            const tr = document.createElement("tr");          </div>
-
-            tr.innerHTML = `<td colspan="4" style="padding:2rem;text-align:center;color:#ccc">Nenhum feedback registrado.</td>`;        </td>
-
-            feedbackBody.appendChild(tr);        <td><div class="feedback-text">${escapeHtml(f.text)}</div></td>
-
-            return;        <td class="actions-cell">
-
-        }          <button class="action-btn delete-btn" data-id="${f.id}" title="Remover">×</button>
-
+    console.log('FeedbackUI.render: Renderizando', feedbacks.length, 'feedbacks');
+    feedbacks.forEach((feedback, index) => {
+      console.log(`FeedbackUI.render: Processando feedback ${index + 1}:`, feedback);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>
+          <div class="feedback-user">
+            <div class="feedback-avatar">${this.escapeInitials(feedback.customerName || 'Anônimo')}</div>
+            <div>
+              <div class="feedback-name">${this.escapeHtml(feedback.customerName || 'Anônimo')}</div>
+              <div class="feedback-meta">${this.formatDate(feedback.feedbackDate)}</div>
+            </div>
+          </div>
         </td>
-
-        feedbacks.forEach(feedback => {      `;
-
-            const tr = document.createElement("tr");      feedbackBody.appendChild(tr);
-
-            tr.innerHTML = `    });
-
-                <td>${feedback.customerName || 'Anônimo'}</td>
-
-                <td>    // attach listeners for delete buttons
-
-                    <div class="rating">    document.querySelectorAll(".delete-btn").forEach(btn => {
-
-                        ${generateStarRating(feedback.rating || 0)}      btn.addEventListener("click", (e) => {
-
-                    </div>        const id = e.currentTarget.dataset.id;
-
-                </td>        showConfirm("Tem certeza que deseja remover este feedback?", id);
-
-                <td>${feedback.comment || ''}</td>      });
-
-                <td>${formatDate(feedback.feedbackDate)}</td>    });
-
-                <td>  }
-
-                    <button class="btn-delete" onclick="confirmDelete(${feedback.id})" title="Remover feedback">
-
-                        <i class="fas fa-trash"></i>  function showConfirm(message, id) {
-
-                    </button>    toDeleteId = id;
-
-                </td>    confirmMessage.textContent = message;
-
-            `;    confirmTitle.textContent = "Remover feedback";
-
-            feedbackBody.appendChild(tr);    confirmModal.classList.add("open");
-
-        });    document.body.style.overflow = "hidden";
-
-    }  }
-
-
-
-    function generateStarRating(rating) {  function closeConfirm() {
-
-        let stars = '';    toDeleteId = null;
-
-        for (let i = 1; i <= 5; i++) {    confirmModal.classList.remove("open");
-
-            if (i <= rating) {    document.body.style.overflow = "";
-
-                stars += '<i class="fas fa-star text-warning"></i>';  }
-
-            } else {
-
-                stars += '<i class="far fa-star text-muted"></i>';  confirmCancel.addEventListener("click", closeConfirm);
-
-            }
-
-        }  confirmOk.addEventListener("click", () => {
-
-        return stars;    if (!toDeleteId) return closeConfirm();
-
-    }    feedbacks = feedbacks.filter(f => f.id !== toDeleteId);
-
-    render();
-
-    function formatDate(dateString) {    closeConfirm();
-
-        if (!dateString) return 'Data inválida';  });
-
-        
-
-        try {  // fechar clicando fora do modal
-
-            const date = new Date(dateString);  confirmModal.addEventListener("click", (e) => {
-
-            return date.toLocaleDateString('pt-BR');    if (e.target === confirmModal) closeConfirm();
-
-        } catch (error) {  });
-
-            return 'Data inválida';
-
-        }  // fechar com ESC
-
-    }  document.addEventListener("keydown", (e) => {
-
-    if (e.key === "Escape" && confirmModal.classList.contains("open")) closeConfirm();
-
-    // Função global para confirmar exclusão  });
-
-    window.confirmDelete = function(id) {
-
-        toDeleteId = id;  // helpers
-
-        confirmTitle.textContent = "Confirmar Remoção";  function escapeHtml(s){
-
-        confirmMessage.textContent = "Tem certeza que deseja remover este feedback? Esta ação não pode ser desfeita.";    return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
-
-        confirmModal.classList.add("open");  }
-
-    };  function escapeInitials(name){
-
-    if(!name) return "";
-
-    // Event listeners para modal de confirmação    const parts = name.trim().split(" ");
-
-    confirmCancel?.addEventListener("click", () => {    if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-
-        confirmModal.classList.remove("open");    return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
-
-        toDeleteId = null;  }
-
-    });  function formatDate(iso){
-
-    try{
-
-    confirmOk?.addEventListener("click", async () => {      const d = new Date(iso);
-
-        if (toDeleteId) {      if(isNaN(d)) return iso;
-
-            await deleteFeedback(toDeleteId);      return d.toLocaleDateString();
-
-        }    } catch(e){ return iso; }
-
-        confirmModal.classList.remove("open");  }
-
-        toDeleteId = null;
-
-    });  // inicial
-
-  render();
-
-    // Fechar modal clicando fora});
-
-    confirmModal?.addEventListener("click", (e) => {
-        if (e.target === confirmModal) {
-            confirmModal.classList.remove("open");
-            toDeleteId = null;
-        }
+        <td>
+          <div class="rating">
+            ${this.generateStarRating(feedback.rating || 0)}
+          </div>
+        </td>
+        <td><div class="feedback-text">${this.escapeHtml(feedback.comment || '')}</div></td>
+        <td class="actions-cell">
+          <button class="action-btn delete-btn" data-id="${feedback.id}" title="Remover">×</button>
+        </td>
+      `;
+      feedbackBody.appendChild(tr);
     });
 
-    async function deleteFeedback(id) {
-        try {
-            const response = await fetch(`/api/feedbacks/${id}`, {
-                method: 'DELETE'
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            await loadFeedbacks();
-            showSuccess('Feedback removido com sucesso!');
-            
-        } catch (error) {
-            console.error('Erro ao remover feedback:', error);
-            alert('Erro ao remover feedback');
-        }
-    }
+    // Adicionar event listeners aos botões de excluir
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = e.currentTarget.dataset.id;
+        ConfirmationModal.show("Remover feedback", "Tem certeza que deseja remover este feedback?", id);
+      });
+    });
+  },
 
-    function showError(message) {
-        const feedbackBody = document.getElementById("feedbackBody");
-        if (feedbackBody) {
-            feedbackBody.innerHTML = `
-                <tr>
-                    <td colspan="4" style="padding:2rem;text-align:center;">
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            ${message}
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }
-    }
-
-    function showSuccess(message) {
-        // Criar toast de sucesso
-        const toastHtml = `
-            <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="fas fa-check-circle"></i>
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                </div>
+  showError(message) {
+    if (this.elements.feedbackBody) {
+      this.elements.feedbackBody.innerHTML = `
+        <tr>
+          <td colspan="4" style="padding:2rem;text-align:center;">
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-triangle"></i>
+              ${message}
             </div>
-        `;
-        
-        // Verificar se existe container de toasts
-        let toastContainer = document.getElementById('toast-container');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'toast-container';
-            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-            document.body.appendChild(toastContainer);
-        }
-        
-        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-        
-        // Inicializar e mostrar toast
-        const toastElement = toastContainer.lastElementChild;
-        const toast = new bootstrap.Toast(toastElement);
-        toast.show();
-        
-        // Remover toast após ser escondido
-        toastElement.addEventListener('hidden.bs.toast', () => {
-            toastElement.remove();
-        });
+          </td>
+        </tr>
+      `;
     }
+  },
+
+  // Funções utilitárias
+  escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;"
+    }[m]));
+  },
+
+  escapeInitials(name) {
+    if(!name) return "";
+    const parts = name.trim().split(" ");
+    if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
+  },
+
+  formatDate(dateString) {
+    if (!dateString) return 'Data inválida';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR');
+    } catch (error) {
+      return 'Data inválida';
+    }
+  },
+
+  generateStarRating(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+      stars += i <= rating 
+        ? '<i class="fas fa-star text-warning"></i>' 
+        : '<i class="far fa-star text-muted"></i>';
+    }
+    return stars;
+  }
+};
+
+// Módulo de notificações - Responsável pelos toasts e alertas
+const NotificationManager = {
+  showSuccess(message) {
+    // Criar toast de sucesso
+    const toastHtml = `
+      <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-check-circle"></i>
+            ${message}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    `;
+    
+    // Verificar se existe container de toasts
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'toast-container';
+      toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+      document.body.appendChild(toastContainer);
+    }
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    // Inicializar e mostrar toast
+    const toastElement = toastContainer.lastElementChild;
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    // Remover toast após ser escondido
+    toastElement.addEventListener('hidden.bs.toast', () => {
+      toastElement.remove();
+    });
+  }
+};
+
+// Módulo de confirmação - Gerencia o modal de confirmação
+const ConfirmationModal = {
+  currentItemId: null,
+  onConfirm: null,
+  elements: null,
+
+  initialize(elements) {
+    this.elements = elements;
+    
+    // Event listeners para o modal
+    elements.confirmCancel.addEventListener("click", this.close.bind(this));
+    
+    elements.confirmOk.addEventListener("click", () => {
+      if (this.onConfirm && this.currentItemId) {
+        this.onConfirm(this.currentItemId);
+      }
+      this.close();
+    });
+
+    // Fechar clicando fora do modal
+    elements.confirmModal.addEventListener("click", (e) => {
+      if (e.target === elements.confirmModal) {
+        this.close();
+      }
+    });
+
+    // Fechar com ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && elements.confirmModal.classList.contains("open")) {
+        this.close();
+      }
+    });
+  },
+
+  show(title, message, itemId, callback) {
+    this.currentItemId = itemId;
+    this.onConfirm = callback;
+    this.elements.confirmTitle.textContent = title;
+    this.elements.confirmMessage.textContent = message;
+    this.elements.confirmModal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  },
+
+  close() {
+    this.currentItemId = null;
+    this.elements.confirmModal.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+};
+
+// Controller principal - Gerencia o fluxo de dados e ações
+const FeedbackController = {
+  initialize() {
+    FeedbackUI.initialize();
+    ConfirmationModal.initialize(FeedbackUI.elements);
+    this.loadFeedbacks();
+
+    // Atualizar automaticamente a cada 30 segundos
+    setInterval(this.loadFeedbacks.bind(this), 30000);
+  },
+
+  async loadFeedbacks() {
+    try {
+      console.log('loadFeedbacks: Iniciando carregamento...');
+      const feedbacks = await FeedbackAPI.getFeedbacks();
+      console.log('loadFeedbacks: Feedbacks recebidos:', feedbacks);
+      FeedbackUI.render(feedbacks);
+      console.log('loadFeedbacks: Renderização concluída');
+    } catch (error) {
+      console.error('loadFeedbacks: Erro:', error);
+      FeedbackUI.showError('Erro ao carregar feedbacks');
+    }
+  },
+
+  async deleteFeedback(id) {
+    try {
+      await FeedbackAPI.deleteFeedback(id);
+      await this.loadFeedbacks();
+      NotificationManager.showSuccess('Feedback removido com sucesso!');
+    } catch (error) {
+      FeedbackUI.showError('Erro ao remover feedback');
+    }
+  }
+};
+
+// Inicialização
+document.addEventListener("DOMContentLoaded", () => {
+  FeedbackController.initialize();
+  
+  // Configurar o callback para exclusão de feedbacks
+  ConfirmationModal.onConfirm = FeedbackController.deleteFeedback.bind(FeedbackController);
 });

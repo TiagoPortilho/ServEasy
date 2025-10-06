@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -12,7 +13,8 @@ import java.util.List;
 public class OrderRequest {
     private Integer tableNumber;
     private String customerName;
-    private String notes;
+    private String observations; // Mudança de notes para observations
+    private String status;
     private List<OrderItemRequest> items;
 
     @Data
@@ -21,6 +23,7 @@ public class OrderRequest {
     public static class OrderItemRequest {
         private Long menuItemId;
         private Integer quantity;
+        private BigDecimal unitPrice; // Adicionado unitPrice
         private String notes;
     }
 }

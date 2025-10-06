@@ -2,6 +2,7 @@ package com.tiagoportilho.ServEasy.controller.api;
 
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
 import com.tiagoportilho.ServEasy.dto.OrderRequest;
+import com.tiagoportilho.ServEasy.dto.OrderResponseDTO;
 import com.tiagoportilho.ServEasy.model.Order;
 import com.tiagoportilho.ServEasy.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -20,10 +22,25 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Order>>> getAllOrders() {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getAllOrders(@RequestParam(required = false) String status) {
         try {
-            List<Order> orders = orderService.getAllOrders();
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<Order> orders;
+            if (status != null && !status.isEmpty()) {
+                try {
+                    Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
+                    orders = orderService.getOrdersByStatus(orderStatus);
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.badRequest()
+                            .body(ApiResponse.error("Status inválido: " + status));
+                }
+            } else {
+                orders = orderService.getAllOrders();
+            }
+            
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(OrderResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar pedidos: " + e.getMessage()));
@@ -31,10 +48,13 @@ public class OrderController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<ApiResponse<List<Order>>> getOrdersByStatus(@PathVariable Order.OrderStatus status) {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getOrdersByStatus(@PathVariable Order.OrderStatus status) {
         try {
             List<Order> orders = orderService.getOrdersByStatus(status);
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(OrderResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar pedidos por status: " + e.getMessage()));
@@ -42,10 +62,13 @@ public class OrderController {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<ApiResponse<List<Order>>> getNewOrders() {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getNewOrders() {
         try {
             List<Order> orders = orderService.getNewOrders();
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(OrderResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar novos pedidos: " + e.getMessage()));
@@ -53,10 +76,13 @@ public class OrderController {
     }
 
     @GetMapping("/in-progress")
-    public ResponseEntity<ApiResponse<List<Order>>> getOrdersInProgress() {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getOrdersInProgress() {
         try {
             List<Order> orders = orderService.getOrdersInProgress();
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(OrderResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar pedidos em andamento: " + e.getMessage()));
@@ -64,10 +90,13 @@ public class OrderController {
     }
 
     @GetMapping("/ready")
-    public ResponseEntity<ApiResponse<List<Order>>> getReadyOrders() {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getReadyOrders() {
         try {
             List<Order> orders = orderService.getReadyOrders();
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(OrderResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar pedidos prontos: " + e.getMessage()));
@@ -75,10 +104,13 @@ public class OrderController {
     }
 
     @GetMapping("/today")
-    public ResponseEntity<ApiResponse<List<Order>>> getTodaysOrders() {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getTodaysOrders() {
         try {
             List<Order> orders = orderService.getTodaysOrders();
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                    .map(OrderResponseDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar pedidos de hoje: " + e.getMessage()));
@@ -86,11 +118,12 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Order>> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> getOrderById(@PathVariable Long id) {
         try {
             Optional<Order> order = orderService.getOrderById(id);
             if (order.isPresent()) {
-                return ResponseEntity.ok(ApiResponse.success(order.get()));
+                OrderResponseDTO orderDTO = OrderResponseDTO.fromEntity(order.get());
+                return ResponseEntity.ok(ApiResponse.success(orderDTO));
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -101,10 +134,13 @@ public class OrderController {
     }
 
     @GetMapping("/table/{tableNumber}")
-    public ResponseEntity<ApiResponse<List<Order>>> getOrdersByTable(@PathVariable Integer tableNumber) {
+    public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getOrdersByTable(@PathVariable Integer tableNumber) {
         try {
             List<Order> orders = orderService.getOrdersByTable(tableNumber);
-            return ResponseEntity.ok(ApiResponse.success(orders));
+            List<OrderResponseDTO> orderDTOs = orders.stream()
+                .map(OrderResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(orderDTOs));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("Erro ao buscar pedidos da mesa: " + e.getMessage()));
@@ -112,10 +148,11 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Order>> createOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> createOrder(@RequestBody OrderRequest orderRequest) {
         try {
             Order createdOrder = orderService.createOrder(orderRequest);
-            return ResponseEntity.ok(ApiResponse.success("Pedido criado com sucesso", createdOrder));
+            OrderResponseDTO orderDTO = OrderResponseDTO.fromEntity(createdOrder);
+            return ResponseEntity.ok(ApiResponse.success("Pedido criado com sucesso", orderDTO));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Erro ao criar pedido: " + e.getMessage()));
@@ -177,5 +214,30 @@ public class OrderController {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Erro ao cancelar pedido: " + e.getMessage()));
         }
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> updateOrderStatus(
+            @PathVariable Long id, 
+            @RequestBody StatusUpdateRequest request) {
+        try {
+            Order.OrderStatus newStatus = Order.OrderStatus.valueOf(request.getStatus().toUpperCase());
+            Order updatedOrder = orderService.updateOrderStatus(id, newStatus);
+            OrderResponseDTO responseDTO = OrderResponseDTO.fromEntity(updatedOrder);
+            return ResponseEntity.ok(ApiResponse.success("Status atualizado", responseDTO));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Status inválido: " + request.getStatus()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Erro ao atualizar status: " + e.getMessage()));
+        }
+    }
+
+    public static class StatusUpdateRequest {
+        private String status;
+        
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
     }
 }

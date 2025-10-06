@@ -1,5 +1,6 @@
 package com.tiagoportilho.ServEasy.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ public class Order {
     private String notes;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<OrderItem> items;
 
     @Column(name = "created_at")

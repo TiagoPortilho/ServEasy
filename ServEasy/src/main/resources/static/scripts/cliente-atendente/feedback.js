@@ -80,7 +80,7 @@ function atualizarEstrelas() {
     destacarEstrelas(avaliacaoSelecionada);
 }
 
-function enviarFeedback(e) {
+async function enviarFeedback(e) {
     e.preventDefault();
     
     const tipoFeedback = document.getElementById('tipoFeedback').value;
@@ -93,25 +93,38 @@ function enviarFeedback(e) {
     }
     
     const feedback = {
-        id: Date.now(),
-        tipo: 'feedback',
-        categoria: tipoFeedback,
-        nome: nomeCliente,
-        comentario: comentario,
-        avaliacao: avaliacaoSelecionada,
-        mesa: mesaSelecionada,
-        dataEnvio: new Date().toISOString(),
-        status: 'enviado'
+        customerName: nomeCliente,
+        rating: avaliacaoSelecionada,
+        comment: `[${tipoFeedback}] ${comentario}${mesaSelecionada ? ` (Mesa ${mesaSelecionada})` : ''}`
     };
     
-    // Limpar formulário
-    document.getElementById('feedbackForm').reset();
-    avaliacaoSelecionada = 0;
-    atualizarEstrelas();
-    
-    // Mostrar modal de sucesso
-    document.getElementById('mensagemSucesso').textContent = 'Seu feedback foi enviado com sucesso. Obrigado por sua opinião!';
-    document.getElementById('modalSucesso').style.display = 'flex';
+    try {
+        const response = await fetch('/api/feedbacks/simple', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(feedback)
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success' || result.success) {
+            // Limpar formulário
+            document.getElementById('feedbackForm').reset();
+            avaliacaoSelecionada = 0;
+            atualizarEstrelas();
+            
+            // Mostrar modal de sucesso
+            document.getElementById('mensagemSucesso').textContent = 'Seu feedback foi enviado com sucesso. Obrigado por sua opinião!';
+            document.getElementById('modalSucesso').style.display = 'flex';
+        } else {
+            mostrarNotificacao(result.message || 'Erro ao enviar feedback', 'warning');
+        }
+    } catch (error) {
+        console.error('Erro ao enviar feedback:', error);
+        mostrarNotificacao('Erro de conexão ao enviar feedback', 'warning');
+    }
 }
 
 function enviarSolicitacaoAjuda(e) {
