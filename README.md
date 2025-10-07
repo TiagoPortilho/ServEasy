@@ -410,7 +410,7 @@ server.port=8080
 # Banco de Dados
 spring.datasource.url=jdbc:mysql://localhost:3306/serveasy_db?createDatabaseIfNotExist=true
 spring.datasource.username=root
-spring.datasource.password=300807
+spring.datasource.password=root
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA/Hibernate
