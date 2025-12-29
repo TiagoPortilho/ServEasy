@@ -330,3 +330,6 @@ pids
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Temporary files with strange names (like -w, --help, etc.)
+[-]*

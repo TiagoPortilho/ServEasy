@@ -108,7 +108,8 @@ class ServEasyIntegrationTest {
         for (int i = 0; i < 1000; i++) {
             // Criar strings grandes
             String largeString = "x".repeat(1000);
-            // Não armazenar referência - deve ser coletado pelo GC
+            // Usar a string para evitar warning
+            assert largeString.length() == 1000;
         }
         
         // Forçar garbage collection
@@ -138,6 +139,7 @@ class ServEasyIntegrationTest {
 
     @Test
     @DisplayName("CONCURRENCY TEST: Teste de operações concorrentes")
+    @SuppressWarnings("unchecked")
     void testConcurrentOperations() {
         System.out.println("🔄 TESTE DE CONCORRÊNCIA:");
         
@@ -154,6 +156,8 @@ class ServEasyIntegrationTest {
                     for (int j = 0; j < 100; j++) {
                         // Operação que pode ter race condition
                         String result = "Thread-" + threadId + "-Operation-" + j;
+                        // Usar a variável para evitar warning
+                        assert result != null;
                         Thread.sleep(1); // Simular processamento
                     }
                 } catch (InterruptedException e) {
@@ -228,6 +232,8 @@ class ServEasyIntegrationTest {
         // Teste 1: Divisão por zero
         try {
             int result = 10 / 0;
+            // Usar a variável para evitar warning
+            System.out.println("Resultado inesperado: " + result);
             System.out.println("❌ Divisão por zero deveria ter lançado exceção!");
             fail("Divisão por zero não lançou exceção");
         } catch (ArithmeticException e) {
@@ -237,6 +243,8 @@ class ServEasyIntegrationTest {
         // Teste 2: NullPointerException
         try {
             String nullString = null;
+            // Usar a variável para evitar warning, mas ainda causar NPE
+            System.out.println("Tentando acessar string nula: " + nullString);
             int length = nullString.length();
             System.out.println("❌ NPE deveria ter sido lançada!");
             fail("NullPointerException não foi lançada");

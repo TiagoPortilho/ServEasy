@@ -416,9 +416,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       console.log('DADOS RECEBIDOS:', data);
       
-      // 2. EXTRAIR MESA
-      const table = data.success ? data.data : data;
+      // 2. EXTRAIR MESA - suporta ambos formatos
+      const table = (data.status === 'success' || data.success) ? data.data : data;
       console.log('MESA:', table);
+      
+      if (!table || !table.tableNumber) {
+        throw new Error('Dados da mesa não encontrados');
+      }
       
       // 3. CONFIGURAR EDIÇÃO
       editingTableId = tableId;
@@ -440,9 +444,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         // PREENCHER CAMPOS
-        numeroInput.value = table.tableNumber;
-        capacidadeInput.value = table.capacity;
-        statusSelect.value = table.status;
+        numeroInput.value = table.tableNumber || '';
+        capacidadeInput.value = table.capacity || '';
+        statusSelect.value = table.status || 'DISPONIVEL';
         
         console.log('CAMPOS PREENCHIDOS:', {
           numero: numeroInput.value,

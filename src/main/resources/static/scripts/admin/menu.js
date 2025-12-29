@@ -607,6 +607,23 @@ const ModalManager = {
     elements.addBtn?.addEventListener('click', this.openAddModal.bind(this));
     elements.cancelBtn?.addEventListener('click', this.closeModal.bind(this));
     elements.saveBtn?.addEventListener('click', MenuController.saveItem.bind(MenuController));
+    
+    // Event listener para adicionar ingrediente
+    elements.addIngredientBtn?.addEventListener('click', () => MenuUI.addIngredient());
+    
+    // Fechar modal ao clicar fora dele
+    elements.modal?.addEventListener('click', (e) => {
+      if (e.target === elements.modal) {
+        this.closeModal();
+      }
+    });
+    
+    // Fechar modal com tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && elements.modal?.classList.contains('open')) {
+        this.closeModal();
+      }
+    });
   },
 
   openAddModal() {
