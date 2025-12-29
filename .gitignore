@@ -49,6 +49,16 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+### VS Code ###
+.vscode/
+
+# ============================================
+# Application Configuration
+# ============================================
+
+# Application properties with sensitive data
+src/main/resources/application.properties
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
