@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
  * Testes de bugtracking simples para OrderService
  * Foca em detectar bugs básicos sem depender de métodos inexistentes
  */
+@SuppressWarnings("null")
 class OrderServiceBugTrackingTest {
 
     @Mock

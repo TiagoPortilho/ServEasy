@@ -27,6 +27,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("FeedbackService Tests")
+@SuppressWarnings("null")
 class FeedbackServiceTest {
 
     @Mock

@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class OrderService {
     
     private final OrderRepository orderRepository;
@@ -43,6 +44,7 @@ public class OrderService {
         return orderRepository.findByStatusOrderByCreatedAtAsc(Order.OrderStatus.PRONTO);
     }
 
+    @SuppressWarnings("null")
     public Optional<Order> getOrderById(Long id) {
         return orderRepository.findById(id);
     }
@@ -89,6 +91,7 @@ public class OrderService {
                     "Quantidade deve ser maior que zero para o item ID: " + itemRequest.getMenuItemId());
             }
             
+            @SuppressWarnings("null")
             Optional<MenuItem> menuItemOpt = menuItemRepository.findById(itemRequest.getMenuItemId());
             if (menuItemOpt.isPresent()) {
                 MenuItem menuItem = menuItemOpt.get();
@@ -129,6 +132,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @SuppressWarnings("null")
     public Order updateOrderStatus(Long orderId, Order.OrderStatus newStatus) {
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isPresent()) {
@@ -147,6 +151,7 @@ public class OrderService {
         throw new RuntimeException("Pedido não encontrado");
     }
 
+    @SuppressWarnings("null")
     public void cancelOrder(Long orderId) {
         // 🔧 BUG FIX: Verificar se pode cancelar antes de tentar
         Optional<Order> orderOpt = orderRepository.findById(orderId);
