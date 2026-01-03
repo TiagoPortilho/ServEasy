@@ -86,6 +86,7 @@ public class SecurityConfig {
                 
                 // APIs administrativas (protegidas)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/stock").hasAnyRole("ADMIN", "CLIENTE_ATENDENTE")
                 .requestMatchers("/api/stock/**").hasRole("ADMIN")
                 .requestMatchers("/api/dashboard/**").hasAnyRole("ADMIN", "COZINHEIRO", "CLIENTE_ATENDENTE")
                 

@@ -32,8 +32,13 @@ public class JwtTokenProvider {
 
         Date expiryDate = new Date(System.currentTimeMillis() + jwtExpirationInMs);
 
+        // Extrair role do UserPrincipal
+        String role = userPrincipal.getAuthorities().iterator().next().getAuthority();
+
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getId()))
+                .claim("role", role)
+                .claim("username", userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -58,6 +63,24 @@ public class JwtTokenProvider {
                 .getBody();
 
         return Long.parseLong(claims.getSubject());
+    }
+
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSigningKey())
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role", String.class);
+    }
+
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSigningKey())
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("username", String.class);
     }
 
     public boolean validateToken(String authToken) {
