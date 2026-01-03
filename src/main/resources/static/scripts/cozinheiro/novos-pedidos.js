@@ -1,8 +1,42 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Novos pedidos carregado');
-    loadNovosPedidos();
-    setInterval(loadNovosPedidos, 30000);
+
+    // Aguardar o JWT interceptor carregar antes de fazer requisições
+    waitForJwtInterceptor().then(() => {
+        console.log('[novos-pedidos.js] JWT Interceptor carregado, iniciando aplicação...');
+        loadNovosPedidos();
+        setInterval(loadNovosPedidos, 30000);
+    });
 });
+
+// Função para aguardar o JWT interceptor carregar
+function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+        if (window.jwtInterceptorLoaded) {
+            console.log('[novos-pedidos.js] JWT Interceptor já estava carregado');
+            resolve();
+            return;
+        }
+
+        console.log('[novos-pedidos.js] Aguardando JWT Interceptor carregar...');
+        const checkInterval = setInterval(() => {
+            if (window.jwtInterceptorLoaded) {
+                console.log('[novos-pedidos.js] JWT Interceptor carregado com sucesso');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+
+        // Timeout de segurança (5 segundos)
+        setTimeout(() => {
+            if (!window.jwtInterceptorLoaded) {
+                console.warn('[novos-pedidos.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 5000);
+    });
+}
 
 function loadNovosPedidos() {
     fetch('/api/orders?status=NOVO')

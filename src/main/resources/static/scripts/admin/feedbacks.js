@@ -3,6 +3,44 @@
  * Implementado com princípios SOLID
  */
 
+// Aguardar o JWT interceptor carregar antes de inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    // Aguardar o JWT interceptor carregar antes de fazer requisições
+    waitForJwtInterceptor().then(() => {
+        console.log('[feedbacks.js] JWT Interceptor carregado, iniciando aplicação...');
+        initializeFeedbackManager();
+    });
+});
+
+// Função para aguardar o JWT interceptor carregar
+function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+        if (window.jwtInterceptorLoaded) {
+            console.log('[feedbacks.js] JWT Interceptor já estava carregado');
+            resolve();
+            return;
+        }
+
+        console.log('[feedbacks.js] Aguardando JWT Interceptor carregar...');
+        const checkInterval = setInterval(() => {
+            if (window.jwtInterceptorLoaded) {
+                console.log('[feedbacks.js] JWT Interceptor carregado com sucesso');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+
+        // Timeout de segurança (5 segundos)
+        setTimeout(() => {
+            if (!window.jwtInterceptorLoaded) {
+                console.warn('[feedbacks.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 5000);
+    });
+}
+
 // Módulo de API - Responsável pela comunicação com o servidor
 const FeedbackAPI = {
   async getFeedbacks() {
@@ -305,9 +343,14 @@ const FeedbackController = {
 };
 
 // Inicialização
-document.addEventListener("DOMContentLoaded", () => {
-  FeedbackController.initialize();
-  
-  // Configurar o callback para exclusão de feedbacks
-  ConfirmationModal.onConfirm = FeedbackController.deleteFeedback.bind(FeedbackController);
-});
+// REMOVIDO: document.addEventListener("DOMContentLoaded", () => {
+//   FeedbackController.initialize();
+// });
+
+// Função para inicializar o feedback manager após JWT interceptor
+function initializeFeedbackManager() {
+    FeedbackController.initialize();
+
+    // Configurar o callback para exclusão de feedbacks
+    ConfirmationModal.onConfirm = FeedbackController.deleteFeedback.bind(FeedbackController);
+}

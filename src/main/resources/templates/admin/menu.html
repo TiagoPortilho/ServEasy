@@ -11,6 +11,9 @@
 
     <!-- Estilos do projeto -->
     <link rel="stylesheet" th:href="@{/styles/admin/admin-styles.css}">
+    
+    <!-- JWT Interceptor - deve ser carregado primeiro -->
+    <script th:src="@{/scripts/jwt-interceptor.js}"></script>
   </head>
 
   <body>
@@ -51,11 +54,9 @@
         </nav>
 
         <div class="logout">
-          <a href="../login.html">
           <button class="nav-btn" id="logoutBtn" title="Sair">
             Sair
           </button>
-          </a>
         </div>
       </aside>
 

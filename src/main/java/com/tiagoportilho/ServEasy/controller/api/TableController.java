@@ -1,14 +1,21 @@
 package com.tiagoportilho.ServEasy.controller.api;
 
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
+import com.tiagoportilho.ServEasy.model.Order;
 import com.tiagoportilho.ServEasy.model.RestaurantTable;
+import com.tiagoportilho.ServEasy.model.Sale;
+import com.tiagoportilho.ServEasy.service.OrderService;
+import com.tiagoportilho.ServEasy.service.SaleService;
 import com.tiagoportilho.ServEasy.service.TableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tables")
@@ -17,6 +24,8 @@ import java.util.Optional;
 public class TableController {
 
     private final TableService tableService;
+    private final OrderService orderService;
+    private final SaleService saleService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<RestaurantTable>>> getAllTables() {
@@ -162,6 +171,124 @@ public class TableController {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Erro ao ocupar mesa: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/release/{tableNumber}")
+    public ResponseEntity<ApiResponse<RestaurantTable>> releaseTable(@PathVariable Integer tableNumber) {
+        try {
+            Optional<RestaurantTable> tableOpt = tableService.getTableByNumber(tableNumber);
+            if (tableOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            RestaurantTable table = tableOpt.get();
+            
+            if (table.getStatus() != RestaurantTable.TableStatus.OCUPADA) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Mesa não está ocupada"));
+            }
+            
+            RestaurantTable updatedTable = tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
+            return ResponseEntity.ok(ApiResponse.success("Mesa liberada com sucesso", updatedTable));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Erro ao liberar mesa: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/close-account/{tableNumber}")
+    public ResponseEntity<ApiResponse<Object>> closeTableAccount(@PathVariable Integer tableNumber) {
+        try {
+            Optional<RestaurantTable> tableOpt = tableService.getTableByNumber(tableNumber);
+            if (tableOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            RestaurantTable table = tableOpt.get();
+            
+            if (table.getStatus() != RestaurantTable.TableStatus.OCUPADA) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Mesa não está ocupada"));
+            }
+
+            // Buscar todos os pedidos da mesa
+            List<Order> pedidosDaMesa = orderService.getOrdersByTable(tableNumber);
+            
+            if (pedidosDaMesa.isEmpty()) {
+                // Não há pedidos, apenas liberar a mesa
+                tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
+                return ResponseEntity.ok(ApiResponse.success("Mesa liberada - nenhum pedido encontrado", null));
+            }
+
+            // Verificar status dos pedidos
+            List<Order> pedidosProntos = pedidosDaMesa.stream()
+                    .filter(p -> p.getStatus() == Order.OrderStatus.PRONTO)
+                    .collect(Collectors.toList());
+
+            List<Order> pedidosEntregues = pedidosDaMesa.stream()
+                    .filter(p -> p.getStatus() == Order.OrderStatus.ENTREGUE)
+                    .collect(Collectors.toList());
+
+            List<Order> pedidosAtivos = pedidosDaMesa.stream()
+                    .filter(p -> p.getStatus() == Order.OrderStatus.NOVO || p.getStatus() == Order.OrderStatus.EM_ANDAMENTO)
+                    .collect(Collectors.toList());
+
+            // REGRA: Não permitir fechar se há pedidos PRONTOS (aguardando entrega)
+            if (!pedidosProntos.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Não é possível fechar a conta. Há " + pedidosProntos.size() + " pedido(s) pronto(s) aguardando entrega."));
+            }
+
+            // Calcular total apenas dos pedidos ENTREGUES
+            BigDecimal totalCobrar = pedidosEntregues.stream()
+                    .map(Order::getTotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            int totalItens = pedidosEntregues.stream()
+                    .mapToInt(p -> p.getItems() != null ? p.getItems().size() : 0)
+                    .sum();
+
+            // Se há pedidos ativos, retornar aviso
+            String avisoAtivos = "";
+            if (!pedidosAtivos.isEmpty()) {
+                avisoAtivos = pedidosAtivos.size() + " pedido(s) em preparo será(ão) cancelado(s). ";
+            }
+
+            // Criar venda no sistema
+            if (totalCobrar.compareTo(BigDecimal.ZERO) > 0) {
+                Sale sale = new Sale();
+                sale.setTableNumber(tableNumber);
+                sale.setTotalAmount(totalCobrar);
+                sale.setItemsCount(totalItens);
+                sale.setOrderIds(pedidosEntregues.stream()
+                        .map(p -> p.getId().toString())
+                        .collect(Collectors.joining(",")));
+                sale.setPaymentMethod("DINHEIRO"); // Default - poderia ser parametrizado
+                sale.setCancelledOrdersCount(pedidosAtivos.size()); // Registrar quantos foram cancelados
+                
+                saleService.saveSale(sale);
+            }
+
+            // Deletar TODOS os pedidos da mesa
+            for (Order pedido : pedidosDaMesa) {
+                orderService.deleteOrder(pedido.getId());
+            }
+
+            // Liberar mesa
+            tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
+
+            String mensagem = avisoAtivos + "Conta fechada com sucesso. Total cobrado: R$ " + totalCobrar.toString();
+            
+            return ResponseEntity.ok(ApiResponse.success(mensagem, Map.of(
+                    "totalCobrado", totalCobrar,
+                    "pedidosEntregues", pedidosEntregues.size(),
+                    "pedidosCancelados", pedidosAtivos.size()
+            )));
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Erro ao fechar conta: " + e.getMessage()));
         }
     }
 }

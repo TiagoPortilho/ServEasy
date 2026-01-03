@@ -3,8 +3,10 @@ package com.tiagoportilho.ServEasy.service;
 import com.tiagoportilho.ServEasy.dto.OrderRequest;
 import com.tiagoportilho.ServEasy.model.MenuItem;
 import com.tiagoportilho.ServEasy.model.Order;
+import com.tiagoportilho.ServEasy.model.RestaurantTable;
 import com.tiagoportilho.ServEasy.repository.MenuItemRepository;
 import com.tiagoportilho.ServEasy.repository.OrderRepository;
+import com.tiagoportilho.ServEasy.repository.RestaurantTableRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -34,12 +36,16 @@ class OrderServiceBugTrackingTest {
     @Mock
     private MenuItemRepository menuItemRepository;
 
+    @Mock
+    private RestaurantTableRepository restaurantTableRepository;
+
     @InjectMocks
     private OrderService orderService;
 
     private MenuItem menuItem;
     private Order order;
     private OrderRequest orderRequest;
+    private RestaurantTable table;
 
     @BeforeEach
     void setUp() {
@@ -52,9 +58,15 @@ class OrderServiceBugTrackingTest {
         menuItem.setPrice(new BigDecimal("25.00"));
         menuItem.setCategory(MenuItem.Category.PIZZAS);
         
+        table = new RestaurantTable();
+        table.setId(1L);
+        table.setTableNumber(5);
+        table.setCapacity(4);
+        table.setStatus(RestaurantTable.TableStatus.DISPONIVEL);
+        
         order = new Order();
         order.setId(1L);
-        order.setTableNumber(5);
+        order.setTable(table);
         order.setCustomerName("João Silva");
         order.setStatus(Order.OrderStatus.NOVO);
         order.setTotal(new BigDecimal("25.00"));
@@ -79,6 +91,8 @@ class OrderServiceBugTrackingTest {
         System.out.println("\n🔍 ====== TESTE: ITEM INEXISTENTE ======");
         
         // Arrange
+        table.setStatus(RestaurantTable.TableStatus.OCUPADA);
+        when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(table));
         when(menuItemRepository.findById(1L)).thenReturn(Optional.empty());
         
         // Act & Assert
@@ -104,6 +118,7 @@ class OrderServiceBugTrackingTest {
         zeroQuantityRequest.setQuantity(0);
         orderRequest.setItems(Arrays.asList(zeroQuantityRequest));
         
+        when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(table));
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
         
         // Test quantidade zero
@@ -137,6 +152,7 @@ class OrderServiceBugTrackingTest {
         
         orderRequest.setTableNumber(null);
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
+        // Não adicionar mock do restaurantTableRepository para testar falha
         
         try {
             orderService.createOrder(orderRequest);
@@ -230,6 +246,8 @@ class OrderServiceBugTrackingTest {
     void testDataIntegrity() {
         System.out.println("\n🔍 ====== TESTE: INTEGRIDADE DOS DADOS ======");
         
+        table.setStatus(RestaurantTable.TableStatus.OCUPADA);
+        when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(table));
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
         
@@ -244,10 +262,10 @@ class OrderServiceBugTrackingTest {
             System.out.println("🐛 BUG: Nome do cliente perdido ou inválido");
         }
         
-        if (result.getTableNumber() != null && result.getTableNumber() > 0) {
-            System.out.println("✅ Número da mesa válido: " + result.getTableNumber());
+        if (result.getTable() != null && result.getTable().getTableNumber() != null && result.getTable().getTableNumber() > 0) {
+            System.out.println("✅ Número da mesa válido: " + result.getTable().getTableNumber());
         } else {
-            System.out.println("🐛 BUG: Número da mesa inválido: " + result.getTableNumber());
+            System.out.println("🐛 BUG: Número da mesa inválido: " + (result.getTable() != null ? result.getTable().getTableNumber() : "null"));
         }
         
         if (result.getTotal() != null && result.getTotal().compareTo(BigDecimal.ZERO) >= 0) {
@@ -268,9 +286,15 @@ class OrderServiceBugTrackingTest {
     private List<Order> generateManyOrders(int count) {
         return java.util.stream.IntStream.range(0, count)
                 .mapToObj(i -> {
+                    RestaurantTable table = new RestaurantTable();
+                    table.setId((long) (i % 20 + 1));
+                    table.setTableNumber(i % 20 + 1);
+                    table.setCapacity(4);
+                    table.setStatus(RestaurantTable.TableStatus.DISPONIVEL);
+                    
                     Order o = new Order();
                     o.setId((long) i);
-                    o.setTableNumber(i % 20 + 1);
+                    o.setTable(table);
                     o.setCustomerName("Cliente " + i);
                     o.setTotal(new BigDecimal("15.50"));
                     o.setStatus(Order.OrderStatus.NOVO);

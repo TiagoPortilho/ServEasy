@@ -3,8 +3,10 @@ package com.tiagoportilho.ServEasy.service;
 import com.tiagoportilho.ServEasy.dto.OrderRequest;
 import com.tiagoportilho.ServEasy.model.MenuItem;
 import com.tiagoportilho.ServEasy.model.Order;
+import com.tiagoportilho.ServEasy.model.RestaurantTable;
 import com.tiagoportilho.ServEasy.repository.MenuItemRepository;
 import com.tiagoportilho.ServEasy.repository.OrderRepository;
+import com.tiagoportilho.ServEasy.repository.RestaurantTableRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,11 +41,15 @@ class OrderServiceTest {
     @Mock
     private MenuItemRepository menuItemRepository;
 
+    @Mock
+    private RestaurantTableRepository restaurantTableRepository;
+
     @InjectMocks
     private OrderService orderService;
 
     private Order sampleOrder;
     private MenuItem sampleMenuItem;
+    private RestaurantTable sampleTable;
 
     @BeforeEach
     void setUp() {
@@ -53,9 +59,15 @@ class OrderServiceTest {
         sampleMenuItem.setPrice(new BigDecimal("35.00"));
         sampleMenuItem.setIsAvailable(true);
 
+        sampleTable = new RestaurantTable();
+        sampleTable.setId(1L);
+        sampleTable.setTableNumber(5);
+        sampleTable.setCapacity(4);
+        sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
+
         sampleOrder = new Order();
         sampleOrder.setId(1L);
-        sampleOrder.setTableNumber(5);
+        sampleOrder.setTable(sampleTable);
         sampleOrder.setCustomerName("João");
         sampleOrder.setStatus(Order.OrderStatus.NOVO);
         sampleOrder.setTotal(new BigDecimal("70.00"));
@@ -142,6 +154,7 @@ class OrderServiceTest {
         void shouldCreateOrderWithValidData() {
             OrderRequest request = createValidOrderRequest();
             
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
             when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
             when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
                 Order order = invocation.getArgument(0);
@@ -152,7 +165,7 @@ class OrderServiceTest {
             Order result = orderService.createOrder(request);
 
             assertThat(result).isNotNull();
-            assertThat(result.getTableNumber()).isEqualTo(5);
+            assertThat(result.getTable()).isEqualTo(sampleTable);
             assertThat(result.getCustomerName()).isEqualTo("João");
             assertThat(result.getStatus()).isEqualTo(Order.OrderStatus.NOVO);
             verify(orderRepository, times(1)).save(any(Order.class));
@@ -170,14 +183,35 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando nome do cliente é vazio")
-        void shouldThrowExceptionWhenCustomerNameIsEmpty() {
+        @DisplayName("deve lançar exceção quando mesa não é encontrada")
+        void shouldThrowExceptionWhenTableNotFound() {
             OrderRequest request = createValidOrderRequest();
-            request.setCustomerName("");
+            
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> orderService.createOrder(request))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Nome do cliente");
+                    .hasMessageContaining("Mesa número 5 não encontrada");
+        }
+
+        @Test
+        @DisplayName("deve aceitar pedido com nome do cliente vazio ou nulo")
+        void shouldAcceptOrderWithEmptyOrNullCustomerName() {
+            OrderRequest request = createValidOrderRequest();
+            request.setCustomerName("");
+            
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
+            when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
+                Order order = invocation.getArgument(0);
+                order.setId(1L);
+                return order;
+            });
+
+            Order result = orderService.createOrder(request);
+            
+            assertThat(result).isNotNull();
+            assertThat(result.getCustomerName()).isNullOrEmpty();
         }
 
         @Test
@@ -185,6 +219,9 @@ class OrderServiceTest {
         void shouldThrowExceptionWhenItemsIsEmpty() {
             OrderRequest request = createValidOrderRequest();
             request.setItems(new ArrayList<>());
+            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
+            
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
 
             assertThatThrownBy(() -> orderService.createOrder(request))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -195,6 +232,8 @@ class OrderServiceTest {
         @DisplayName("deve lançar exceção quando item do menu não existe")
         void shouldThrowExceptionWhenMenuItemNotFound() {
             OrderRequest request = createValidOrderRequest();
+            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
             when(menuItemRepository.findById(1L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> orderService.createOrder(request))
@@ -206,7 +245,9 @@ class OrderServiceTest {
         @DisplayName("deve lançar exceção quando item não está disponível")
         void shouldThrowExceptionWhenMenuItemNotAvailable() {
             OrderRequest request = createValidOrderRequest();
+            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
             sampleMenuItem.setIsAvailable(false);
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
             when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
 
             assertThatThrownBy(() -> orderService.createOrder(request))

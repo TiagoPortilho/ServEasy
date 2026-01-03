@@ -3,6 +3,44 @@
  * Implementado com princípios SOLID
  */
 
+// Aguardar o JWT interceptor carregar antes de inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    // Aguardar o JWT interceptor carregar antes de fazer requisições
+    waitForJwtInterceptor().then(() => {
+        console.log('[menu.js] JWT Interceptor carregado, iniciando aplicação...');
+        initializeMenuManager();
+    });
+});
+
+// Função para aguardar o JWT interceptor carregar
+function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+        if (window.jwtInterceptorLoaded) {
+            console.log('[menu.js] JWT Interceptor já estava carregado');
+            resolve();
+            return;
+        }
+
+        console.log('[menu.js] Aguardando JWT Interceptor carregar...');
+        const checkInterval = setInterval(() => {
+            if (window.jwtInterceptorLoaded) {
+                console.log('[menu.js] JWT Interceptor carregado com sucesso');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+
+        // Timeout de segurança (5 segundos)
+        setTimeout(() => {
+            if (!window.jwtInterceptorLoaded) {
+                console.warn('[menu.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 5000);
+    });
+}
+
 // Módulo de API - Responsável pela comunicação com o servidor
 const MenuAPI = {
   async getMenuItems() {
@@ -609,7 +647,10 @@ const ModalManager = {
     elements.saveBtn?.addEventListener('click', MenuController.saveItem.bind(MenuController));
     
     // Event listener para adicionar ingrediente
-    elements.addIngredientBtn?.addEventListener('click', () => MenuUI.addIngredient());
+    if (elements.addIngredientBtn && !elements.addIngredientBtn.dataset.listenerAdded) {
+      elements.addIngredientBtn.addEventListener('click', () => MenuUI.addIngredient());
+      elements.addIngredientBtn.dataset.listenerAdded = 'true';
+    }
     
     // Fechar modal ao clicar fora dele
     elements.modal?.addEventListener('click', (e) => {
@@ -902,6 +943,28 @@ const MenuController = {
 };
 
 // Inicialização
-document.addEventListener("DOMContentLoaded", () => {
-  MenuController.initialize();
-});
+// REMOVIDO: document.addEventListener("DOMContentLoaded", () => {
+//   MenuController.initialize();
+// });
+
+// Função para inicializar o menu manager após JWT interceptor
+function initializeMenuManager() {
+    MenuController.initialize();
+    
+    // Configurar botão de logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            if (window.logout) {
+                window.logout();
+            } else {
+                // Fallback caso a função global não esteja disponível
+                localStorage.removeItem('jwt_token');
+                localStorage.removeItem('user_role'); 
+                localStorage.removeItem('username');
+                window.location.href = '/login';
+            }
+        });
+    }
+}

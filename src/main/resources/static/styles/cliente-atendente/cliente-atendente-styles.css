@@ -772,6 +772,10 @@ a {
   margin: 0;
 }
 
+.modal-body {
+  margin-top: 20px;
+}
+
 .mesas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -988,6 +992,146 @@ a {
 
 .mesa-modal .modal-body {
   padding: 10px 0;
+}
+
+/* Modal para fechar conta */
+.close-account-modal {
+  max-width: 600px;
+}
+
+.close-account-modal .modal-body {
+  padding: 20px;
+}
+
+.total-section {
+  text-align: center;
+  margin: 30px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(252, 163, 17, 0.1), rgba(252, 163, 17, 0.05));
+  border-radius: 12px;
+  border: 1px solid rgba(252, 163, 17, 0.2);
+}
+
+.total-section h3 {
+  color: var(--btn-bg);
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.total-amount {
+  color: #28a745;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 10px 0;
+  text-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.total-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin: 5px 0 0 0;
+}
+
+.orders-summary {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.orders-summary h4 {
+  color: var(--body-text);
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item span {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.summary-item strong {
+  font-weight: 600;
+  color: var(--body-text);
+}
+
+.cancel-count {
+  color: #dc3545 !important;
+}
+
+.ready-count {
+  color: #28a745 !important;
+}
+
+/* Aviso de cancelamento */
+.cancel-warning {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.cancel-warning h4 {
+  color: #ffc107;
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cancel-warning p {
+  color: #ffc107;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Mensagem de liberação de mesa */
+.release-message {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.release-message p {
+  margin: 10px 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Botões do modal fechar conta */
+.close-account-modal .modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.close-account-modal .modal-buttons .btn {
+  flex: 1;
+  max-width: 180px;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.close-account-modal .modal-buttons .btn i {
+  margin-right: 8px;
 }
 
 /* Input para nome do cliente */

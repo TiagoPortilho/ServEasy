@@ -12,28 +12,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmOk = document.getElementById("confirmOk");
   let currentCallback = null;
 
-  // Carrega as mesas ao iniciar
-  loadTables();
-  
-  // Recarrega as mesas quando a página fica visível novamente
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-      console.log('Página ficou visível, recarregando mesas...');
+  // Aguardar o JWT interceptor carregar antes de fazer requisições
+  waitForJwtInterceptor().then(() => {
+    console.log('[tables.js] JWT Interceptor carregado, iniciando aplicação...');
+    // Carrega as mesas ao iniciar
+    loadTables();
+    
+    // Recarrega as mesas quando a página fica visível novamente
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        console.log('Página ficou visível, recarregando mesas...');
+        loadTables();
+      }
+    });
+    
+    // Recarrega as mesas quando a janela recebe foco
+    window.addEventListener('focus', () => {
+      console.log('Janela recebeu foco, recarregando mesas...');
       loadTables();
-    }
+    });
+    
+    // Atualização automática a cada 30 segundos
+    setInterval(() => {
+      console.log('Atualização automática das mesas...');
+      loadTables();
+    }, 30000);
   });
   
-  // Recarrega as mesas quando a janela recebe foco
-  window.addEventListener('focus', () => {
-    console.log('Janela recebeu foco, recarregando mesas...');
-    loadTables();
-  });
-  
-  // Atualização automática a cada 30 segundos
-  setInterval(() => {
-    console.log('Atualização automática das mesas...');
-    loadTables();
-  }, 30000);
+  // Função para aguardar o JWT interceptor carregar
+  function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+      if (window.jwtInterceptorLoaded) {
+        console.log('[tables.js] JWT Interceptor já estava carregado');
+        resolve();
+        return;
+      }
+      
+      console.log('[tables.js] Aguardando JWT Interceptor carregar...');
+      const checkInterval = setInterval(() => {
+        if (window.jwtInterceptorLoaded) {
+          console.log('[tables.js] JWT Interceptor carregado com sucesso');
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+      
+      // Timeout de segurança (5 segundos)
+      setTimeout(() => {
+        if (!window.jwtInterceptorLoaded) {
+          console.warn('[tables.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 5000);
+    });
+  }
 
   function showConfirm(message, callback) {
     document.getElementById("confirmMessage").textContent = message;
