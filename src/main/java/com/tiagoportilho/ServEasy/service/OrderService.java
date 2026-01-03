@@ -4,8 +4,10 @@ import com.tiagoportilho.ServEasy.dto.OrderRequest;
 import com.tiagoportilho.ServEasy.model.MenuItem;
 import com.tiagoportilho.ServEasy.model.Order;
 import com.tiagoportilho.ServEasy.model.OrderItem;
+import com.tiagoportilho.ServEasy.model.RestaurantTable;
 import com.tiagoportilho.ServEasy.repository.MenuItemRepository;
 import com.tiagoportilho.ServEasy.repository.OrderRepository;
+import com.tiagoportilho.ServEasy.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class OrderService {
     
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
+    private final RestaurantTableRepository restaurantTableRepository;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -50,7 +53,11 @@ public class OrderService {
     }
 
     public List<Order> getOrdersByTable(Integer tableNumber) {
-        return orderRepository.findByTableNumber(tableNumber);
+        Optional<RestaurantTable> tableOpt = restaurantTableRepository.findByTableNumber(tableNumber);
+        if (tableOpt.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return orderRepository.findByTable(tableOpt.get());
     }
 
     public List<Order> getTodaysOrders() {
@@ -61,9 +68,26 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
-        // 🔧 BUG FIX: Validar dados de entrada obrigatórios
+        // Validar dados de entrada obrigatórios
         if (orderRequest.getTableNumber() == null || orderRequest.getTableNumber() <= 0) {
             throw new IllegalArgumentException("Número da mesa é obrigatório e deve ser maior que zero");
+        }
+        
+        // Verificar se a mesa existe
+        Optional<RestaurantTable> tableOpt = restaurantTableRepository.findByTableNumber(orderRequest.getTableNumber());
+        if (tableOpt.isEmpty()) {
+            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " não encontrada");
+        }
+        
+        RestaurantTable table = tableOpt.get();
+        
+        // Verificar se a mesa está disponível
+        if (table.getStatus() == RestaurantTable.TableStatus.OCUPADA) {
+            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " já está ocupada");
+        }
+        
+        if (table.getStatus() == RestaurantTable.TableStatus.MANUTENCAO) {
+            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " está em manutenção");
         }
         
         if (orderRequest.getCustomerName() == null || orderRequest.getCustomerName().trim().isEmpty()) {
@@ -75,7 +99,7 @@ public class OrderService {
         }
 
         Order order = new Order();
-        order.setTableNumber(orderRequest.getTableNumber());
+        order.setTable(table);
         order.setCustomerName(orderRequest.getCustomerName().trim());
         order.setNotes(orderRequest.getObservations());
         order.setStatus(Order.OrderStatus.NOVO);

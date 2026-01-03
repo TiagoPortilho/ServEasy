@@ -27,7 +27,7 @@ public class OrderResponseDTO {
     public static OrderResponseDTO fromEntity(Order order) {
         OrderResponseDTO dto = new OrderResponseDTO();
         dto.setId(order.getId());
-        dto.setTableNumber(order.getTableNumber());
+        dto.setTableNumber(order.getTable() != null ? order.getTable().getTableNumber() : null);
         dto.setCustomerName(order.getCustomerName());
         dto.setTotal(order.getTotal());
         dto.setStatus(order.getStatus() != null ? order.getStatus().name() : null);

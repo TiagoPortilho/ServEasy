@@ -2,6 +2,7 @@ package com.tiagoportilho.ServEasy.service;
 
 import com.tiagoportilho.ServEasy.model.Feedback;
 import com.tiagoportilho.ServEasy.model.Order;
+import com.tiagoportilho.ServEasy.model.RestaurantTable;
 import com.tiagoportilho.ServEasy.repository.FeedbackRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,9 +42,15 @@ class FeedbackServiceTest {
 
     @BeforeEach
     void setUp() {
+        RestaurantTable table = new RestaurantTable();
+        table.setId(1L);
+        table.setTableNumber(5);
+        table.setCapacity(4);
+        table.setStatus(RestaurantTable.TableStatus.DISPONIVEL);
+        
         sampleOrder = new Order();
         sampleOrder.setId(1L);
-        sampleOrder.setTableNumber(5);
+        sampleOrder.setTable(table);
         sampleOrder.setCustomerName("João");
 
         sampleFeedback = new Feedback();

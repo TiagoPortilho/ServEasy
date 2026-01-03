@@ -21,10 +21,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Número da mesa é obrigatório")
-    @Min(value = 1, message = "Número da mesa deve ser maior que zero")
-    @Column(name = "table_number")
-    private Integer tableNumber;
+    @NotNull(message = "Mesa é obrigatória")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "table_id", nullable = false)
+    private RestaurantTable table;
 
     @NotBlank(message = "Nome do cliente é obrigatório")
     @Size(min = 2, max = 100, message = "Nome do cliente deve ter entre 2 e 100 caracteres")
