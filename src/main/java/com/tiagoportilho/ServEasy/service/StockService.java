@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class StockService {
     
     private final StockItemRepository stockItemRepository;

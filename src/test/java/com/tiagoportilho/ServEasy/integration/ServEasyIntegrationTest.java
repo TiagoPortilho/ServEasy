@@ -242,11 +242,13 @@ class ServEasyIntegrationTest {
         
         // Teste 2: NullPointerException
         try {
+            @SuppressWarnings("null")
             String nullString = null;
             // Usar a variável para evitar warning, mas ainda causar NPE
             System.out.println("Tentando acessar string nula: " + nullString);
-            int length = nullString.length();
-            System.out.println("❌ NPE deveria ter sido lançada!");
+            @SuppressWarnings("null")
+            int length = nullString.length(); // Esta linha vai causar NPE
+            System.out.println("❌ NPE deveria ter sido lançada! Length: " + length);
             fail("NullPointerException não foi lançada");
         } catch (NullPointerException e) {
             System.out.println("✅ NullPointerException tratada: " + e.getClass().getSimpleName());

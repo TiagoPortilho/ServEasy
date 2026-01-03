@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OrderService Tests")
+@SuppressWarnings("null")
 class OrderServiceTest {
 
     @Mock

@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MenuService Tests")
+@SuppressWarnings("null")
 class MenuServiceTest {
 
     @Mock
@@ -144,6 +145,7 @@ class MenuServiceTest {
 
         @Test
         @DisplayName("deve salvar item com sucesso")
+        @SuppressWarnings("null")
         void shouldSaveItemSuccessfully() {
             when(menuItemRepository.save(any(MenuItem.class))).thenReturn(sampleMenuItem);
 

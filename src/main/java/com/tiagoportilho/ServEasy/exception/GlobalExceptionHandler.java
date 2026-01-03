@@ -37,9 +37,11 @@ public class GlobalExceptionHandler {
         Map<String, String> details = new HashMap<>();
         details.put("errorCode", ex.getErrorCode());
         
-        return ResponseEntity
+        @SuppressWarnings("null")
+        ResponseEntity<ApiResponse<Object>> response = ResponseEntity
                 .status(ex.getStatus())
                 .body(ApiResponse.error(ex.getMessage(), details));
+        return response;
     }
 
     /**
@@ -115,11 +117,13 @@ public class GlobalExceptionHandler {
      * Trata exceções de tipo de argumento incorreto (ex: String em vez de Long).
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @SuppressWarnings("null")
     public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String requiredTypeName = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "tipo válido";
         String message = String.format("Parâmetro '%s' com valor inválido: '%s'. Esperado: %s",
                 ex.getName(),
                 ex.getValue(),
-                ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "tipo válido");
+                requiredTypeName);
 
         log.warn("Tipo de argumento incorreto: {}", message);
         
