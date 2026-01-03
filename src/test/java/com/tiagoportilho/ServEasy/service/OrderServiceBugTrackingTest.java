@@ -91,6 +91,7 @@ class OrderServiceBugTrackingTest {
         System.out.println("\n🔍 ====== TESTE: ITEM INEXISTENTE ======");
         
         // Arrange
+        table.setStatus(RestaurantTable.TableStatus.OCUPADA);
         when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(table));
         when(menuItemRepository.findById(1L)).thenReturn(Optional.empty());
         
@@ -245,6 +246,7 @@ class OrderServiceBugTrackingTest {
     void testDataIntegrity() {
         System.out.println("\n🔍 ====== TESTE: INTEGRIDADE DOS DADOS ======");
         
+        table.setStatus(RestaurantTable.TableStatus.OCUPADA);
         when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(table));
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);

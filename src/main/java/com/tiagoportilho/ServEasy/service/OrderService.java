@@ -81,18 +81,16 @@ public class OrderService {
         
         RestaurantTable table = tableOpt.get();
         
-        // Verificar se a mesa está disponível
-        if (table.getStatus() == RestaurantTable.TableStatus.OCUPADA) {
-            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " já está ocupada");
+        // Verificar se a mesa tem clientes (apenas mesa ocupada pode receber pedidos)
+        if (table.getStatus() == RestaurantTable.TableStatus.DISPONIVEL) {
+            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " está disponível - não há clientes para atender");
         }
         
         if (table.getStatus() == RestaurantTable.TableStatus.MANUTENCAO) {
             throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " está em manutenção");
         }
         
-        if (orderRequest.getCustomerName() == null || orderRequest.getCustomerName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome do cliente é obrigatório");
-        }
+        // Mesa OCUPADA pode receber pedidos - tem clientes esperando
         
         if (orderRequest.getItems() == null || orderRequest.getItems().isEmpty()) {
             throw new IllegalArgumentException("Pelo menos um item deve ser adicionado ao pedido");
@@ -100,7 +98,7 @@ public class OrderService {
 
         Order order = new Order();
         order.setTable(table);
-        order.setCustomerName(orderRequest.getCustomerName().trim());
+        order.setCustomerName(orderRequest.getCustomerName() != null ? orderRequest.getCustomerName().trim() : null);
         order.setNotes(orderRequest.getObservations());
         order.setStatus(Order.OrderStatus.NOVO);
 
@@ -201,6 +199,10 @@ public class OrderService {
 
     public Order markAsDelivered(Long orderId) {
         return updateOrderStatus(orderId, Order.OrderStatus.ENTREGUE);
+    }
+
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
     }
     
     // 🔧 BUG FIX: Método para validar transições de status

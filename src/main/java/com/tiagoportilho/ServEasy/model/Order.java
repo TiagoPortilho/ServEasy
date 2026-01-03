@@ -26,8 +26,6 @@ public class Order {
     @JoinColumn(name = "table_id", nullable = false)
     private RestaurantTable table;
 
-    @NotBlank(message = "Nome do cliente é obrigatório")
-    @Size(min = 2, max = 100, message = "Nome do cliente deve ter entre 2 e 100 caracteres")
     @Column(name = "customer_name")
     private String customerName;
 

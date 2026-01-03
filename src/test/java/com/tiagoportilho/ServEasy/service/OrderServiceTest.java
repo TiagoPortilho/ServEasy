@@ -63,7 +63,7 @@ class OrderServiceTest {
         sampleTable.setId(1L);
         sampleTable.setTableNumber(5);
         sampleTable.setCapacity(4);
-        sampleTable.setStatus(RestaurantTable.TableStatus.DISPONIVEL);
+        sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
 
         sampleOrder = new Order();
         sampleOrder.setId(1L);
@@ -195,16 +195,23 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando nome do cliente é vazio")
-        void shouldThrowExceptionWhenCustomerNameIsEmpty() {
+        @DisplayName("deve aceitar pedido com nome do cliente vazio ou nulo")
+        void shouldAcceptOrderWithEmptyOrNullCustomerName() {
             OrderRequest request = createValidOrderRequest();
             request.setCustomerName("");
             
             when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
+            when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
+                Order order = invocation.getArgument(0);
+                order.setId(1L);
+                return order;
+            });
 
-            assertThatThrownBy(() -> orderService.createOrder(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Nome do cliente");
+            Order result = orderService.createOrder(request);
+            
+            assertThat(result).isNotNull();
+            assertThat(result.getCustomerName()).isNullOrEmpty();
         }
 
         @Test
@@ -212,6 +219,7 @@ class OrderServiceTest {
         void shouldThrowExceptionWhenItemsIsEmpty() {
             OrderRequest request = createValidOrderRequest();
             request.setItems(new ArrayList<>());
+            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
             
             when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
 
@@ -224,6 +232,7 @@ class OrderServiceTest {
         @DisplayName("deve lançar exceção quando item do menu não existe")
         void shouldThrowExceptionWhenMenuItemNotFound() {
             OrderRequest request = createValidOrderRequest();
+            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
             when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
             when(menuItemRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -236,6 +245,7 @@ class OrderServiceTest {
         @DisplayName("deve lançar exceção quando item não está disponível")
         void shouldThrowExceptionWhenMenuItemNotAvailable() {
             OrderRequest request = createValidOrderRequest();
+            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
             sampleMenuItem.setIsAvailable(false);
             when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
             when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));

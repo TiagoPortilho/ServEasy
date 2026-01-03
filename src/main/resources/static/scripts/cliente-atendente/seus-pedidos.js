@@ -201,15 +201,20 @@ function atualizarEstatisticas() {
         return sum + total;
     }, 0);
     
-    // Contar pedidos ativos (pendente, preparando)
+    // Contar pedidos por status
     const pedidosAtivos = pedidosValidos.filter(pedido => {
         const status = pedido.status.toUpperCase();
-        return status === 'PENDENTE' || status === 'NOVO' || status === 'PREPARANDO';
+        return status === 'PENDENTE' || status === 'NOVO' || status === 'EM_ANDAMENTO';
     }).length;
     
-    // Contar pedidos prontos
+    // Contar pedidos prontos (aguardando entrega)
     const pedidosProntos = pedidosValidos.filter(pedido => 
         pedido.status.toUpperCase() === 'PRONTO'
+    ).length;
+    
+    // Contar pedidos entregues
+    const pedidosEntregues = pedidosValidos.filter(pedido => 
+        pedido.status.toUpperCase() === 'ENTREGUE'
     ).length;
     
     // Atualizar elementos na tela
@@ -232,11 +237,19 @@ function atualizarEstatisticas() {
     
     // Habilitar/desabilitar botão de fechar conta
     if (btnFecharConta) {
-        const temPedidosAbertos = pedidosAtivos > 0;
-        btnFecharConta.disabled = temPedidosAbertos;
-        btnFecharConta.title = temPedidosAbertos ? 
-            'Não é possível fechar a conta com pedidos pendentes' : 
-            'Fechar conta da mesa';
+        // NÃO pode fechar se há pedidos prontos (aguardando entrega)
+        const temPedidosProntos = pedidosProntos > 0;
+        btnFecharConta.disabled = temPedidosProntos;
+        
+        if (temPedidosProntos) {
+            btnFecharConta.title = 'Não é possível fechar a conta com pedidos prontos aguardando entrega';
+        } else if (pedidosAtivos > 0) {
+            btnFecharConta.title = 'Fechar conta (pedidos em preparo serão cancelados)';
+        } else if (pedidosEntregues > 0) {
+            btnFecharConta.title = 'Fechar conta da mesa';
+        } else {
+            btnFecharConta.title = 'Liberar mesa (sem pedidos)';
+        }
     }
 }
 
@@ -638,6 +651,188 @@ window.selecionarMesaEspecifica = function(numeroMesa) {
 window.fecharModal = function() {
     const modals = document.querySelectorAll('.modal-overlay');
     modals.forEach(modal => modal.remove());
+};
+
+// Função para fechar conta da mesa
+window.fecharConta = function() {
+    if (!mesaSelecionada) {
+        mostrarNotificacao('Selecione uma mesa primeiro', 'error');
+        return;
+    }
+
+    // Buscar pedidos da mesa para análise
+    const pedidosValidos = pedidos.filter(pedido => pedido.tableNumber == mesaSelecionada);
+    
+    if (pedidosValidos.length === 0) {
+        // Não há pedidos, apenas confirmar liberação da mesa
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Liberar Mesa ${mesaSelecionada}</h2>
+                    <button class="btn-close" onclick="fecharModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="release-message">
+                        <p>Esta mesa não possui pedidos.</p>
+                        <p>Deseja liberar a mesa ${mesaSelecionada}?</p>
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button class="btn btn-secondary" onclick="fecharModal()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button class="btn btn-success" onclick="confirmarFecharConta()">
+                            <i class="fas fa-check"></i> Liberar Mesa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        return;
+    }
+
+    // Analisar status dos pedidos
+    const pedidosProntos = pedidosValidos.filter(p => p.status.toUpperCase() === 'PRONTO');
+    const pedidosEntregues = pedidosValidos.filter(p => p.status.toUpperCase() === 'ENTREGUE');
+    const pedidosAtivos = pedidosValidos.filter(p => {
+        const status = p.status.toUpperCase();
+        return status === 'NOVO' || status === 'EM_ANDAMENTO' || status === 'PENDENTE';
+    });
+
+    // REGRA: Não permitir fechar se há pedidos PRONTOS
+    if (pedidosProntos.length > 0) {
+        mostrarNotificacao(`Não é possível fechar a conta. Há ${pedidosProntos.length} pedido(s) pronto(s) aguardando entrega.`, 'error');
+        return;
+    }
+
+    // Calcular total apenas dos pedidos ENTREGUES
+    const totalCobrar = pedidosEntregues.reduce((sum, pedido) => {
+        const total = pedido.items ? pedido.items.reduce((itemSum, item) => {
+            return itemSum + (item.quantity * item.unitPrice);
+        }, 0) : pedido.total || 0;
+        return sum + total;
+    }, 0);
+
+    // Preparar mensagens
+    let mensagemAviso = '';
+    let classeAviso = '';
+    
+    if (pedidosAtivos.length > 0) {
+        mensagemAviso = `
+            <div class="cancel-warning">
+                <h4>Atenção</h4>
+                <p>
+                    <strong>${pedidosAtivos.length} pedido(s) em preparo será(ão) cancelado(s)</strong> ao fechar a conta.
+                </p>
+            </div>
+        `;
+    }
+
+    // Mostrar modal de confirmação
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content close-account-modal">
+            <div class="modal-header">
+                <h2>Fechar Conta - Mesa ${mesaSelecionada}</h2>
+                <button class="btn-close" onclick="fecharModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                ${mensagemAviso}
+                
+                <div class="total-section">
+                    <h3>Total a Cobrar</h3>
+                    <div class="total-amount">R$ ${totalCobrar.toFixed(2)}</div>
+                    <p class="total-description">Baseado em ${pedidosEntregues.length} pedido(s) entregue(s)</p>
+                </div>
+
+                <div class="orders-summary">
+                    <h4>Resumo dos Pedidos:</h4>
+                    <div class="summary-item">
+                        <span>Entregues (cobrará):</span>
+                        <strong>${pedidosEntregues.length}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Em preparo (cancelará):</span>
+                        <strong class="cancel-count">${pedidosAtivos.length}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Prontos (bloqueando):</span>
+                        <strong class="ready-count">${pedidosProntos.length}</strong>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="fecharModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn btn-success" onclick="confirmarFecharConta()">
+                        <i class="fas fa-receipt"></i> Confirmar Fechamento
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+};
+
+// Função para confirmar fechamento da conta
+window.confirmarFecharConta = async function() {
+    try {
+        // Fazer requisição para fechar conta (novo endpoint com regras de negócio)
+        const response = await fetch(`/api/tables/close-account/${mesaSelecionada}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            fecharModal();
+            
+            // Mostrar resultado detalhado
+            if (result.data && result.data.totalCobrado !== undefined) {
+                const totalCobrado = result.data.totalCobrado;
+                const pedidosEntregues = result.data.pedidosEntregues || 0;
+                const pedidosCancelados = result.data.pedidosCancelados || 0;
+                
+                let mensagem = `Conta da mesa ${mesaSelecionada} fechada!\n`;
+                mensagem += ` Total cobrado: R$ ${totalCobrado}\n`;
+                if (pedidosEntregues > 0) {
+                    mensagem += ` ${pedidosEntregues} pedido(s) entregue(s)\n`;
+                }
+                if (pedidosCancelados > 0) {
+                    mensagem += ` ${pedidosCancelados} pedido(s) cancelado(s)`;
+                }
+                
+                mostrarNotificacao(mensagem, 'success');
+            } else {
+                mostrarNotificacao(result.message || 'Mesa liberada com sucesso!', 'success');
+            }
+            
+            // Limpar seleção de mesa e recarregar
+            mesaSelecionada = null;
+            localStorage.removeItem('mesaSelecionada');
+            mostrarMesaAtiva();
+            carregarPedidos();
+            carregarMesas();
+            
+        } else {
+            throw new Error(result.message || `Erro ${response.status}: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Erro ao fechar conta:', error);
+        mostrarNotificacao('Erro ao fechar conta: ' + error.message, 'error');
+    }
 };
 
 function mostrarNotificacao(mensagem, tipo = 'info') {

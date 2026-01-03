@@ -950,4 +950,21 @@ const MenuController = {
 // Função para inicializar o menu manager após JWT interceptor
 function initializeMenuManager() {
     MenuController.initialize();
+    
+    // Configurar botão de logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            if (window.logout) {
+                window.logout();
+            } else {
+                // Fallback caso a função global não esteja disponível
+                localStorage.removeItem('jwt_token');
+                localStorage.removeItem('user_role'); 
+                localStorage.removeItem('username');
+                window.location.href = '/login';
+            }
+        });
+    }
 }

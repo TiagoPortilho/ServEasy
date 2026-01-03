@@ -15,4 +15,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByTable(RestaurantTable table);
     List<Order> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     List<Order> findByStatusInOrderByCreatedAtDesc(List<Order.OrderStatus> statuses);
+    List<Order> findByTableTableNumberAndStatusIn(Integer tableNumber, List<Order.OrderStatus> statuses);
 }

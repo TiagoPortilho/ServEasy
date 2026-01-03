@@ -24,21 +24,36 @@
       if (result.status === 'success') {
         const stats = result.data;
         
+        // Atualizar ganhos do dia (receita total: pedidos ativos + vendas fechadas)
         if (ganhosValor) ganhosValor.textContent = moneyBR(stats.totalRevenue);
+        
+        // Mostrar total de pedidos (ativos + fechados)
         if (metaPedidos) metaPedidos.textContent = stats.totalOrders;
+        
+        // Ticket médio calculado sobre o total
         if (metaTicket) metaTicket.textContent = moneyBR(stats.averageTicket);
+        
+        // Hora atual
         if (ganhosHora) ganhosHora.textContent = new Date().toLocaleTimeString();
+        
+        // Estatísticas na parte inferior
         if (statVendas) statVendas.textContent = stats.totalOrders;
         if (statClientes) statClientes.textContent = stats.uniqueCustomers;
         if (statCancel) statCancel.textContent = stats.cancelledOrders;
         
-        atualizarLog("Dados atualizados com sucesso");
+        // Log de sucesso com mais detalhes
+        const detalhes = stats.closedAccounts > 0 ? 
+          ` (${stats.closedAccounts} conta(s) fechada(s), ${stats.activeOrders} pedido(s) ativo(s))` : 
+          ` (${stats.activeOrders} pedido(s) ativo(s))`;
+        atualizarLog("Dados atualizados com sucesso" + detalhes);
       } else {
         mostrarDadosVazios();
+        atualizarLog("Erro ao carregar dados: " + result.message);
       }
     } catch (error) {
       console.error('Erro na requisição:', error);
       mostrarDadosVazios();
+      atualizarLog("Erro de conexão com o servidor");
     }
   }
 
