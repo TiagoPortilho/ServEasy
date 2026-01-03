@@ -8,20 +8,56 @@ document.addEventListener("DOMContentLoaded", function() {
   let stockItems = []; // Adicionar stockItems para compatibilidade com admin
   let mesas = []; // Lista de mesas
 
+  // Aguardar o JWT interceptor carregar antes de fazer requisições
+  waitForJwtInterceptor().then(() => {
+    console.log('[cardapio.js] JWT Interceptor carregado, iniciando aplicação...');
+    carregarCardapio();
+  });
+
+  // Função para aguardar o JWT interceptor carregar
+  function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+      if (window.jwtInterceptorLoaded) {
+        console.log('[cardapio.js] JWT Interceptor já estava carregado');
+        resolve();
+        return;
+      }
+
+      console.log('[cardapio.js] Aguardando JWT Interceptor carregar...');
+      const checkInterval = setInterval(() => {
+        if (window.jwtInterceptorLoaded) {
+          console.log('[cardapio.js] JWT Interceptor carregado com sucesso');
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+
+      // Timeout de segurança (5 segundos)
+      setTimeout(() => {
+        if (!window.jwtInterceptorLoaded) {
+          console.warn('[cardapio.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 5000);
+    });
+  }
+
+  // Função para carregar cardápio
   async function carregarCardapio() {
     try {
       // Carregar estoque primeiro para referências
       await carregarEstoque();
-      
+
       // Carregar mesas
       await carregarMesas();
-      
+
       // Verificar se há mesa selecionada no localStorage
       verificarMesaSalva();
-      
+
       const response = await fetch('/api/menu/available');
       const result = await response.json();
-      
+
       if (result.status === 'success' || result.success) {
         menuData = result.data;
         exibirCardapio(menuData);

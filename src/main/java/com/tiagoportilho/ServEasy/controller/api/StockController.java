@@ -13,7 +13,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/stock")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class StockController {
 
     private final StockService stockService;

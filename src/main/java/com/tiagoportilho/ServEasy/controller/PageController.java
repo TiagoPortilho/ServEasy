@@ -1,6 +1,7 @@
 package com.tiagoportilho.ServEasy.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -16,9 +17,25 @@ public class PageController {
         return "login";
     }
 
+    @GetMapping("/admin")
+    public String adminRedirect() {
+        return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/cozinheiro")
+    public String cozinheiroRedirect() {
+        return "redirect:/cozinheiro/novos-pedidos";
+    }
+
+    @GetMapping("/cliente-atendente")
+    public String clienteAtendenteRedirect() {
+        return "redirect:/cliente-atendente/cardapio";
+    }
+
     // Admin pages
     @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
+    public String adminDashboard(Model model) {
+        model.addAttribute("userRole", "ADMIN");
         return "admin/dashboard";
     }
 
@@ -44,7 +61,8 @@ public class PageController {
 
     // Cozinheiro pages
     @GetMapping("/cozinheiro/novos-pedidos")
-    public String cozinheiroNovosPedidos() {
+    public String cozinheiroNovosPedidos(Model model) {
+        model.addAttribute("userRole", "COZINHEIRO");
         return "cozinheiro/novos-pedidos";
     }
 
@@ -60,7 +78,8 @@ public class PageController {
 
     // Cliente-Atendente pages
     @GetMapping("/cliente-atendente/cardapio")
-    public String clienteAtendenteCardapio() {
+    public String clienteAtendenteCardapio(Model model) {
+        model.addAttribute("userRole", "CLIENTE_ATENDENTE");
         return "cliente-atendente/cardapio";
     }
 

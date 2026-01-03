@@ -1,8 +1,42 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Pedidos em andamento carregado');
-    loadPedidosAndamento();
-    setInterval(loadPedidosAndamento, 30000);
+
+    // Aguardar o JWT interceptor carregar antes de fazer requisições
+    waitForJwtInterceptor().then(() => {
+        console.log('[pedidos-andamento.js] JWT Interceptor carregado, iniciando aplicação...');
+        loadPedidosAndamento();
+        setInterval(loadPedidosAndamento, 30000);
+    });
 });
+
+// Função para aguardar o JWT interceptor carregar
+function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+        if (window.jwtInterceptorLoaded) {
+            console.log('[pedidos-andamento.js] JWT Interceptor já estava carregado');
+            resolve();
+            return;
+        }
+
+        console.log('[pedidos-andamento.js] Aguardando JWT Interceptor carregar...');
+        const checkInterval = setInterval(() => {
+            if (window.jwtInterceptorLoaded) {
+                console.log('[pedidos-andamento.js] JWT Interceptor carregado com sucesso');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+
+        // Timeout de segurança (5 segundos)
+        setTimeout(() => {
+            if (!window.jwtInterceptorLoaded) {
+                console.warn('[pedidos-andamento.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 5000);
+    });
+}
 
 function loadPedidosAndamento() {
     fetch('/api/orders?status=EM_ANDAMENTO')

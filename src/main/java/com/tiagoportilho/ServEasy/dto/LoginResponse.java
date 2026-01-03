@@ -14,4 +14,5 @@ public class LoginResponse {
     private String redirectUrl;
     private User.UserRole role;
     private String username;
+    private String token; // JWT token
 }

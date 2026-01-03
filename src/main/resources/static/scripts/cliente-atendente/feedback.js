@@ -5,9 +5,42 @@ let avaliacaoSelecionada = 0;
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
-    verificarMesaSalva();
-    setupEventListeners();
+    // Aguardar o JWT interceptor carregar antes de fazer requisições
+    waitForJwtInterceptor().then(() => {
+        console.log('[feedback.js] JWT Interceptor carregado, iniciando aplicação...');
+        verificarMesaSalva();
+        setupEventListeners();
+    });
 });
+
+// Função para aguardar o JWT interceptor carregar
+function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+        if (window.jwtInterceptorLoaded) {
+            console.log('[feedback.js] JWT Interceptor já estava carregado');
+            resolve();
+            return;
+        }
+
+        console.log('[feedback.js] Aguardando JWT Interceptor carregar...');
+        const checkInterval = setInterval(() => {
+            if (window.jwtInterceptorLoaded) {
+                console.log('[feedback.js] JWT Interceptor carregado com sucesso');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+
+        // Timeout de segurança (5 segundos)
+        setTimeout(() => {
+            if (!window.jwtInterceptorLoaded) {
+                console.warn('[feedback.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 5000);
+    });
+}
 
 function verificarMesaSalva() {
     const mesaSalva = localStorage.getItem('mesaSelecionada');

@@ -22,8 +22,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let editingItemId = null;
 
-  // Carregar itens do estoque ao inicializar
-  loadStockItems();
+  // Aguardar o JWT interceptor carregar antes de fazer requisições
+  waitForJwtInterceptor().then(() => {
+    console.log('[stock.js] JWT Interceptor carregado, iniciando aplicação...');
+    // Carregar itens do estoque ao inicializar
+    loadStockItems();
+  });
+
+  // Função para aguardar o JWT interceptor carregar
+  function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+      if (window.jwtInterceptorLoaded) {
+        console.log('[stock.js] JWT Interceptor já estava carregado');
+        resolve();
+        return;
+      }
+
+      console.log('[stock.js] Aguardando JWT Interceptor carregar...');
+      const checkInterval = setInterval(() => {
+        if (window.jwtInterceptorLoaded) {
+          console.log('[stock.js] JWT Interceptor carregado com sucesso');
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+
+      // Timeout de segurança (5 segundos)
+      setTimeout(() => {
+        if (!window.jwtInterceptorLoaded) {
+          console.warn('[stock.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 5000);
+    });
+  }
 
   // Event listeners
   addBtn?.addEventListener("click", () => {

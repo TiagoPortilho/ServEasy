@@ -6,14 +6,47 @@ let mesas = [];
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
-    verificarMesaSalva();
-    carregarMesas();
-    carregarPedidos();
-    setupEventListeners();
-    
-    // Atualizar pedidos a cada 30 segundos
-    setInterval(carregarPedidos, 30000);
+    // Aguardar o JWT interceptor carregar antes de fazer requisições
+    waitForJwtInterceptor().then(() => {
+        console.log('[seus-pedidos.js] JWT Interceptor carregado, iniciando aplicação...');
+        verificarMesaSalva();
+        carregarMesas();
+        carregarPedidos();
+        setupEventListeners();
+
+        // Atualizar pedidos a cada 30 segundos
+        setInterval(carregarPedidos, 30000);
+    });
 });
+
+// Função para aguardar o JWT interceptor carregar
+function waitForJwtInterceptor() {
+    return new Promise((resolve) => {
+        if (window.jwtInterceptorLoaded) {
+            console.log('[seus-pedidos.js] JWT Interceptor já estava carregado');
+            resolve();
+            return;
+        }
+
+        console.log('[seus-pedidos.js] Aguardando JWT Interceptor carregar...');
+        const checkInterval = setInterval(() => {
+            if (window.jwtInterceptorLoaded) {
+                console.log('[seus-pedidos.js] JWT Interceptor carregado com sucesso');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+
+        // Timeout de segurança (5 segundos)
+        setTimeout(() => {
+            if (!window.jwtInterceptorLoaded) {
+                console.warn('[seus-pedidos.js] Timeout aguardando JWT Interceptor, continuando mesmo assim');
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 5000);
+    });
+}
 
 function verificarMesaSalva() {
     const mesaSalva = localStorage.getItem('mesaSelecionada');
