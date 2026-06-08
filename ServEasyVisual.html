@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServEasy — Identidade Visual</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --canvas:       #0b0b0b;
+      --canvas-soft:  #212121;
+      --canvas-light: #ffffff;
+      --canvas-paper: #ededed;
+      --brand:        #f36458;
+      --ink:          #0b0b0b;
+      --ash:          #b9b9b9;
+      --mute:         #797979;
+      --graphite:     #353535;
+      --on-primary:   #ffffff;
+      --hairline-soft:#353535;
+      --hairline:     #ededed;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--canvas);
+      color: var(--on-primary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 96px 48px;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      margin-bottom: 96px;
+    }
+
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--mute);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-size: 38px;
+      font-weight: 400;
+      letter-spacing: -1.14px;
+      line-height: 1.1;
+      color: var(--on-primary);
+    }
+
+    .page-title em {
+      font-style: normal;
+      color: var(--ash);
+    }
+
+    /* ── SECTIONS ── */
+    .block {
+      margin-bottom: 80px;
+    }
+
+    .block-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--mute);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    /* ── SHOWCASE CARDS ── */
+    .card {
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card--dark {
+      background: var(--canvas);
+      border: 1px solid var(--hairline-soft);
+    }
+
+    .card--soft {
+      background: var(--canvas-soft);
+      border: 1px solid var(--hairline-soft);
+    }
+
+    .card--light {
+      background: var(--canvas-light);
+      border: 1px solid var(--hairline);
+    }
+
+    .card--paper {
+      background: var(--canvas-paper);
+      border: 1px solid var(--hairline);
+    }
+
+    .card--brand {
+      background: var(--brand);
+    }
+
+    /* ── LOGO LOCKUP ── */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+
+    .logo--sm  { gap: 10px; }
+    .logo--lg  { gap: 18px; }
+    .logo--xl  { gap: 22px; }
+
+    .logo-mark {
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .logo-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .logo-name {
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-name--sm  { font-size: 18px; letter-spacing: -0.3px; }
+    .logo-name--md  { font-size: 26px; }
+    .logo-name--lg  { font-size: 36px; letter-spacing: -0.8px; }
+    .logo-name--xl  { font-size: 52px; letter-spacing: -1.5px; }
+
+    .logo-name .serv { font-weight: 600; }
+    .logo-name .easy { font-weight: 300; }
+
+    .logo-name--dark  .serv,
+    .logo-name--dark  .easy  { color: var(--on-primary); }
+
+    .logo-name--light .serv,
+    .logo-name--light .easy  { color: var(--ink); }
+
+    .logo-name--brand .serv,
+    .logo-name--brand .easy  { color: var(--ink); }
+
+    .logo-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .logo-sub--dark  { color: var(--mute); }
+    .logo-sub--light { color: var(--mute); }
+    .logo-sub--brand { color: rgba(11,11,11,0.55); }
+
+    /* ── STACKED ── */
+    .logo--stacked {
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .logo--stacked .logo-text-group {
+      align-items: center;
+    }
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 2px;
+    }
+
+    /* rounded corners for grid children */
+    .grid-2 > *:nth-child(1) { border-radius: 12px 0 0 12px; }
+    .grid-2 > *:nth-child(2) { border-radius: 0 12px 12px 0; }
+
+    .grid-3 > *:nth-child(1) { border-radius: 12px 0 0 12px; }
+    .grid-3 > *:nth-child(2) { border-radius: 0; }
+    .grid-3 > *:nth-child(3) { border-radius: 0 12px 12px 0; }
+
+    .grid-4 > *:nth-child(1) { border-radius: 12px 0 0 12px; }
+    .grid-4 > *:nth-child(2),
+    .grid-4 > *:nth-child(3) { border-radius: 0; }
+    .grid-4 > *:nth-child(4) { border-radius: 0 12px 12px 0; }
+
+    /* ── SIZES ROW ── */
+    .sizes-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .sizes-row .card {
+      flex: 1;
+      padding: 48px 32px;
+    }
+
+    /* ── COLOR PALETTE ── */
+    .palette {
+      display: flex;
+      gap: 2px;
+    }
+
+    .swatch {
+      flex: 1;
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    .swatch:first-child { border-radius: 12px 0 0 12px; }
+    .swatch:last-child  { border-radius: 0 12px 12px 0; }
+
+    .swatch-color {
+      height: 72px;
+    }
+
+    .swatch-label {
+      padding: 14px 16px 16px;
+      background: var(--canvas-soft);
+      border-top: 1px solid var(--hairline-soft);
+    }
+
+    .swatch-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--ash);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .swatch-hex {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--mute);
+    }
+
+    /* ── TYPE SPECIMENS ── */
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--hairline-soft);
+    }
+
+    .type-row:first-child {
+      border-top: 1px solid var(--hairline-soft);
+    }
+
+    .type-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--mute);
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+
+    .type-sample {
+      color: var(--on-primary);
+    }
+
+    /* ── DIVIDER ── */
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--hairline-soft);
+      margin: 80px 0;
+    }
+
+    /* ── USAGE NOTES ── */
+    .do-dont {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .rule-card {
+      padding: 32px;
+      border-radius: 0;
+      background: var(--canvas-soft);
+      border: 1px solid var(--hairline-soft);
+    }
+
+    .rule-card:first-child { border-radius: 12px 0 0 12px; }
+    .rule-card:last-child  { border-radius: 0 12px 12px 0; }
+
+    .rule-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      border-radius: 99px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .rule-badge--do   { background: rgba(55, 205, 132, 0.15); color: #37cd84; }
+    .rule-badge--dont { background: rgba(243, 100, 88, 0.15);  color: var(--brand); }
+
+    .rule-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rule-list li {
+      font-size: 14px;
+      color: var(--ash);
+      line-height: 1.5;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .rule-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--graphite);
+    }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      margin-top: 96px;
+      padding-top: 32px;
+      border-top: 1px solid var(--hairline-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--mute);
+      text-align: right;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── PAGE HEADER ── -->
+  <header class="page-header">
+    <p class="eyebrow">TCC · Curso Técnico em ADS · SENAC</p>
+    <h1 class="page-title">Identidade Visual<br><em>ServEasy</em></h1>
+  </header>
+
+  <!-- ══ 1. PRIMARY LOCKUP ══ -->
+  <div class="block">
+    <p class="block-label">Lockup principal</p>
+    <div class="card card--dark" style="padding: 80px 48px;">
+      <div class="logo logo--lg">
+
+        <!-- MARK: coral-red circle + white fork -->
+        <svg class="logo-mark" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+            <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+            <line x1="28" y1="9" x2="28" y2="46"/>
+            <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+          </g>
+        </svg>
+
+        <div class="logo-text-group">
+          <span class="logo-name logo-name--lg logo-name--dark">
+            <span class="serv">Serv</span><span class="easy">Easy</span>
+          </span>
+          <span class="logo-sub logo-sub--dark">Restaurant Management System</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 2. COLOUR VARIATIONS ══ -->
+  <div class="block">
+    <p class="block-label">Variações de fundo</p>
+    <div class="grid-2" style="margin-bottom: 2px;">
+      <!-- Dark -->
+      <div class="card card--dark">
+        <div class="logo">
+          <svg class="logo-mark" width="44" height="44" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="#f36458"/>
+            <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+          </svg>
+          <div class="logo-text-group">
+            <span class="logo-name logo-name--md logo-name--dark">
+              <span class="serv">Serv</span><span class="easy">Easy</span>
+            </span>
+            <span class="logo-sub logo-sub--dark">Restaurant Management</span>
+          </div>
+        </div>
+      </div>
+      <!-- Light -->
+      <div class="card card--light">
+        <div class="logo">
+          <svg class="logo-mark" width="44" height="44" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="#f36458"/>
+            <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+          </svg>
+          <div class="logo-text-group">
+            <span class="logo-name logo-name--md logo-name--light">
+              <span class="serv">Serv</span><span class="easy">Easy</span>
+            </span>
+            <span class="logo-sub logo-sub--light">Restaurant Management</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <!-- Canvas Soft -->
+      <div class="card card--soft">
+        <div class="logo">
+          <svg class="logo-mark" width="44" height="44" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="#f36458"/>
+            <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+          </svg>
+          <div class="logo-text-group">
+            <span class="logo-name logo-name--md logo-name--dark">
+              <span class="serv">Serv</span><span class="easy">Easy</span>
+            </span>
+            <span class="logo-sub logo-sub--dark">Restaurant Management</span>
+          </div>
+        </div>
+      </div>
+      <!-- Brand -->
+      <div class="card card--brand">
+        <div class="logo">
+          <svg class="logo-mark" width="44" height="44" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="rgba(0,0,0,0.15)"/>
+            <g stroke="#0b0b0b" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+          </svg>
+          <div class="logo-text-group">
+            <span class="logo-name logo-name--md logo-name--brand">
+              <span class="serv">Serv</span><span class="easy">Easy</span>
+            </span>
+            <span class="logo-sub logo-sub--brand">Restaurant Management</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3. STACKED + ICON-ONLY ══ -->
+  <div class="block">
+    <p class="block-label">Empilhado & Ícone</p>
+    <div class="grid-3">
+      <!-- Stacked dark -->
+      <div class="card card--dark">
+        <div class="logo logo--stacked">
+          <svg class="logo-mark" width="52" height="52" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="#f36458"/>
+            <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+          </svg>
+          <div class="logo-text-group">
+            <span class="logo-name logo-name--md logo-name--dark">
+              <span class="serv">Serv</span><span class="easy">Easy</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Icon mark only — large -->
+      <div class="card card--soft">
+        <svg width="72" height="72" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+      </div>
+      <!-- Wordmark only -->
+      <div class="card card--dark">
+        <span class="logo-name logo-name--lg logo-name--dark">
+          <span class="serv">Serv</span><span class="easy">Easy</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 4. SCALE ══ -->
+  <div class="block">
+    <p class="block-label">Escala do ícone</p>
+    <div class="card card--soft" style="padding: 48px; justify-content: flex-start; gap: 32px; align-items: center; flex-wrap: wrap;">
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="96" height="96" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mute);">96px</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="64" height="64" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mute);">64px</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="48" height="48" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mute);">48px</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mute);">32px</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="20" height="20" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mute);">20px</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="16" height="16" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="28" fill="#f36458"/>
+          <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+        </svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mute);">16px</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 5. PALETA DE CORES ══ -->
+  <div class="block">
+    <p class="block-label">Paleta</p>
+    <div class="palette">
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f36458;"></div>
+        <div class="swatch-label">
+          <span class="swatch-name">Brand</span>
+          <span class="swatch-hex">#f36458</span>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0b0b0b;border-bottom:1px solid #353535;"></div>
+        <div class="swatch-label">
+          <span class="swatch-name">Canvas</span>
+          <span class="swatch-hex">#0b0b0b</span>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:#212121;"></div>
+        <div class="swatch-label">
+          <span class="swatch-name">Canvas Soft</span>
+          <span class="swatch-hex">#212121</span>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:#b9b9b9;"></div>
+        <div class="swatch-label">
+          <span class="swatch-name">Ash</span>
+          <span class="swatch-hex">#b9b9b9</span>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ffffff;border-bottom:1px solid #ededed;"></div>
+        <div class="swatch-label">
+          <span class="swatch-name">White</span>
+          <span class="swatch-hex">#ffffff</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 6. TIPOGRAFIA ══ -->
+  <div class="block">
+    <p class="block-label">Tipografia</p>
+
+    <div class="type-row">
+      <div class="type-meta">Display / 52px / 600</div>
+      <div class="type-sample" style="font-size:52px;font-weight:600;letter-spacing:-1.5px;line-height:1;">ServEasy</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Display / 52px / 300</div>
+      <div class="type-sample" style="font-size:52px;font-weight:300;letter-spacing:-1.5px;line-height:1;">ServEasy</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Wordmark / 36px</div>
+      <div class="type-sample" style="font-size:36px;letter-spacing:-0.8px;line-height:1;">
+        <strong style="font-weight:600;">Serv</strong><span style="font-weight:300;">Easy</span>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Mono Eyebrow / 11px</div>
+      <div class="type-sample" style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--mute);">Restaurant Management System</div>
+    </div>
+
+  </div>
+
+  <!-- ══ 7. REGRAS DE USO ══ -->
+  <div class="block">
+    <p class="block-label">Regras de uso</p>
+    <div class="do-dont">
+      <div class="rule-card">
+        <span class="rule-badge rule-badge--do">✓ Fazer</span>
+        <ul class="rule-list">
+          <li>Usar o lockup completo (ícone + texto) como identificação principal</li>
+          <li>Manter a marca coral <strong style="color:var(--brand);">#f36458</strong> apenas no círculo do ícone</li>
+          <li>Usar fundo escuro como contexto primário da marca</li>
+          <li>Preservar a diferença de peso: <strong>Serv</strong> 600 · Easy 300</li>
+          <li>Respeitar o espaçamento mínimo ao redor do logo</li>
+        </ul>
+      </div>
+      <div class="rule-card">
+        <span class="rule-badge rule-badge--dont">✕ Evitar</span>
+        <ul class="rule-list">
+          <li>Alterar as cores do ícone ou do wordmark</li>
+          <li>Usar o logo sobre fundos coloridos que conflitem com o coral</li>
+          <li>Redimensionar desproporcionalmente o ícone em relação ao texto</li>
+          <li>Usar o garfo sem o círculo de fundo</li>
+          <li>Aplicar efeitos de sombra ou gradiente sobre o logo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer class="page-footer">
+    <div class="footer-brand">
+      <svg width="28" height="28" viewBox="0 0 56 56" fill="none">
+        <circle cx="28" cy="28" r="28" fill="#f36458"/>
+        <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+            </g>
+      </svg>
+      <span style="font-size:16px;font-weight:600;letter-spacing:-0.3px;">Serv<span style="font-weight:300;">Easy</span></span>
+    </div>
+    <div class="footer-meta">
+      Curso Técnico em Análise e Desenvolvimento de Sistemas<br>
+      SENAC · Trabalho de Conclusão de Curso
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

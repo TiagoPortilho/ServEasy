@@ -190,14 +190,18 @@ document.addEventListener("DOMContentLoaded", function() {
       
       // Trata a URL da imagem
       const imageUrl = item.imageUrl && item.imageUrl.trim() !== '' ? item.imageUrl : '';
-      
-      // Cria a estrutura do card igual ao do admin
+      const imgHtml = imageUrl
+        ? `<img src="${imageUrl}" alt="${item.name}" class="produto-img" onerror="this.style.display='none'" />`
+        : `<div class="produto-img-placeholder"><i class="fas fa-utensils"></i></div>`;
+
       card.innerHTML = `
-        <img src="${imageUrl}" alt="${item.name}" class="produto-img" onerror="this.src=''" />
-        <h3 class="produto-nome">${item.name}</h3>
-        <div class="produto-preco">R$ ${item.price.toFixed(2)}</div>
-        ${descriptionHtml}
-        <div class="produto-categoria">${getCategoryDisplayName(item.category)}</div>
+        <div class="produto-img-wrapper">${imgHtml}</div>
+        <div class="produto-info">
+          <span class="produto-categoria">${getCategoryDisplayName(item.category)}</span>
+          <h3 class="produto-nome">${item.name}</h3>
+          <div class="produto-preco">R$ ${item.price.toFixed(2)}</div>
+          ${descriptionHtml}
+        </div>
         <div class="produto-acoes">
           <button onclick="adicionarAoCarrinho(${item.id})" class="btn-adicionar">
             <i class="fas fa-plus"></i> Adicionar
@@ -301,60 +305,17 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   function mostrarNotificacao(mensagem, tipo = 'success') {
-    // Cria uma notificação toast simples
+    const tipoClasse = tipo === 'warning' ? 'error' : tipo;
     const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.textContent = mensagem;
-    
-    let backgroundColor, textColor;
-    switch(tipo) {
-      case 'success':
-        backgroundColor = 'var(--btn-bg)';
-        textColor = 'black';
-        break;
-      case 'warning':
-        backgroundColor = '#ff6b6b';
-        textColor = 'white';
-        break;
-      case 'info':
-        backgroundColor = '#17a2b8';
-        textColor = 'white';
-        break;
-      default:
-        backgroundColor = 'var(--btn-bg)';
-        textColor = 'black';
-    }
-    
-    toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: ${backgroundColor};
-      color: ${textColor};
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 1000;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-    `;
-    
+    toast.className = `notificacao notificacao-${tipoClasse}`;
+    toast.innerHTML = `<div class="notificacao-conteudo"><span>${mensagem}</span></div>`;
+
     document.body.appendChild(toast);
-    
-    // Anima a entrada
+
+    setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
     setTimeout(() => {
-      toast.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Remove após 3 segundos
-    setTimeout(() => {
-      toast.style.transform = 'translateX(100%)';
-      setTimeout(() => {
-        if (toast.parentNode) {
-          toast.parentNode.removeChild(toast);
-        }
-      }, 300);
+      toast.style.transform = 'translateX(400px)';
+      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
     }, 3000);
   }
 

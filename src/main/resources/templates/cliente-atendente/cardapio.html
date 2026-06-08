@@ -4,34 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ServEasy - Cardápio</title>
-    <link rel="stylesheet" th:href="@{/styles/cliente-atendente/cliente-atendente-styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- JWT Interceptor - deve ser carregado primeiro -->
+    <link rel="stylesheet" th:href="@{/styles/design-system.css}">
+    <link rel="stylesheet" th:href="@{/styles/cliente-atendente/cliente-atendente-styles.css}">
     <script th:src="@{/scripts/jwt-interceptor.js}"></script>
 </head>
 <body>
     <div class="app">
         <aside class="sidebar" aria-label="Sidebar de navegação">
             <div class="header-box" role="banner">
-                <div style="display: flex; align-items: center; gap: 0.9rem">
-                    <div
-                        style="
-                            width: 46px;
-                            height: 46px;
-                            border-radius: 10px;
-                            background: linear-gradient(
-                                90deg,
-                                var(--btn-bg),
-                                var(--btn-hover-end)
-                            );
-                            box-shadow: 0 6px 18px var(--btn-shadow);
-                        "
-                    ></div>
-                    <div>
-                        <div class="title">ServEasy</div>
-                        <div class="subtitle">Services.</div>
-                    </div>
+                <svg class="logo-mark" width="36" height="36" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#f36458"/><g stroke="white" stroke-linecap="round" fill="none" stroke-width="3"><path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/><line x1="28" y1="9" x2="28" y2="46"/><path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/></g></svg>
+                <div>
+                    <div class="title"><span class="serv">Serv</span><span class="easy">Easy</span></div>
+                    <div class="subtitle">Services.</div>
                 </div>
             </div>
 
@@ -42,28 +27,14 @@
                 </button>
                 <a th:href="@{/cliente-atendente/seus-pedidos}">
                     <button class="nav-btn">
-                        <div
-                            style="
-                                width: 10px;
-                                height: 10px;
-                                border-radius: 50%;
-                                background: #6b7280;
-                            "
-                        ></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:var(--hairline-soft)"></div>
                         Seus Pedidos
                     </button>
                 </a>
                 <a th:href="@{/cliente-atendente/feedback}">
                     <button class="nav-btn">
-                        <div
-                            style="
-                                width: 10px;
-                                height: 10px;
-                                border-radius: 50%;
-                                background: #6b7280;
-                            "
-                        ></div>
-                        Feedback & Ajuda
+                        <div style="width:6px;height:6px;border-radius:50%;background:var(--hairline-soft)"></div>
+                        Feedback &amp; Ajuda
                     </button>
                 </a>
             </nav>
@@ -124,9 +95,9 @@
 
             <!-- Mensagem vazia -->
             <div id="emptyMessage" class="text-center mt-20 hidden">
-                <i class="fas fa-utensils" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
-                <h3 style="color: #666;">Nenhum produto encontrado</h3>
-                <p style="color: #999;">Tente ajustar os filtros ou buscar por outros termos.</p>
+                <i class="fas fa-utensils" style="font-size: 4rem; color: var(--mute); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--mute);">Nenhum produto encontrado</h3>
+                <p style="color: var(--mute);">Tente ajustar os filtros ou buscar por outros termos.</p>
             </div>
         </main>
     </div>
@@ -136,13 +107,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-table"></i> Selecionar Mesa</h2>
-                <p style="color: #cccccc; margin: 0;">Escolha uma mesa disponível para começar o atendimento</p>
+                <p style="color: var(--ash); margin: 0;">Escolha uma mesa disponível para começar o atendimento</p>
             </div>
-            
+
             <div class="mesas-grid" id="mesasGrid">
                 <!-- Mesas serão carregadas dinamicamente -->
             </div>
-            
+
             <div class="modal-buttons">
                 <button onclick="cancelarSelecaoMesa()" class="btn-secondary">
                     Cancelar
@@ -159,13 +130,13 @@
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h2><i class="fas fa-shopping-cart"></i> Confirmar Pedido</h2>
-                <p style="color: #cccccc; margin: 0;">Revise os detalhes do seu pedido antes de confirmar</p>
+                <p style="color: var(--ash); margin: 0;">Revise os detalhes do seu pedido antes de confirmar</p>
             </div>
-            
+
             <div id="detalhesPedido">
                 <!-- Detalhes do pedido aparecerão aqui -->
             </div>
-            
+
             <div class="modal-buttons">
                 <button onclick="cancelarPedido()" class="btn-secondary">
                     Cancelar
@@ -180,22 +151,10 @@
 
     <script th:src="@{/scripts/cliente-atendente/cardapio.js}"></script>
     <script>
-        // Script para logout
         document.getElementById('logoutBtn')?.addEventListener('click', function() {
             if (confirm('Tem certeza que deseja sair?')) {
                 window.location.href = '/logout';
             }
-        });
-        
-        // Melhorar navegação entre as páginas
-        const navButtons = document.querySelectorAll('.nav-btn');
-        navButtons.forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(5px)';
-            });
-            button.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(0)';
-            });
         });
     </script>
 </body>

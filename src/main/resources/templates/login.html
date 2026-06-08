@@ -1,52 +1,106 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ServEasy - Login</title>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServEasy — Acesso</title>
+  <link rel="stylesheet" th:href="@{/styles/login-styles.css}">
+</head>
+<body>
 
-    <!-- Bootstrap -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+<div class="layout">
 
-    <link rel="stylesheet" th:href="@{/styles/login-styles.css}" />
-  </head>
+  <!-- LEFT: BRAND PANEL -->
+  <div class="brand-panel">
 
-  <body>
-    <div class="login-container">
-      <!-- Cabeçalho com fundo laranja -->
-      <div class="header-box">
-        <div class="title">ServEasy</div>
-        <div class="subtitle">Services.</div>
+    <svg class="brand-panel__bg" width="380" height="440" viewBox="0 0 56 56" fill="none">
+      <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+        <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+        <line x1="28" y1="9" x2="28" y2="46"/>
+        <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+      </g>
+    </svg>
+
+    <div class="brand-panel__top">
+      <svg width="30" height="30" viewBox="0 0 56 56" fill="none">
+        <circle cx="28" cy="28" r="28" fill="#f36458"/>
+        <g stroke="white" stroke-linecap="round" fill="none" stroke-width="3">
+          <path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/>
+          <line x1="28" y1="9" x2="28" y2="46"/>
+          <path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/>
+        </g>
+      </svg>
+      <span class="logo-name"><span class="serv">Serv</span><span class="easy">Easy</span></span>
+    </div>
+
+    <div class="brand-panel__body">
+      <p class="brand-eyebrow">Sistema de Gestão</p>
+      <h1 class="brand-headline">
+        Gestão simples.<br><em>Serviço eficiente.</em>
+      </h1>
+      <p class="brand-desc">
+        Controle de mesas, pedidos, estoque e desempenho — tudo integrado em um único painel.
+      </p>
+
+      <div class="brand-features">
+        <div class="feature-item">
+          <span class="feature-dot"></span>
+          Controle de mesas e pedidos em tempo real
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot"></span>
+          Gestão de estoque e fornecedores
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot"></span>
+          Relatórios de desempenho e vendas
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-panel__footer">
+      Trabalho de Conclusão de Curso<br>
+      ADS · SENAC
+    </div>
+  </div>
+
+  <!-- RIGHT: FORM PANEL -->
+  <div class="form-panel">
+    <div class="form-box">
+
+      <p class="form-eyebrow">Acesso ao sistema</p>
+      <h2 class="form-heading">Bem-vindo de volta.</h2>
+      <p class="form-sub">Faça login para acessar o painel.</p>
+
+      <div class="field">
+        <label class="field-label" for="username">Usuário</label>
+        <input
+          class="field-input"
+          id="username"
+          type="text"
+          placeholder="Digite seu usuário"
+          autocomplete="username"
+        />
       </div>
 
-      <!-- Formulário -->
-      <form>
-        <div class="mb-3">
-          <label for="username" class="form-label">Usuário</label>
-          <input
-            type="text"
-            class="form-control"
-            id="username"
-            placeholder="Digite seu usuário"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Senha</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            placeholder="Digite sua senha"
-          />
-        </div>
-        <button type="submit" class="btn btn-login mt-3" id="AccessButton">
-          Acessar
-        </button>
-      </form>
+      <div class="field">
+        <label class="field-label" for="password">Senha</label>
+        <input
+          class="field-input"
+          id="password"
+          type="password"
+          placeholder="Digite sua senha"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button class="btn-submit" id="AccessButton">Acessar</button>
+
     </div>
-    <script th:src="@{/scripts/login.js}"></script>
-  </body>
+  </div>
+
+</div>
+
+<script th:src="@{/scripts/login.js}"></script>
+</body>
 </html>

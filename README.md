@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="readmeAssets/logo.png" width="180" alt="ServEasy Logo" style="border-radius: 20px;"/>
+<img src="readmeAssets/logo.png" width="100%" alt="ServEasy Logo" style="border-radius: 20px;"/>
 
 # ServEasy - Restaurant Management System
 
@@ -43,12 +43,6 @@ This project was developed as a technical course final project, applying concept
 
 ## System Demonstration
 
-### Video Demo
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=Dpbm6OHpKKo">
-    <img src="https://img.shields.io/badge/▶_Watch_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch Demo Video"/>
-  </a>
-</p>
 
 ### Screenshots
 

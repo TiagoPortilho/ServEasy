@@ -1,70 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ServEasy - Feedback & Ajuda</title>
-    <link rel="stylesheet" href="../../styles/cliente-atendente/cliente-atendente-styles.css">
+    <title>ServEasy - Feedback &amp; Ajuda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- JWT Interceptor - deve ser carregado primeiro -->
-    <script src="/scripts/jwt-interceptor.js"></script>
+    <link rel="stylesheet" th:href="@{/styles/design-system.css}">
+    <link rel="stylesheet" th:href="@{/styles/cliente-atendente/cliente-atendente-styles.css}">
+    <script th:src="@{/scripts/jwt-interceptor.js}"></script>
 </head>
 <body>
     <div class="app">
         <aside class="sidebar" aria-label="Sidebar de navegação">
             <div class="header-box" role="banner">
-                <div style="display: flex; align-items: center; gap: 0.9rem">
-                    <div
-                        style="
-                            width: 46px;
-                            height: 46px;
-                            border-radius: 10px;
-                            background: linear-gradient(
-                                90deg,
-                                var(--btn-bg),
-                                var(--btn-hover-end)
-                            );
-                            box-shadow: 0 6px 18px var(--btn-shadow);
-                        "
-                    ></div>
-                    <div>
-                        <div class="title">ServEasy</div>
-                        <div class="subtitle">Services.</div>
-                    </div>
+                <svg class="logo-mark" width="36" height="36" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#f36458"/><g stroke="white" stroke-linecap="round" fill="none" stroke-width="3"><path d="M 21,9 L 21,22 C 21,30 28,30 28,30"/><line x1="28" y1="9" x2="28" y2="46"/><path d="M 35,9 L 35,22 C 35,30 28,30 28,30"/></g></svg>
+                <div>
+                    <div class="title"><span class="serv">Serv</span><span class="easy">Easy</span></div>
+                    <div class="subtitle">Services.</div>
                 </div>
             </div>
 
             <nav class="nav-list" aria-label="Navegação principal">
                 <a th:href="@{/cliente-atendente/cardapio}">
                     <button class="nav-btn">
-                        <div
-                            style="
-                                width: 10px;
-                                height: 10px;
-                                border-radius: 50%;
-                                background: #6b7280;
-                            "
-                        ></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:var(--hairline-soft)"></div>
                         Cardápio
                     </button>
                 </a>
                 <a th:href="@{/cliente-atendente/seus-pedidos}">
                     <button class="nav-btn">
-                        <div
-                            style="
-                                width: 10px;
-                                height: 10px;
-                                border-radius: 50%;
-                                background: #6b7280;
-                            "
-                        ></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:var(--hairline-soft)"></div>
                         Seus Pedidos
                     </button>
                 </a>
                 <button class="nav-btn" aria-current="page">
                     <div class="dot" aria-hidden="true"></div>
-                    Feedback & Ajuda
+                    Feedback &amp; Ajuda
                 </button>
             </nav>
 
@@ -77,7 +48,7 @@
 
         <main class="main" role="main">
             <div class="main-header">
-                <h1>Feedback & Ajuda</h1>
+                <h1>Feedback &amp; Ajuda</h1>
                 <div class="mesa-ativa" id="mesaAtiva" style="display: none;">
                     <i class="fas fa-table"></i>
                     <span id="mesaNumero">Mesa 0</span>
@@ -86,7 +57,7 @@
 
             <div class="feedback-container">
                 <!-- Abas de Navegação -->
-                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--hairline-soft);">
                     <button class="tab-btn active" data-tab="feedback" onclick="trocarAba('feedback')">
                         <i class="fas fa-star"></i>
                         Dar Feedback
@@ -100,11 +71,11 @@
                 <!-- Aba de Feedback -->
                 <div id="tab-feedback" class="tab-content">
                     <div class="feedback-form">
-                        <h2 style="color: #fca311; margin-bottom: 20px;">
+                        <h2 style="color: var(--brand); margin-bottom: 20px;">
                             <i class="fas fa-star"></i>
                             Como foi sua experiência?
                         </h2>
-                        
+
                         <form id="feedbackForm">
                             <div class="form-group">
                                 <label>Tipo de Feedback</label>
@@ -131,7 +102,7 @@
                                         <i class="far fa-star" data-rating="4"></i>
                                         <i class="far fa-star" data-rating="5"></i>
                                     </div>
-                                    <span id="ratingText" style="color: #999;">Selecione uma avaliação</span>
+                                    <span id="ratingText" style="color: var(--mute);">Selecione uma avaliação</span>
                                 </div>
                             </div>
 
@@ -156,11 +127,11 @@
                 <!-- Aba de Ajuda -->
                 <div id="tab-ajuda" class="tab-content" style="display: none;">
                     <div class="feedback-form">
-                        <h2 style="color: #fca311; margin-bottom: 20px;">
+                        <h2 style="color: var(--brand); margin-bottom: 20px;">
                             <i class="fas fa-question-circle"></i>
                             Precisa de ajuda?
                         </h2>
-                        
+
                         <form id="ajudaForm">
                             <div class="form-group">
                                 <label>Tipo de Problema</label>
@@ -213,11 +184,11 @@
     <!-- Modal de Sucesso -->
     <div id="modalSucesso" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <div style="color: #28a745; font-size: 3rem; margin-bottom: 15px;">
+            <div style="color: var(--success); font-size: 3rem; margin-bottom: 15px;">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <h2 style="color: #28a745; margin-bottom: 10px;">Enviado com Sucesso!</h2>
-            <p id="mensagemSucesso" style="color: #cccccc; margin-bottom: 20px;">
+            <h2 style="color: var(--success); margin-bottom: 10px;">Enviado com Sucesso!</h2>
+            <p id="mensagemSucesso" style="color: var(--ash); margin-bottom: 20px;">
                 Seu feedback foi enviado com sucesso. Obrigado!
             </p>
             <button onclick="fecharModalSucesso()" class="add-btn">
@@ -227,121 +198,12 @@
         </div>
     </div>
 
-    <script src="../../scripts/cliente-atendente/feedback.js"></script>
+    <script th:src="@{/scripts/cliente-atendente/feedback.js}"></script>
     <script>
-        // Script para logout
         document.getElementById('logoutBtn')?.addEventListener('click', function() {
             if (confirm('Tem certeza que deseja sair?')) {
                 window.location.href = '/logout';
             }
-        });
-        
-        // Melhorar navegação entre as páginas
-        const navButtons = document.querySelectorAll('.nav-btn');
-        navButtons.forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(5px)';
-            });
-            button.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(0)';
-            });
-        });
-    </script>
-    <style>
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.02);
-            color: var(--body-text);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 12px 20px;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-btn:hover {
-            background: rgba(252, 163, 17, 0.1);
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, var(--btn-bg), var(--btn-hover-end));
-            color: var(--btn-text);
-            border-color: var(--btn-bg);
-        }
-
-        .stars {
-            display: flex;
-            gap: 5px;
-        }
-
-        .stars i {
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #666;
-        }
-
-        .stars i:hover,
-        .stars i.active {
-            color: #fca311;
-        }
-
-        .historico-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .historico-item:hover {
-            border-color: var(--btn-bg);
-            background: rgba(252, 163, 17, 0.05);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-pendente {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffc107;
-        }
-
-        .status-resolvido {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-        }
-
-        .status-em-andamento {
-            background: rgba(23, 162, 184, 0.2);
-            color: #17a2b8;
-        }
-    </style>
-    <script>
-        // Script para logout
-        document.getElementById('logoutBtn')?.addEventListener('click', function() {
-            if (confirm('Tem certeza que deseja sair?')) {
-                window.location.href = '/logout';
-            }
-        });
-        
-        // Melhorar navegação entre as páginas
-        const navButtonsMain = document.querySelectorAll('.nav-btn');
-        navButtonsMain.forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(5px)';
-            });
-            button.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(0)';
-            });
         });
     </script>
 </body>
