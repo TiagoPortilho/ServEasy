@@ -64,8 +64,8 @@ public class AuthService {
     private String getRedirectUrlByRole(User.UserRole role) {
         return switch (role) {
             case ADMIN -> "/admin/dashboard";
-            case COZINHEIRO -> "/cozinheiro/dashboard";
-            case CLIENTE_ATENDENTE -> "/cliente-atendente/dashboard";
+            case COZINHEIRO -> "/cozinheiro/novos-pedidos";
+            case CLIENTE_ATENDENTE -> "/cliente-atendente/cardapio";
         };
     }
 

@@ -31,8 +31,7 @@ public class FeedbackController {
     private final OrderService orderService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Listar feedbacks", description = "Retorna todos os feedbacks ordenados por data. Somente ADMIN.")
+    @Operation(summary = "Listar feedbacks", description = "Retorna todos os feedbacks ordenados por data. Acesso público.")
     public ResponseEntity<ApiResponse<List<FeedbackResponseDTO>>> getAllFeedbacks() {
         List<FeedbackResponseDTO> dtos = feedbackService.getAllFeedbacks().stream()
                 .map(FeedbackResponseDTO::fromEntity).toList();

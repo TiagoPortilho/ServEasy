@@ -53,8 +53,7 @@ public class MenuController {
     }
 
     @GetMapping("/check-stock")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Verificar estoque disponível", description = "Retorna true se há itens no estoque para criação de pratos. Somente ADMIN.")
+    @Operation(summary = "Verificar estoque disponível", description = "Retorna true se há itens no estoque para criação de pratos. Acesso público.")
     public ResponseEntity<ApiResponse<Boolean>> checkStockAvailability() {
         return ResponseEntity.ok(ApiResponse.success(menuService.hasStockItems()));
     }
