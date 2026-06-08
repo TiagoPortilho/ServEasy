@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.response;
 
 import com.tiagoportilho.ServEasy.model.Order;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -34,13 +33,11 @@ public class OrderResponseDTO {
         dto.setNotes(order.getNotes());
         dto.setCreatedAt(order.getCreatedAt());
         dto.setUpdatedAt(order.getUpdatedAt());
-        
         if (order.getItems() != null) {
             dto.setItems(order.getItems().stream()
-                .map(OrderItemResponseDTO::fromEntity)
-                .collect(Collectors.toList()));
+                    .map(OrderItemResponseDTO::fromEntity)
+                    .toList());
         }
-        
         return dto;
     }
 }

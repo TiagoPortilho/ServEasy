@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

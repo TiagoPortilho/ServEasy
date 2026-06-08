@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.response;
 
 import com.tiagoportilho.ServEasy.model.Feedback;
 import lombok.AllArgsConstructor;
@@ -25,12 +25,9 @@ public class FeedbackResponseDTO {
         dto.setRating(feedback.getRating());
         dto.setComment(feedback.getComment());
         dto.setFeedbackDate(feedback.getCreatedAt());
-        
-        // Evitar problemas de lazy loading
         if (feedback.getOrder() != null) {
             dto.setOrderId(feedback.getOrder().getId());
         }
-        
         return dto;
     }
 }

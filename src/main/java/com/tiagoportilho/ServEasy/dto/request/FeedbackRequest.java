@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class FeedbackDto {
+public class FeedbackRequest {
+
     @NotBlank(message = "Nome do cliente é obrigatório")
     private String customerName;
 
@@ -19,6 +20,6 @@ public class FeedbackDto {
     @NotBlank(message = "Comentário é obrigatório")
     private String comment;
 
-    private Long orderId; // Opcional
-    private Integer tableNumber; // Opcional
+    private Long orderId;
+    private Integer tableNumber;
 }

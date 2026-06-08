@@ -1,9 +1,9 @@
 package com.tiagoportilho.ServEasy.controller.api;
 
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
-import com.tiagoportilho.ServEasy.dto.OrderRequest;
-import com.tiagoportilho.ServEasy.dto.OrderResponseDTO;
+import com.tiagoportilho.ServEasy.dto.request.OrderRequest;
 import com.tiagoportilho.ServEasy.dto.request.StatusUpdateRequest;
+import com.tiagoportilho.ServEasy.dto.response.OrderResponseDTO;
 import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.exception.ValidationException;
 import com.tiagoportilho.ServEasy.model.Order;

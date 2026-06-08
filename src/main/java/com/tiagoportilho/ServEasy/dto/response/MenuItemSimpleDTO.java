@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.response;
 
 import com.tiagoportilho.ServEasy.model.MenuItem;
 import lombok.AllArgsConstructor;

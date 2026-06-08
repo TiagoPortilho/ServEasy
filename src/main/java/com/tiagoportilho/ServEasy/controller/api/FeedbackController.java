@@ -1,8 +1,8 @@
 package com.tiagoportilho.ServEasy.controller.api;
 
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
-import com.tiagoportilho.ServEasy.dto.FeedbackDto;
-import com.tiagoportilho.ServEasy.dto.FeedbackResponseDTO;
+import com.tiagoportilho.ServEasy.dto.request.FeedbackRequest;
+import com.tiagoportilho.ServEasy.dto.response.FeedbackResponseDTO;
 import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.model.Feedback;
 import com.tiagoportilho.ServEasy.model.Order;
@@ -66,7 +66,7 @@ public class FeedbackController {
 
     @PostMapping
     @Operation(summary = "Enviar feedback", description = "Submete uma avaliação do cliente. Acesso público — não requer autenticação.")
-    public ResponseEntity<ApiResponse<FeedbackResponseDTO>> createFeedback(@Valid @RequestBody FeedbackDto feedbackDto) {
+    public ResponseEntity<ApiResponse<FeedbackResponseDTO>> createFeedback(@Valid @RequestBody FeedbackRequest feedbackDto) {
         Feedback feedback = new Feedback();
         feedback.setCustomerName(feedbackDto.getCustomerName());
         feedback.setRating(feedbackDto.getRating());
@@ -84,7 +84,7 @@ public class FeedbackController {
 
     @PostMapping("/simple")
     @Operation(summary = "Enviar feedback simplificado", description = "Submete avaliação sem associação com pedido. Acesso público.")
-    public ResponseEntity<ApiResponse<FeedbackResponseDTO>> createSimpleFeedback(@Valid @RequestBody FeedbackDto feedbackDto) {
+    public ResponseEntity<ApiResponse<FeedbackResponseDTO>> createSimpleFeedback(@Valid @RequestBody FeedbackRequest feedbackDto) {
         Feedback feedback = new Feedback();
         feedback.setCustomerName(feedbackDto.getCustomerName());
         feedback.setRating(feedbackDto.getRating());

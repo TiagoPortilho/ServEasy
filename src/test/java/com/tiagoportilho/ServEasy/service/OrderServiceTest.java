@@ -1,7 +1,7 @@
 package com.tiagoportilho.ServEasy.service;
 
-import com.tiagoportilho.ServEasy.dto.OrderRequest;
 import com.tiagoportilho.ServEasy.dto.request.OrderItemRequest;
+import com.tiagoportilho.ServEasy.dto.request.OrderRequest;
 import com.tiagoportilho.ServEasy.exception.BusinessException;
 import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.model.MenuItem;

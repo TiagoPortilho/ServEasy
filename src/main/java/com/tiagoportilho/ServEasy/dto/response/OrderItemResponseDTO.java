@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.response;
 
 import com.tiagoportilho.ServEasy.model.OrderItem;
 import lombok.AllArgsConstructor;
@@ -25,11 +25,9 @@ public class OrderItemResponseDTO {
         dto.setUnitPrice(orderItem.getUnitPrice());
         dto.setSubtotal(orderItem.getSubtotal());
         dto.setNotes(orderItem.getNotes());
-        
         if (orderItem.getMenuItem() != null) {
             dto.setMenuItem(MenuItemSimpleDTO.fromEntity(orderItem.getMenuItem()));
         }
-        
         return dto;
     }
 }

@@ -1,4 +1,4 @@
-package com.tiagoportilho.ServEasy.dto;
+package com.tiagoportilho.ServEasy.dto.response;
 
 import com.tiagoportilho.ServEasy.model.User;
 import lombok.AllArgsConstructor;
@@ -14,5 +14,5 @@ public class LoginResponse {
     private String redirectUrl;
     private User.UserRole role;
     private String username;
-    private String token; // JWT token
+    private String token;
 }

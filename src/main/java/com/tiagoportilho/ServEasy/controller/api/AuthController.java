@@ -1,8 +1,8 @@
 package com.tiagoportilho.ServEasy.controller.api;
 
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
-import com.tiagoportilho.ServEasy.dto.LoginRequest;
-import com.tiagoportilho.ServEasy.dto.LoginResponse;
+import com.tiagoportilho.ServEasy.dto.request.LoginRequest;
+import com.tiagoportilho.ServEasy.dto.response.LoginResponse;
 import com.tiagoportilho.ServEasy.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

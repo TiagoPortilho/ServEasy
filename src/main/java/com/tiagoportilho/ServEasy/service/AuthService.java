@@ -1,7 +1,7 @@
 package com.tiagoportilho.ServEasy.service;
 
-import com.tiagoportilho.ServEasy.dto.LoginRequest;
-import com.tiagoportilho.ServEasy.dto.LoginResponse;
+import com.tiagoportilho.ServEasy.dto.request.LoginRequest;
+import com.tiagoportilho.ServEasy.dto.response.LoginResponse;
 import com.tiagoportilho.ServEasy.exception.BusinessException;
 import com.tiagoportilho.ServEasy.model.User;
 import com.tiagoportilho.ServEasy.repository.UserRepository;
