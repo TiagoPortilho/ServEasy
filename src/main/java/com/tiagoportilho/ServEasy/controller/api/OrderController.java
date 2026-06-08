@@ -3,6 +3,7 @@ package com.tiagoportilho.ServEasy.controller.api;
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
 import com.tiagoportilho.ServEasy.dto.OrderRequest;
 import com.tiagoportilho.ServEasy.dto.OrderResponseDTO;
+import com.tiagoportilho.ServEasy.dto.request.StatusUpdateRequest;
 import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.exception.ValidationException;
 import com.tiagoportilho.ServEasy.model.Order;
@@ -10,30 +11,29 @@ import com.tiagoportilho.ServEasy.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * Controller para gerenciamento de pedidos.
- */
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-@Slf4j
-@Tag(name = "Pedidos", description = "Gerenciamento de pedidos do restaurante")
+@Tag(name = "Pedidos", description = "Ciclo de vida dos pedidos: criação, acompanhamento e encerramento")
 public class OrderController {
 
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "Listar pedidos", description = "Retorna todos os pedidos ou filtra por status")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Listar pedidos", description = "Retorna todos os pedidos ou filtra por status (query param). Acessível por todos os papéis.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getAllOrders(
-            @Parameter(description = "Filtrar por status") @RequestParam(required = false) String status) {
+            @Parameter(description = "Filtrar por status: NOVO, EM_ANDAMENTO, PRONTO, ENTREGUE, CANCELADO", example = "NOVO")
+            @RequestParam(required = false) String status) {
         List<Order> orders;
         if (status != null && !status.isEmpty()) {
             try {
@@ -45,160 +45,129 @@ public class OrderController {
         } else {
             orders = orderService.getAllOrders();
         }
-        
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+        return ResponseEntity.ok(ApiResponse.success(orders.stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @GetMapping("/status/{status}")
-    @Operation(summary = "Buscar por status", description = "Retorna pedidos com um status específico")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Buscar por status", description = "Retorna pedidos com o status especificado.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getOrdersByStatus(
             @Parameter(description = "Status do pedido") @PathVariable Order.OrderStatus status) {
-        List<Order> orders = orderService.getOrdersByStatus(status);
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.getOrdersByStatus(status).stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @GetMapping("/new")
-    @Operation(summary = "Pedidos novos", description = "Retorna todos os pedidos com status NOVO")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO')")
+    @Operation(summary = "Pedidos novos", description = "Retorna pedidos com status NOVO. Uso exclusivo da cozinha e admin.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getNewOrders() {
-        List<Order> orders = orderService.getNewOrders();
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.getNewOrders().stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @GetMapping("/in-progress")
-    @Operation(summary = "Pedidos em andamento", description = "Retorna todos os pedidos com status EM_ANDAMENTO")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO')")
+    @Operation(summary = "Pedidos em andamento", description = "Retorna pedidos com status EM_ANDAMENTO.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getOrdersInProgress() {
-        List<Order> orders = orderService.getOrdersInProgress();
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.getOrdersInProgress().stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @GetMapping("/ready")
-    @Operation(summary = "Pedidos prontos", description = "Retorna todos os pedidos com status PRONTO")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Pedidos prontos", description = "Retorna pedidos com status PRONTO aguardando entrega.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getReadyOrders() {
-        List<Order> orders = orderService.getReadyOrders();
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.getReadyOrders().stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @GetMapping("/today")
-    @Operation(summary = "Pedidos de hoje", description = "Retorna todos os pedidos criados hoje")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Pedidos de hoje", description = "Retorna todos os pedidos criados hoje. Somente ADMIN.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getTodaysOrders() {
-        List<Order> orders = orderService.getTodaysOrders();
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.getTodaysOrders().stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar pedido por ID", description = "Retorna um pedido específico")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Buscar pedido por ID", description = "Retorna um pedido específico. Retorna 404 se não encontrado.")
     public ResponseEntity<ApiResponse<OrderResponseDTO>> getOrderById(
-            @Parameter(description = "ID do pedido") @PathVariable Long id) {
+            @Parameter(description = "ID do pedido", example = "42") @PathVariable Long id) {
         Order order = orderService.getOrderById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido", id));
-        OrderResponseDTO orderDTO = OrderResponseDTO.fromEntity(order);
-        return ResponseEntity.ok(ApiResponse.success(orderDTO));
+        return ResponseEntity.ok(ApiResponse.success(OrderResponseDTO.fromEntity(order)));
     }
 
     @GetMapping("/table/{tableNumber}")
-    @Operation(summary = "Pedidos por mesa", description = "Retorna todos os pedidos de uma mesa específica")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Pedidos por mesa", description = "Retorna todos os pedidos de uma mesa específica.")
     public ResponseEntity<ApiResponse<List<OrderResponseDTO>>> getOrdersByTable(
-            @Parameter(description = "Número da mesa") @PathVariable Integer tableNumber) {
-        List<Order> orders = orderService.getOrdersByTable(tableNumber);
-        List<OrderResponseDTO> orderDTOs = orders.stream()
-            .map(OrderResponseDTO::fromEntity)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success(orderDTOs));
+            @Parameter(description = "Número da mesa", example = "5") @PathVariable Integer tableNumber) {
+        return ResponseEntity.ok(ApiResponse.success(
+                orderService.getOrdersByTable(tableNumber).stream().map(OrderResponseDTO::fromEntity).toList()));
     }
 
     @PostMapping
-    @Operation(summary = "Criar pedido", description = "Cria um novo pedido")
-    public ResponseEntity<ApiResponse<OrderResponseDTO>> createOrder(@RequestBody OrderRequest orderRequest) {
-        Order createdOrder = orderService.createOrder(orderRequest);
-        OrderResponseDTO orderDTO = OrderResponseDTO.fromEntity(createdOrder);
-        log.info("Pedido criado com ID: {}", createdOrder.getId());
-        return ResponseEntity.ok(ApiResponse.success("Pedido criado com sucesso", orderDTO));
-    }
-
-    @PatchMapping("/{id}/status")
-    @Operation(summary = "Atualizar status", description = "Atualiza o status de um pedido")
-    public ResponseEntity<ApiResponse<Order>> updateOrderStatus(
-            @Parameter(description = "ID do pedido") @PathVariable Long id, 
-            @Parameter(description = "Novo status") @RequestParam Order.OrderStatus status) {
-        Order updatedOrder = orderService.updateOrderStatus(id, status);
-        log.info("Status do pedido {} atualizado para {}", id, status);
-        return ResponseEntity.ok(ApiResponse.success("Status atualizado com sucesso", updatedOrder));
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Criar pedido",
+            description = "Cria um novo pedido para uma mesa OCUPADA. Requer CLIENTE_ATENDENTE ou ADMIN. " +
+                    "Retorna 409 se a mesa não estiver ocupada ou o item não estiver disponível.")
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
+        Order created = orderService.createOrder(orderRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Pedido criado com sucesso", OrderResponseDTO.fromEntity(created)));
     }
 
     @PatchMapping("/{id}/start")
-    @Operation(summary = "Iniciar pedido", description = "Marca o pedido como em andamento")
-    public ResponseEntity<ApiResponse<Order>> startOrder(
-            @Parameter(description = "ID do pedido") @PathVariable Long id) {
-        Order updatedOrder = orderService.markAsInProgress(id);
-        log.info("Pedido {} iniciado", id);
-        return ResponseEntity.ok(ApiResponse.success("Pedido iniciado", updatedOrder));
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO')")
+    @Operation(summary = "Iniciar preparo", description = "Transição NOVO → EM_ANDAMENTO. Requer COZINHEIRO ou ADMIN.")
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> startOrder(
+            @Parameter(description = "ID do pedido", example = "42") @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Pedido iniciado",
+                OrderResponseDTO.fromEntity(orderService.markAsInProgress(id))));
     }
 
     @PatchMapping("/{id}/ready")
-    @Operation(summary = "Marcar como pronto", description = "Marca o pedido como pronto para entrega")
-    public ResponseEntity<ApiResponse<Order>> markAsReady(
-            @Parameter(description = "ID do pedido") @PathVariable Long id) {
-        Order updatedOrder = orderService.markAsReady(id);
-        log.info("Pedido {} marcado como pronto", id);
-        return ResponseEntity.ok(ApiResponse.success("Pedido marcado como pronto", updatedOrder));
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO')")
+    @Operation(summary = "Marcar como pronto", description = "Transição EM_ANDAMENTO → PRONTO. Requer COZINHEIRO ou ADMIN.")
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> markAsReady(
+            @Parameter(description = "ID do pedido", example = "42") @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Pedido pronto",
+                OrderResponseDTO.fromEntity(orderService.markAsReady(id))));
     }
 
     @PatchMapping("/{id}/deliver")
-    @Operation(summary = "Marcar como entregue", description = "Marca o pedido como entregue ao cliente")
-    public ResponseEntity<ApiResponse<Order>> markAsDelivered(
-            @Parameter(description = "ID do pedido") @PathVariable Long id) {
-        Order updatedOrder = orderService.markAsDelivered(id);
-        log.info("Pedido {} entregue", id);
-        return ResponseEntity.ok(ApiResponse.success("Pedido entregue", updatedOrder));
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Marcar como entregue", description = "Transição PRONTO → ENTREGUE. Requer CLIENTE_ATENDENTE ou ADMIN.")
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> markAsDelivered(
+            @Parameter(description = "ID do pedido", example = "42") @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Pedido entregue",
+                OrderResponseDTO.fromEntity(orderService.markAsDelivered(id))));
     }
 
     @PatchMapping("/{id}/cancel")
-    @Operation(summary = "Cancelar pedido", description = "Cancela um pedido")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Cancelar pedido", description = "Cancela o pedido. Retorna 409 se já entregue ou cancelado.")
     public ResponseEntity<ApiResponse<Void>> cancelOrder(
-            @Parameter(description = "ID do pedido") @PathVariable Long id) {
+            @Parameter(description = "ID do pedido", example = "42") @PathVariable Long id) {
         orderService.cancelOrder(id);
-        log.info("Pedido {} cancelado", id);
         return ResponseEntity.ok(ApiResponse.success("Pedido cancelado", null));
     }
 
     @PutMapping("/{id}/status")
-    @Operation(summary = "Atualizar status (body)", description = "Atualiza o status de um pedido via body")
+    @PreAuthorize("hasAnyRole('ADMIN','COZINHEIRO','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Atualizar status via body",
+            description = "Atualiza o status do pedido. Body: {\"status\": \"EM_ANDAMENTO\"}. Retorna 409 para transições inválidas.")
     public ResponseEntity<ApiResponse<OrderResponseDTO>> updateOrderStatus(
-            @Parameter(description = "ID do pedido") @PathVariable Long id, 
-            @RequestBody StatusUpdateRequest request) {
+            @Parameter(description = "ID do pedido", example = "42") @PathVariable Long id,
+            @Valid @RequestBody StatusUpdateRequest request) {
         try {
             Order.OrderStatus newStatus = Order.OrderStatus.valueOf(request.getStatus().toUpperCase());
-            Order updatedOrder = orderService.updateOrderStatus(id, newStatus);
-            OrderResponseDTO responseDTO = OrderResponseDTO.fromEntity(updatedOrder);
-            log.info("Status do pedido {} atualizado para {}", id, newStatus);
-            return ResponseEntity.ok(ApiResponse.success("Status atualizado", responseDTO));
+            return ResponseEntity.ok(ApiResponse.success("Status atualizado",
+                    OrderResponseDTO.fromEntity(orderService.updateOrderStatus(id, newStatus))));
         } catch (IllegalArgumentException e) {
             throw new ValidationException("status", "Status inválido: " + request.getStatus());
         }
-    }
-
-    public static class StatusUpdateRequest {
-        private String status;
-        
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
     }
 }

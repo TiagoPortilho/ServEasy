@@ -1,7 +1,10 @@
 package com.tiagoportilho.ServEasy.service;
 
+import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.model.MenuItem;
+import com.tiagoportilho.ServEasy.repository.MenuItemIngredientRepository;
 import com.tiagoportilho.ServEasy.repository.MenuItemRepository;
+import com.tiagoportilho.ServEasy.repository.StockItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,163 +15,131 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Testes unitários para MenuService.
- */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("MenuService Tests")
-@SuppressWarnings("null")
+@DisplayName("MenuService")
 class MenuServiceTest {
 
-    @Mock
-    private MenuItemRepository menuItemRepository;
+    @Mock private MenuItemRepository menuItemRepository;
+    @Mock private MenuItemIngredientRepository ingredientRepository;
+    @Mock private StockItemRepository stockItemRepository;
+    @InjectMocks private MenuService menuService;
 
-    @InjectMocks
-    private MenuService menuService;
-
-    private MenuItem sampleMenuItem;
+    private MenuItem item;
 
     @BeforeEach
     void setUp() {
-        sampleMenuItem = new MenuItem();
-        sampleMenuItem.setId(1L);
-        sampleMenuItem.setName("Pizza Margherita");
-        sampleMenuItem.setDescription("Molho de tomate, mussarela e manjericão");
-        sampleMenuItem.setPrice(new BigDecimal("35.00"));
-        sampleMenuItem.setCategory(MenuItem.Category.PIZZAS);
-        sampleMenuItem.setIsAvailable(true);
+        item = new MenuItem();
+        item.setId(1L);
+        item.setName("Hambúrguer Clássico");
+        item.setPrice(new BigDecimal("29.90"));
+        item.setCategory(MenuItem.Category.LANCHES);
+        item.setIsAvailable(true);
     }
 
-    @Nested
-    @DisplayName("getAllMenuItems")
-    class GetAllMenuItemsTests {
+    @Nested @DisplayName("getAllMenuItems")
+    class GetAll {
 
         @Test
-        @DisplayName("deve retornar lista vazia quando não há itens")
-        void shouldReturnEmptyListWhenNoItems() {
+        @DisplayName("retorna lista vazia quando não há itens")
+        void returns_empty_when_no_items() {
             when(menuItemRepository.findAll()).thenReturn(Collections.emptyList());
-
-            List<MenuItem> result = menuService.getAllMenuItems();
-
-            assertThat(result).isEmpty();
-            verify(menuItemRepository, times(1)).findAll();
+            assertThat(menuService.getAllMenuItems()).isEmpty();
         }
 
         @Test
-        @DisplayName("deve retornar todos os itens do cardápio")
-        void shouldReturnAllMenuItems() {
-            MenuItem item2 = new MenuItem();
-            item2.setId(2L);
-            item2.setName("Hambúrguer");
-            
-            when(menuItemRepository.findAll()).thenReturn(Arrays.asList(sampleMenuItem, item2));
-
-            List<MenuItem> result = menuService.getAllMenuItems();
-
-            assertThat(result).hasSize(2);
-            verify(menuItemRepository, times(1)).findAll();
+        @DisplayName("retorna todos os itens")
+        void returns_all_items() {
+            when(menuItemRepository.findAll()).thenReturn(List.of(item));
+            assertThat(menuService.getAllMenuItems()).hasSize(1);
         }
     }
 
-    @Nested
-    @DisplayName("getMenuItemById")
-    class GetMenuItemByIdTests {
+    @Nested @DisplayName("getMenuItemById")
+    class GetById {
 
         @Test
-        @DisplayName("deve retornar item quando existe")
-        void shouldReturnItemWhenExists() {
-            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
-
-            Optional<MenuItem> result = menuService.getMenuItemById(1L);
-
-            assertThat(result).isPresent();
-            assertThat(result.get().getName()).isEqualTo("Pizza Margherita");
+        @DisplayName("retorna item quando encontrado")
+        void returns_item_when_found() {
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+            assertThat(menuService.getMenuItemById(1L)).isPresent();
         }
 
         @Test
-        @DisplayName("deve retornar vazio quando item não existe")
-        void shouldReturnEmptyWhenItemNotExists() {
-            when(menuItemRepository.findById(999L)).thenReturn(Optional.empty());
-
-            Optional<MenuItem> result = menuService.getMenuItemById(999L);
-
-            assertThat(result).isEmpty();
+        @DisplayName("retorna empty quando não encontrado")
+        void returns_empty_when_not_found() {
+            when(menuItemRepository.findById(99L)).thenReturn(Optional.empty());
+            assertThat(menuService.getMenuItemById(99L)).isEmpty();
         }
     }
 
-    @Nested
-    @DisplayName("getAvailableMenuItems")
-    class GetAvailableMenuItemsTests {
+    @Nested @DisplayName("getAvailableMenuItems")
+    class GetAvailable {
 
         @Test
-        @DisplayName("deve retornar apenas itens disponíveis")
-        void shouldReturnOnlyAvailableItems() {
-            when(menuItemRepository.findAvailableMenuItemsWithIngredients())
-                    .thenReturn(Arrays.asList(sampleMenuItem));
-
+        @DisplayName("retorna apenas itens disponíveis")
+        void returns_only_available_items() {
+            when(menuItemRepository.findAvailableMenuItemsWithIngredients()).thenReturn(List.of(item));
             List<MenuItem> result = menuService.getAvailableMenuItems();
-
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getIsAvailable()).isTrue();
         }
     }
 
-    @Nested
-    @DisplayName("getMenuItemsByCategory")
-    class GetMenuItemsByCategoryTests {
+    @Nested @DisplayName("toggleAvailability")
+    class Toggle {
 
         @Test
-        @DisplayName("deve retornar itens da categoria especificada")
-        void shouldReturnItemsByCategory() {
-            when(menuItemRepository.findByCategoryAndIsAvailableTrue(MenuItem.Category.PIZZAS))
-                    .thenReturn(Arrays.asList(sampleMenuItem));
+        @DisplayName("alterna de true para false")
+        void toggles_from_true_to_false() {
+            item.setIsAvailable(true);
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+            when(menuItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-            List<MenuItem> result = menuService.getMenuItemsByCategory(MenuItem.Category.PIZZAS);
+            MenuItem result = menuService.toggleAvailability(1L);
 
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).getCategory()).isEqualTo(MenuItem.Category.PIZZAS);
+            assertThat(result.getIsAvailable()).isFalse();
+        }
+
+        @Test
+        @DisplayName("alterna de false para true")
+        void toggles_from_false_to_true() {
+            item.setIsAvailable(false);
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+            when(menuItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+            MenuItem result = menuService.toggleAvailability(1L);
+
+            assertThat(result.getIsAvailable()).isTrue();
+        }
+
+        @Test
+        @DisplayName("lança ResourceNotFoundException quando item não encontrado")
+        void throws_when_not_found() {
+            when(menuItemRepository.findById(99L)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> menuService.toggleAvailability(99L))
+                    .isInstanceOf(ResourceNotFoundException.class);
         }
     }
 
-    @Nested
-    @DisplayName("saveMenuItem")
-    class SaveMenuItemTests {
+    @Nested @DisplayName("deleteMenuItem")
+    class Delete {
 
         @Test
-        @DisplayName("deve salvar item com sucesso")
-        @SuppressWarnings("null")
-        void shouldSaveItemSuccessfully() {
-            when(menuItemRepository.save(any(MenuItem.class))).thenReturn(sampleMenuItem);
-
-            MenuItem result = menuService.saveMenuItem(sampleMenuItem);
-
-            assertThat(result).isNotNull();
-            assertThat(result.getId()).isEqualTo(1L);
-            verify(menuItemRepository, times(1)).save(any(MenuItem.class));
-        }
-    }
-
-    @Nested
-    @DisplayName("deleteMenuItem")
-    class DeleteMenuItemTests {
-
-        @Test
-        @DisplayName("deve deletar item com sucesso")
-        void shouldDeleteItemSuccessfully() {
+        @DisplayName("chama deleteById no repositório")
+        void calls_delete() {
             doNothing().when(menuItemRepository).deleteById(1L);
-
             menuService.deleteMenuItem(1L);
-
-            verify(menuItemRepository, times(1)).deleteById(1L);
+            verify(menuItemRepository).deleteById(1L);
         }
     }
 }

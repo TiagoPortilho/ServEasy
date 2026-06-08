@@ -69,7 +69,6 @@ public class SecurityConfig {
                 // Recursos estáticos
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/styles/**", "/scripts/**").permitAll()
                 .requestMatchers("/webjars/**", "/favicon.ico").permitAll()
-                .requestMatchers("*.css", "*.js", "*.png", "*.jpg", "*.gif", "*.svg").permitAll()
                 
                 // Páginas HTML - acesso livre (a autenticação é feita via JavaScript nas APIs)
                 .requestMatchers("/admin/**", "/cozinheiro/**", "/cliente-atendente/**").permitAll()
@@ -114,7 +113,7 @@ public class SecurityConfig {
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

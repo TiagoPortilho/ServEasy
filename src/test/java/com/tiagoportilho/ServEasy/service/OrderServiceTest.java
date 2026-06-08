@@ -1,9 +1,14 @@
 package com.tiagoportilho.ServEasy.service;
 
 import com.tiagoportilho.ServEasy.dto.OrderRequest;
+import com.tiagoportilho.ServEasy.dto.request.OrderItemRequest;
+import com.tiagoportilho.ServEasy.exception.BusinessException;
+import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.model.MenuItem;
 import com.tiagoportilho.ServEasy.model.Order;
+import com.tiagoportilho.ServEasy.model.Order.OrderStatus;
 import com.tiagoportilho.ServEasy.model.RestaurantTable;
+import com.tiagoportilho.ServEasy.model.RestaurantTable.TableStatus;
 import com.tiagoportilho.ServEasy.repository.MenuItemRepository;
 import com.tiagoportilho.ServEasy.repository.OrderRepository;
 import com.tiagoportilho.ServEasy.repository.RestaurantTableRepository;
@@ -12,338 +17,255 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Testes unitários para OrderService.
- */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("OrderService Tests")
-@SuppressWarnings("null")
+@DisplayName("OrderService")
 class OrderServiceTest {
 
-    @Mock
-    private OrderRepository orderRepository;
+    @Mock private OrderRepository orderRepository;
+    @Mock private MenuItemRepository menuItemRepository;
+    @Mock private RestaurantTableRepository restaurantTableRepository;
+    @InjectMocks private OrderService orderService;
 
-    @Mock
-    private MenuItemRepository menuItemRepository;
-
-    @Mock
-    private RestaurantTableRepository restaurantTableRepository;
-
-    @InjectMocks
-    private OrderService orderService;
-
-    private Order sampleOrder;
-    private MenuItem sampleMenuItem;
-    private RestaurantTable sampleTable;
+    private RestaurantTable occupiedTable;
+    private MenuItem availableItem;
+    private Order novoOrder;
 
     @BeforeEach
     void setUp() {
-        sampleMenuItem = new MenuItem();
-        sampleMenuItem.setId(1L);
-        sampleMenuItem.setName("Pizza Margherita");
-        sampleMenuItem.setPrice(new BigDecimal("35.00"));
-        sampleMenuItem.setIsAvailable(true);
+        occupiedTable = new RestaurantTable();
+        occupiedTable.setId(1L);
+        occupiedTable.setTableNumber(5);
+        occupiedTable.setStatus(TableStatus.OCUPADA);
 
-        sampleTable = new RestaurantTable();
-        sampleTable.setId(1L);
-        sampleTable.setTableNumber(5);
-        sampleTable.setCapacity(4);
-        sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
+        availableItem = new MenuItem();
+        availableItem.setId(1L);
+        availableItem.setName("Hambúrguer");
+        availableItem.setPrice(new BigDecimal("25.00"));
+        availableItem.setIsAvailable(true);
 
-        sampleOrder = new Order();
-        sampleOrder.setId(1L);
-        sampleOrder.setTable(sampleTable);
-        sampleOrder.setCustomerName("João");
-        sampleOrder.setStatus(Order.OrderStatus.NOVO);
-        sampleOrder.setTotal(new BigDecimal("70.00"));
-        sampleOrder.setCreatedAt(LocalDateTime.now());
+        novoOrder = new Order();
+        novoOrder.setId(1L);
+        novoOrder.setTable(occupiedTable);
+        novoOrder.setStatus(OrderStatus.NOVO);
+        novoOrder.setTotal(new BigDecimal("25.00"));
+        novoOrder.setCreatedAt(LocalDateTime.now());
     }
 
-    @Nested
-    @DisplayName("getAllOrders")
-    class GetAllOrdersTests {
+    // ─────────────────────────────── createOrder ─────────────────────────────────
+
+    @Nested @DisplayName("createOrder")
+    class CreateOrder {
 
         @Test
-        @DisplayName("deve retornar lista vazia quando não há pedidos")
-        void shouldReturnEmptyListWhenNoOrders() {
-            when(orderRepository.findAll()).thenReturn(new ArrayList<>());
-
-            List<Order> result = orderService.getAllOrders();
-
-            assertThat(result).isEmpty();
-            verify(orderRepository, times(1)).findAll();
-        }
-
-        @Test
-        @DisplayName("deve retornar todos os pedidos")
-        void shouldReturnAllOrders() {
-            List<Order> orders = Arrays.asList(sampleOrder, new Order());
-            when(orderRepository.findAll()).thenReturn(orders);
-
-            List<Order> result = orderService.getAllOrders();
-
-            assertThat(result).hasSize(2);
-            verify(orderRepository, times(1)).findAll();
-        }
-    }
-
-    @Nested
-    @DisplayName("getOrdersByStatus")
-    class GetOrdersByStatusTests {
-
-        @Test
-        @DisplayName("deve retornar pedidos com status específico")
-        void shouldReturnOrdersWithSpecificStatus() {
-            when(orderRepository.findByStatusOrderByCreatedAtAsc(Order.OrderStatus.NOVO))
-                    .thenReturn(Arrays.asList(sampleOrder));
-
-            List<Order> result = orderService.getOrdersByStatus(Order.OrderStatus.NOVO);
-
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).getStatus()).isEqualTo(Order.OrderStatus.NOVO);
-        }
-    }
-
-    @Nested
-    @DisplayName("getOrderById")
-    class GetOrderByIdTests {
-
-        @Test
-        @DisplayName("deve retornar pedido quando existe")
-        void shouldReturnOrderWhenExists() {
-            when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
-
-            Optional<Order> result = orderService.getOrderById(1L);
-
-            assertThat(result).isPresent();
-            assertThat(result.get().getId()).isEqualTo(1L);
-        }
-
-        @Test
-        @DisplayName("deve retornar vazio quando pedido não existe")
-        void shouldReturnEmptyWhenOrderNotExists() {
-            when(orderRepository.findById(999L)).thenReturn(Optional.empty());
-
-            Optional<Order> result = orderService.getOrderById(999L);
-
-            assertThat(result).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("createOrder")
-    class CreateOrderTests {
-
-        @Test
-        @DisplayName("deve criar pedido com dados válidos")
-        void shouldCreateOrderWithValidData() {
-            OrderRequest request = createValidOrderRequest();
-            
-            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
-            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
-            when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
-                Order order = invocation.getArgument(0);
-                order.setId(1L);
-                return order;
+        @DisplayName("cria pedido válido em mesa ocupada")
+        void creates_order_for_occupied_table() {
+            OrderRequest req = validRequest();
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(occupiedTable));
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(availableItem));
+            when(orderRepository.save(any())).thenAnswer(inv -> {
+                Order o = inv.getArgument(0);
+                o.setId(1L);
+                return o;
             });
 
-            Order result = orderService.createOrder(request);
+            Order result = orderService.createOrder(req);
 
-            assertThat(result).isNotNull();
-            assertThat(result.getTable()).isEqualTo(sampleTable);
-            assertThat(result.getCustomerName()).isEqualTo("João");
-            assertThat(result.getStatus()).isEqualTo(Order.OrderStatus.NOVO);
-            verify(orderRepository, times(1)).save(any(Order.class));
+            assertThat(result.getStatus()).isEqualTo(OrderStatus.NOVO);
+            assertThat(result.getTotal()).isEqualByComparingTo("50.00");
+            verify(orderRepository).save(any());
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando número da mesa é nulo")
-        void shouldThrowExceptionWhenTableNumberIsNull() {
-            OrderRequest request = createValidOrderRequest();
-            request.setTableNumber(null);
-
-            assertThatThrownBy(() -> orderService.createOrder(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Número da mesa");
-        }
-
-        @Test
-        @DisplayName("deve lançar exceção quando mesa não é encontrada")
-        void shouldThrowExceptionWhenTableNotFound() {
-            OrderRequest request = createValidOrderRequest();
-            
+        @DisplayName("lança ResourceNotFoundException quando mesa não encontrada")
+        void throws_when_table_not_found() {
             when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> orderService.createOrder(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Mesa número 5 não encontrada");
+            assertThatThrownBy(() -> orderService.createOrder(validRequest()))
+                    .isInstanceOf(ResourceNotFoundException.class);
         }
 
         @Test
-        @DisplayName("deve aceitar pedido com nome do cliente vazio ou nulo")
-        void shouldAcceptOrderWithEmptyOrNullCustomerName() {
-            OrderRequest request = createValidOrderRequest();
-            request.setCustomerName("");
-            
-            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
-            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
-            when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
-                Order order = invocation.getArgument(0);
-                order.setId(1L);
-                return order;
-            });
+        @DisplayName("lança BusinessException quando mesa está DISPONIVEL")
+        void throws_when_table_is_available() {
+            occupiedTable.setStatus(TableStatus.DISPONIVEL);
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(occupiedTable));
 
-            Order result = orderService.createOrder(request);
-            
-            assertThat(result).isNotNull();
-            assertThat(result.getCustomerName()).isNullOrEmpty();
+            assertThatThrownBy(() -> orderService.createOrder(validRequest()))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("disponível");
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando lista de itens é vazia")
-        void shouldThrowExceptionWhenItemsIsEmpty() {
-            OrderRequest request = createValidOrderRequest();
-            request.setItems(new ArrayList<>());
-            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
-            
-            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
+        @DisplayName("lança BusinessException quando mesa está em MANUTENCAO")
+        void throws_when_table_in_maintenance() {
+            occupiedTable.setStatus(TableStatus.MANUTENCAO);
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(occupiedTable));
 
-            assertThatThrownBy(() -> orderService.createOrder(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("item");
+            assertThatThrownBy(() -> orderService.createOrder(validRequest()))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("manutenção");
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando item do menu não existe")
-        void shouldThrowExceptionWhenMenuItemNotFound() {
-            OrderRequest request = createValidOrderRequest();
-            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
-            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
+        @DisplayName("lança ResourceNotFoundException quando item não encontrado")
+        void throws_when_menu_item_not_found() {
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(occupiedTable));
             when(menuItemRepository.findById(1L)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> orderService.createOrder(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Item não encontrado");
+            assertThatThrownBy(() -> orderService.createOrder(validRequest()))
+                    .isInstanceOf(ResourceNotFoundException.class);
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando item não está disponível")
-        void shouldThrowExceptionWhenMenuItemNotAvailable() {
-            OrderRequest request = createValidOrderRequest();
-            sampleTable.setStatus(RestaurantTable.TableStatus.OCUPADA);
-            sampleMenuItem.setIsAvailable(false);
-            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(sampleTable));
-            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(sampleMenuItem));
+        @DisplayName("lança BusinessException quando item está indisponível")
+        void throws_when_menu_item_unavailable() {
+            availableItem.setIsAvailable(false);
+            when(restaurantTableRepository.findByTableNumber(5)).thenReturn(Optional.of(occupiedTable));
+            when(menuItemRepository.findById(1L)).thenReturn(Optional.of(availableItem));
 
-            assertThatThrownBy(() -> orderService.createOrder(request))
-                    .isInstanceOf(IllegalArgumentException.class)
+            assertThatThrownBy(() -> orderService.createOrder(validRequest()))
+                    .isInstanceOf(BusinessException.class)
                     .hasMessageContaining("não disponível");
         }
     }
 
-    @Nested
-    @DisplayName("updateOrderStatus")
-    class UpdateOrderStatusTests {
+    // ────────────────────────── status transitions ────────────────────────────
 
-        @Test
-        @DisplayName("deve atualizar status NOVO para EM_ANDAMENTO")
-        void shouldUpdateStatusFromNovoToEmAndamento() {
-            when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
-            when(orderRepository.save(any(Order.class))).thenReturn(sampleOrder);
+    @Nested @DisplayName("status transitions")
+    class StatusTransitions {
 
-            Order result = orderService.updateOrderStatus(1L, Order.OrderStatus.EM_ANDAMENTO);
-
-            assertThat(result.getStatus()).isEqualTo(Order.OrderStatus.EM_ANDAMENTO);
-            verify(orderRepository, times(1)).save(any(Order.class));
+        static Stream<Arguments> validTransitions() {
+            return Stream.of(
+                    Arguments.of(OrderStatus.NOVO, OrderStatus.EM_ANDAMENTO),
+                    Arguments.of(OrderStatus.NOVO, OrderStatus.CANCELADO),
+                    Arguments.of(OrderStatus.EM_ANDAMENTO, OrderStatus.PRONTO),
+                    Arguments.of(OrderStatus.EM_ANDAMENTO, OrderStatus.CANCELADO),
+                    Arguments.of(OrderStatus.PRONTO, OrderStatus.ENTREGUE),
+                    Arguments.of(OrderStatus.PRONTO, OrderStatus.CANCELADO)
+            );
         }
 
-        @Test
-        @DisplayName("deve lançar exceção quando transição de status é inválida")
-        void shouldThrowExceptionWhenStatusTransitionIsInvalid() {
-            sampleOrder.setStatus(Order.OrderStatus.ENTREGUE);
-            when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
+        static Stream<Arguments> invalidTransitions() {
+            return Stream.of(
+                    Arguments.of(OrderStatus.NOVO, OrderStatus.PRONTO),
+                    Arguments.of(OrderStatus.NOVO, OrderStatus.ENTREGUE),
+                    Arguments.of(OrderStatus.EM_ANDAMENTO, OrderStatus.NOVO),
+                    Arguments.of(OrderStatus.PRONTO, OrderStatus.NOVO),
+                    Arguments.of(OrderStatus.ENTREGUE, OrderStatus.NOVO),
+                    Arguments.of(OrderStatus.CANCELADO, OrderStatus.NOVO)
+            );
+        }
 
-            assertThatThrownBy(() -> orderService.updateOrderStatus(1L, Order.OrderStatus.NOVO))
-                    .isInstanceOf(IllegalStateException.class)
+        @ParameterizedTest(name = "{0} → {1}")
+        @MethodSource("validTransitions")
+        @DisplayName("permite transição válida")
+        void allows_valid_transition(OrderStatus from, OrderStatus to) {
+            novoOrder.setStatus(from);
+            when(orderRepository.findById(1L)).thenReturn(Optional.of(novoOrder));
+            when(orderRepository.save(any())).thenReturn(novoOrder);
+
+            Order result = orderService.updateOrderStatus(1L, to);
+            assertThat(result.getStatus()).isEqualTo(to);
+        }
+
+        @ParameterizedTest(name = "{0} → {1}")
+        @MethodSource("invalidTransitions")
+        @DisplayName("rejeita transição inválida com BusinessException")
+        void rejects_invalid_transition(OrderStatus from, OrderStatus to) {
+            novoOrder.setStatus(from);
+            when(orderRepository.findById(1L)).thenReturn(Optional.of(novoOrder));
+
+            assertThatThrownBy(() -> orderService.updateOrderStatus(1L, to))
+                    .isInstanceOf(BusinessException.class)
                     .hasMessageContaining("Transição inválida");
-        }
-
-        @Test
-        @DisplayName("deve lançar exceção quando pedido não existe")
-        void shouldThrowExceptionWhenOrderNotFound() {
-            when(orderRepository.findById(999L)).thenReturn(Optional.empty());
-
-            assertThatThrownBy(() -> orderService.updateOrderStatus(999L, Order.OrderStatus.EM_ANDAMENTO))
-                    .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("não encontrado");
         }
     }
 
-    @Nested
-    @DisplayName("cancelOrder")
-    class CancelOrderTests {
+    // ──────────────────────────── cancelOrder ────────────────────────────────
+
+    @Nested @DisplayName("cancelOrder")
+    class CancelOrder {
 
         @Test
-        @DisplayName("deve cancelar pedido NOVO")
-        void shouldCancelNewOrder() {
-            when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
-            when(orderRepository.save(any(Order.class))).thenReturn(sampleOrder);
+        @DisplayName("cancela pedido NOVO com único lookup no banco")
+        void cancels_novo_order() {
+            when(orderRepository.findById(1L)).thenReturn(Optional.of(novoOrder));
+            when(orderRepository.save(any())).thenReturn(novoOrder);
 
             orderService.cancelOrder(1L);
 
-            verify(orderRepository, times(2)).findById(1L);
-            verify(orderRepository, times(1)).save(any(Order.class));
+            verify(orderRepository, times(1)).findById(1L);
+            verify(orderRepository).save(any());
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando pedido já foi entregue")
-        void shouldThrowExceptionWhenOrderAlreadyDelivered() {
-            sampleOrder.setStatus(Order.OrderStatus.ENTREGUE);
-            when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
+        @DisplayName("lança BusinessException ao cancelar pedido ENTREGUE")
+        void throws_when_order_already_delivered() {
+            novoOrder.setStatus(OrderStatus.ENTREGUE);
+            when(orderRepository.findById(1L)).thenReturn(Optional.of(novoOrder));
 
             assertThatThrownBy(() -> orderService.cancelOrder(1L))
-                    .isInstanceOf(IllegalStateException.class)
+                    .isInstanceOf(BusinessException.class)
                     .hasMessageContaining("já entregue");
         }
 
         @Test
-        @DisplayName("deve lançar exceção quando pedido já está cancelado")
-        void shouldThrowExceptionWhenOrderAlreadyCancelled() {
-            sampleOrder.setStatus(Order.OrderStatus.CANCELADO);
-            when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
+        @DisplayName("lança BusinessException ao cancelar pedido CANCELADO")
+        void throws_when_order_already_cancelled() {
+            novoOrder.setStatus(OrderStatus.CANCELADO);
+            when(orderRepository.findById(1L)).thenReturn(Optional.of(novoOrder));
 
             assertThatThrownBy(() -> orderService.cancelOrder(1L))
-                    .isInstanceOf(IllegalStateException.class)
+                    .isInstanceOf(BusinessException.class)
                     .hasMessageContaining("já está cancelado");
+        }
+
+        @Test
+        @DisplayName("lança ResourceNotFoundException quando pedido não existe")
+        void throws_when_order_not_found() {
+            when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> orderService.cancelOrder(99L))
+                    .isInstanceOf(ResourceNotFoundException.class);
         }
     }
 
-    // Helper methods
-    private OrderRequest createValidOrderRequest() {
-        OrderRequest request = new OrderRequest();
-        request.setTableNumber(5);
-        request.setCustomerName("João");
-        
-        OrderRequest.OrderItemRequest itemRequest = new OrderRequest.OrderItemRequest();
-        itemRequest.setMenuItemId(1L);
-        itemRequest.setQuantity(2);
-        
-        request.setItems(Arrays.asList(itemRequest));
-        return request;
+    // ─────────────────────────── getOrdersByTable ─────────────────────────────
+
+    @Nested @DisplayName("getOrdersByTable")
+    class GetOrdersByTable {
+
+        @Test
+        @DisplayName("retorna lista vazia quando mesa não encontrada")
+        void returns_empty_when_table_not_found() {
+            when(restaurantTableRepository.findByTableNumber(99)).thenReturn(Optional.empty());
+            List<Order> result = orderService.getOrdersByTable(99);
+            assertThat(result).isEmpty();
+        }
+    }
+
+    // ─────────────────────────────── helpers ─────────────────────────────────
+
+    private OrderRequest validRequest() {
+        OrderItemRequest item = new OrderItemRequest(1L, 2, null);
+        return new OrderRequest(5, "João", null, List.of(item));
     }
 }

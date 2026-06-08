@@ -1,14 +1,19 @@
 package com.tiagoportilho.ServEasy.service;
 
 import com.tiagoportilho.ServEasy.dto.OrderRequest;
+import com.tiagoportilho.ServEasy.dto.request.OrderItemRequest;
+import com.tiagoportilho.ServEasy.exception.BusinessException;
+import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.model.MenuItem;
 import com.tiagoportilho.ServEasy.model.Order;
+import com.tiagoportilho.ServEasy.model.Order.OrderStatus;
 import com.tiagoportilho.ServEasy.model.OrderItem;
 import com.tiagoportilho.ServEasy.model.RestaurantTable;
 import com.tiagoportilho.ServEasy.repository.MenuItemRepository;
 import com.tiagoportilho.ServEasy.repository.OrderRepository;
 import com.tiagoportilho.ServEasy.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,46 +25,50 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class OrderService {
-    
+
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final RestaurantTableRepository restaurantTableRepository;
 
+    @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    public List<Order> getOrdersByStatus(Order.OrderStatus status) {
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByStatus(OrderStatus status) {
         return orderRepository.findByStatusOrderByCreatedAtAsc(status);
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getNewOrders() {
-        return orderRepository.findByStatusOrderByCreatedAtAsc(Order.OrderStatus.NOVO);
+        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.NOVO);
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getOrdersInProgress() {
-        return orderRepository.findByStatusOrderByCreatedAtAsc(Order.OrderStatus.EM_ANDAMENTO);
+        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.EM_ANDAMENTO);
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getReadyOrders() {
-        return orderRepository.findByStatusOrderByCreatedAtAsc(Order.OrderStatus.PRONTO);
+        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.PRONTO);
     }
 
-    @SuppressWarnings("null")
+    @Transactional(readOnly = true)
     public Optional<Order> getOrderById(Long id) {
         return orderRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getOrdersByTable(Integer tableNumber) {
-        Optional<RestaurantTable> tableOpt = restaurantTableRepository.findByTableNumber(tableNumber);
-        if (tableOpt.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return orderRepository.findByTable(tableOpt.get());
+        return restaurantTableRepository.findByTableNumber(tableNumber)
+                .map(orderRepository::findByTable)
+                .orElse(new ArrayList<>());
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getTodaysOrders() {
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
@@ -68,164 +77,113 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
-        // Validar dados de entrada obrigatórios
-        if (orderRequest.getTableNumber() == null || orderRequest.getTableNumber() <= 0) {
-            throw new IllegalArgumentException("Número da mesa é obrigatório e deve ser maior que zero");
-        }
-        
-        // Verificar se a mesa existe
-        Optional<RestaurantTable> tableOpt = restaurantTableRepository.findByTableNumber(orderRequest.getTableNumber());
-        if (tableOpt.isEmpty()) {
-            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " não encontrada");
-        }
-        
-        RestaurantTable table = tableOpt.get();
-        
-        // Verificar se a mesa tem clientes (apenas mesa ocupada pode receber pedidos)
+        RestaurantTable table = restaurantTableRepository.findByTableNumber(orderRequest.getTableNumber())
+                .orElseThrow(() -> new ResourceNotFoundException("Mesa", "número " + orderRequest.getTableNumber()));
+
         if (table.getStatus() == RestaurantTable.TableStatus.DISPONIVEL) {
-            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " está disponível - não há clientes para atender");
+            throw new BusinessException("Mesa número " + orderRequest.getTableNumber() + " está disponível — não há clientes para atender",
+                    HttpStatus.CONFLICT, "TABLE_NOT_OCCUPIED");
         }
-        
         if (table.getStatus() == RestaurantTable.TableStatus.MANUTENCAO) {
-            throw new IllegalArgumentException("Mesa número " + orderRequest.getTableNumber() + " está em manutenção");
-        }
-        
-        // Mesa OCUPADA pode receber pedidos - tem clientes esperando
-        
-        if (orderRequest.getItems() == null || orderRequest.getItems().isEmpty()) {
-            throw new IllegalArgumentException("Pelo menos um item deve ser adicionado ao pedido");
+            throw new BusinessException("Mesa número " + orderRequest.getTableNumber() + " está em manutenção",
+                    HttpStatus.CONFLICT, "TABLE_IN_MAINTENANCE");
         }
 
         Order order = new Order();
         order.setTable(table);
         order.setCustomerName(orderRequest.getCustomerName() != null ? orderRequest.getCustomerName().trim() : null);
         order.setNotes(orderRequest.getObservations());
-        order.setStatus(Order.OrderStatus.NOVO);
+        order.setStatus(OrderStatus.NOVO);
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
-        int validItemsCount = 0;
 
-        for (OrderRequest.OrderItemRequest itemRequest : orderRequest.getItems()) {
-            // 🔧 BUG FIX: Validar quantidade positiva
-            if (itemRequest.getQuantity() == null || itemRequest.getQuantity() <= 0) {
-                throw new IllegalArgumentException(
-                    "Quantidade deve ser maior que zero para o item ID: " + itemRequest.getMenuItemId());
-            }
-            
-            @SuppressWarnings("null")
-            Optional<MenuItem> menuItemOpt = menuItemRepository.findById(itemRequest.getMenuItemId());
-            if (menuItemOpt.isPresent()) {
-                MenuItem menuItem = menuItemOpt.get();
-                
-                // 🔧 BUG FIX: Verificar se o item está disponível
-                if (menuItem.getIsAvailable() == null || !menuItem.getIsAvailable()) {
-                    throw new IllegalArgumentException(
-                        "Item não disponível: " + menuItem.getName());
-                }
-                
-                OrderItem orderItem = new OrderItem();
-                orderItem.setOrder(order);
-                orderItem.setMenuItem(menuItem);
-                orderItem.setQuantity(itemRequest.getQuantity());
-                orderItem.setUnitPrice(menuItem.getPrice());
-                orderItem.setNotes(itemRequest.getNotes());
-                
-                BigDecimal subtotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
-                orderItem.setSubtotal(subtotal);
-                total = total.add(subtotal);
-                
-                orderItems.add(orderItem);
-                validItemsCount++;
-            } else {
-                throw new IllegalArgumentException(
-                    "Item não encontrado no cardápio com ID: " + itemRequest.getMenuItemId());
-            }
-        }
+        for (OrderItemRequest itemRequest : orderRequest.getItems()) {
+            MenuItem menuItem = menuItemRepository.findById(itemRequest.getMenuItemId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Item do cardápio", itemRequest.getMenuItemId()));
 
-        // 🔧 BUG FIX: Garantir que pelo menos um item válido foi adicionado
-        if (validItemsCount == 0) {
-            throw new IllegalArgumentException("Nenhum item válido foi encontrado para criar o pedido");
+            if (Boolean.FALSE.equals(menuItem.getIsAvailable())) {
+                throw new BusinessException("Item não disponível: " + menuItem.getName(),
+                        HttpStatus.UNPROCESSABLE_ENTITY, "MENU_ITEM_UNAVAILABLE");
+            }
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setMenuItem(menuItem);
+            orderItem.setQuantity(itemRequest.getQuantity());
+            orderItem.setUnitPrice(menuItem.getPrice());
+            orderItem.setNotes(itemRequest.getNotes());
+
+            BigDecimal subtotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
+            orderItem.setSubtotal(subtotal);
+            total = total.add(subtotal);
+            orderItems.add(orderItem);
         }
 
         order.setItems(orderItems);
         order.setTotal(total);
-
         return orderRepository.save(order);
     }
 
-    @SuppressWarnings("null")
-    public Order updateOrderStatus(Long orderId, Order.OrderStatus newStatus) {
-        Optional<Order> orderOpt = orderRepository.findById(orderId);
-        if (orderOpt.isPresent()) {
-            Order order = orderOpt.get();
-            
-            // 🔧 BUG FIX: Validar transições de status permitidas
-            if (!isValidStatusTransition(order.getStatus(), newStatus)) {
-                throw new IllegalStateException(
-                    String.format("Transição inválida de %s para %s", 
-                        order.getStatus(), newStatus));
-            }
-            
-            order.setStatus(newStatus);
-            return orderRepository.save(order);
+    @Transactional
+    public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido", orderId));
+
+        if (!isValidStatusTransition(order.getStatus(), newStatus)) {
+            throw new BusinessException(
+                    String.format("Transição inválida: %s → %s", order.getStatus(), newStatus),
+                    HttpStatus.CONFLICT, "INVALID_STATUS_TRANSITION");
         }
-        throw new RuntimeException("Pedido não encontrado");
+
+        order.setStatus(newStatus);
+        return orderRepository.save(order);
     }
 
-    @SuppressWarnings("null")
+    @Transactional
     public void cancelOrder(Long orderId) {
-        // 🔧 BUG FIX: Verificar se pode cancelar antes de tentar
-        Optional<Order> orderOpt = orderRepository.findById(orderId);
-        if (orderOpt.isPresent()) {
-            Order order = orderOpt.get();
-            if (order.getStatus() == Order.OrderStatus.ENTREGUE) {
-                throw new IllegalStateException("Não é possível cancelar um pedido já entregue");
-            }
-            if (order.getStatus() == Order.OrderStatus.CANCELADO) {
-                throw new IllegalStateException("Pedido já está cancelado");
-            }
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido", orderId));
+
+        if (order.getStatus() == OrderStatus.ENTREGUE) {
+            throw new BusinessException("Não é possível cancelar um pedido já entregue",
+                    HttpStatus.CONFLICT, "ORDER_ALREADY_DELIVERED");
         }
-        updateOrderStatus(orderId, Order.OrderStatus.CANCELADO);
+        if (order.getStatus() == OrderStatus.CANCELADO) {
+            throw new BusinessException("Pedido já está cancelado",
+                    HttpStatus.CONFLICT, "ORDER_ALREADY_CANCELLED");
+        }
+
+        order.setStatus(OrderStatus.CANCELADO);
+        orderRepository.save(order);
     }
 
+    @Transactional
     public Order markAsInProgress(Long orderId) {
-        return updateOrderStatus(orderId, Order.OrderStatus.EM_ANDAMENTO);
+        return updateOrderStatus(orderId, OrderStatus.EM_ANDAMENTO);
     }
 
+    @Transactional
     public Order markAsReady(Long orderId) {
-        return updateOrderStatus(orderId, Order.OrderStatus.PRONTO);
+        return updateOrderStatus(orderId, OrderStatus.PRONTO);
     }
 
+    @Transactional
     public Order markAsDelivered(Long orderId) {
-        return updateOrderStatus(orderId, Order.OrderStatus.ENTREGUE);
+        return updateOrderStatus(orderId, OrderStatus.ENTREGUE);
     }
 
+    @Transactional
     public void deleteOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
-    
-    // 🔧 BUG FIX: Método para validar transições de status
-    private boolean isValidStatusTransition(Order.OrderStatus currentStatus, Order.OrderStatus newStatus) {
-        // Se é o mesmo status, permite
-        if (currentStatus == newStatus) {
-            return true;
-        }
-        
-        return switch (currentStatus) {
-            case NOVO -> newStatus == Order.OrderStatus.EM_ANDAMENTO || 
-                        newStatus == Order.OrderStatus.CANCELADO;
-            
-            case EM_ANDAMENTO -> newStatus == Order.OrderStatus.PRONTO || 
-                               newStatus == Order.OrderStatus.CANCELADO;
-            
-            case PRONTO -> newStatus == Order.OrderStatus.ENTREGUE || 
-                          newStatus == Order.OrderStatus.CANCELADO;
-            
-            case ENTREGUE -> false; // Pedidos entregues não podem mudar de status
-            
-            case CANCELADO -> false; // Pedidos cancelados não podem mudar de status
-            
+
+    private boolean isValidStatusTransition(OrderStatus current, OrderStatus next) {
+        if (current == next) return true;
+        return switch (current) {
+            case NOVO -> next == OrderStatus.EM_ANDAMENTO || next == OrderStatus.CANCELADO;
+            case EM_ANDAMENTO -> next == OrderStatus.PRONTO || next == OrderStatus.CANCELADO;
+            case PRONTO -> next == OrderStatus.ENTREGUE || next == OrderStatus.CANCELADO;
             default -> false;
         };
     }

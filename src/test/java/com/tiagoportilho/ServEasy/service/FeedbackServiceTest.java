@@ -14,21 +14,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Testes unitários para FeedbackService.
- */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("FeedbackService Tests")
-@SuppressWarnings("null")
+@DisplayName("FeedbackService")
 class FeedbackServiceTest {
 
     @Mock
@@ -38,7 +33,6 @@ class FeedbackServiceTest {
     private FeedbackService feedbackService;
 
     private Feedback sampleFeedback;
-    private Order sampleOrder;
 
     @BeforeEach
     void setUp() {
@@ -47,8 +41,8 @@ class FeedbackServiceTest {
         table.setTableNumber(5);
         table.setCapacity(4);
         table.setStatus(RestaurantTable.TableStatus.DISPONIVEL);
-        
-        sampleOrder = new Order();
+
+        Order sampleOrder = new Order();
         sampleOrder.setId(1L);
         sampleOrder.setTable(table);
         sampleOrder.setCustomerName("João");
@@ -64,43 +58,40 @@ class FeedbackServiceTest {
 
     @Nested
     @DisplayName("getAllFeedbacks")
-    class GetAllFeedbacksTests {
+    class GetAllFeedbacks {
 
         @Test
-        @DisplayName("deve retornar todos os feedbacks ordenados por data")
-        void shouldReturnAllFeedbacksOrderedByDate() {
+        @DisplayName("retorna todos os feedbacks ordenados por data")
+        void returns_all_feedbacks_ordered_by_date() {
             Feedback feedback2 = new Feedback();
             feedback2.setId(2L);
             feedback2.setRating(4);
-            
+
             when(feedbackRepository.findByOrderByCreatedAtDesc())
-                    .thenReturn(Arrays.asList(sampleFeedback, feedback2));
+                    .thenReturn(List.of(sampleFeedback, feedback2));
 
             List<Feedback> result = feedbackService.getAllFeedbacks();
 
             assertThat(result).hasSize(2);
-            verify(feedbackRepository, times(1)).findByOrderByCreatedAtDesc();
+            verify(feedbackRepository).findByOrderByCreatedAtDesc();
         }
 
         @Test
-        @DisplayName("deve retornar lista vazia quando não há feedbacks")
-        void shouldReturnEmptyListWhenNoFeedbacks() {
-            when(feedbackRepository.findByOrderByCreatedAtDesc())
-                    .thenReturn(Collections.emptyList());
+        @DisplayName("retorna lista vazia quando não há feedbacks")
+        void returns_empty_list_when_no_feedbacks() {
+            when(feedbackRepository.findByOrderByCreatedAtDesc()).thenReturn(Collections.emptyList());
 
-            List<Feedback> result = feedbackService.getAllFeedbacks();
-
-            assertThat(result).isEmpty();
+            assertThat(feedbackService.getAllFeedbacks()).isEmpty();
         }
     }
 
     @Nested
     @DisplayName("getFeedbackById")
-    class GetFeedbackByIdTests {
+    class GetFeedbackById {
 
         @Test
-        @DisplayName("deve retornar feedback quando existe")
-        void shouldReturnFeedbackWhenExists() {
+        @DisplayName("retorna feedback quando existe")
+        void returns_feedback_when_exists() {
             when(feedbackRepository.findById(1L)).thenReturn(Optional.of(sampleFeedback));
 
             Optional<Feedback> result = feedbackService.getFeedbackById(1L);
@@ -110,57 +101,53 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("deve retornar vazio quando feedback não existe")
-        void shouldReturnEmptyWhenFeedbackNotExists() {
+        @DisplayName("retorna vazio quando não existe")
+        void returns_empty_when_not_found() {
             when(feedbackRepository.findById(999L)).thenReturn(Optional.empty());
 
-            Optional<Feedback> result = feedbackService.getFeedbackById(999L);
-
-            assertThat(result).isEmpty();
+            assertThat(feedbackService.getFeedbackById(999L)).isEmpty();
         }
     }
 
     @Nested
     @DisplayName("saveFeedback")
-    class SaveFeedbackTests {
+    class SaveFeedback {
 
         @Test
-        @DisplayName("deve salvar feedback com sucesso")
-        void shouldSaveFeedbackSuccessfully() {
+        @DisplayName("persiste e retorna o feedback salvo")
+        void saves_and_returns_feedback() {
             when(feedbackRepository.save(any(Feedback.class))).thenReturn(sampleFeedback);
 
             Feedback result = feedbackService.saveFeedback(sampleFeedback);
 
-            assertThat(result).isNotNull();
             assertThat(result.getId()).isEqualTo(1L);
-            verify(feedbackRepository, times(1)).save(any(Feedback.class));
+            verify(feedbackRepository).save(any(Feedback.class));
         }
     }
 
     @Nested
     @DisplayName("deleteFeedback")
-    class DeleteFeedbackTests {
+    class DeleteFeedback {
 
         @Test
-        @DisplayName("deve deletar feedback com sucesso")
-        void shouldDeleteFeedbackSuccessfully() {
+        @DisplayName("delega deleção ao repositório")
+        void delegates_to_repository() {
             doNothing().when(feedbackRepository).deleteById(1L);
 
             feedbackService.deleteFeedback(1L);
 
-            verify(feedbackRepository, times(1)).deleteById(1L);
+            verify(feedbackRepository).deleteById(1L);
         }
     }
 
     @Nested
     @DisplayName("getFeedbacksByRating")
-    class GetFeedbacksByRatingTests {
+    class GetFeedbacksByRating {
 
         @Test
-        @DisplayName("deve retornar feedbacks com rating específico")
-        void shouldReturnFeedbacksWithSpecificRating() {
-            when(feedbackRepository.findByRating(5))
-                    .thenReturn(Arrays.asList(sampleFeedback));
+        @DisplayName("retorna feedbacks com rating específico")
+        void returns_feedbacks_with_specific_rating() {
+            when(feedbackRepository.findByRating(5)).thenReturn(List.of(sampleFeedback));
 
             List<Feedback> result = feedbackService.getFeedbacksByRating(5);
 
@@ -169,56 +156,45 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("deve retornar lista vazia quando não há feedbacks com o rating")
-        void shouldReturnEmptyListWhenNoFeedbacksWithRating() {
-            when(feedbackRepository.findByRating(1))
-                    .thenReturn(Collections.emptyList());
+        @DisplayName("retorna lista vazia quando não há feedbacks com o rating")
+        void returns_empty_when_no_matching_rating() {
+            when(feedbackRepository.findByRating(1)).thenReturn(Collections.emptyList());
 
-            List<Feedback> result = feedbackService.getFeedbacksByRating(1);
-
-            assertThat(result).isEmpty();
+            assertThat(feedbackService.getFeedbacksByRating(1)).isEmpty();
         }
     }
 
     @Nested
     @DisplayName("getAverageRating")
-    class GetAverageRatingTests {
+    class GetAverageRating {
 
         @Test
-        @DisplayName("deve calcular média corretamente")
-        void shouldCalculateAverageCorrectly() {
-            Feedback feedback2 = new Feedback();
-            feedback2.setRating(4);
-            
-            Feedback feedback3 = new Feedback();
-            feedback3.setRating(3);
-            
-            when(feedbackRepository.findAll())
-                    .thenReturn(Arrays.asList(sampleFeedback, feedback2, feedback3));
+        @DisplayName("calcula média corretamente com múltiplos feedbacks")
+        void calculates_average_correctly() {
+            Feedback f2 = new Feedback();
+            f2.setRating(4);
+            Feedback f3 = new Feedback();
+            f3.setRating(3);
 
-            double result = feedbackService.getAverageRating();
+            when(feedbackRepository.findAll()).thenReturn(List.of(sampleFeedback, f2, f3));
 
-            assertThat(result).isEqualTo(4.0); // (5 + 4 + 3) / 3 = 4.0
+            assertThat(feedbackService.getAverageRating()).isEqualTo(4.0); // (5 + 4 + 3) / 3
         }
 
         @Test
-        @DisplayName("deve retornar 0 quando não há feedbacks")
-        void shouldReturnZeroWhenNoFeedbacks() {
+        @DisplayName("retorna 0.0 quando não há feedbacks")
+        void returns_zero_when_no_feedbacks() {
             when(feedbackRepository.findAll()).thenReturn(Collections.emptyList());
 
-            double result = feedbackService.getAverageRating();
-
-            assertThat(result).isEqualTo(0.0);
+            assertThat(feedbackService.getAverageRating()).isEqualTo(0.0);
         }
 
         @Test
-        @DisplayName("deve calcular média com um único feedback")
-        void shouldCalculateAverageWithSingleFeedback() {
-            when(feedbackRepository.findAll()).thenReturn(Arrays.asList(sampleFeedback));
+        @DisplayName("retorna exatamente o rating quando há um único feedback")
+        void returns_exact_rating_for_single_feedback() {
+            when(feedbackRepository.findAll()).thenReturn(List.of(sampleFeedback));
 
-            double result = feedbackService.getAverageRating();
-
-            assertThat(result).isEqualTo(5.0);
+            assertThat(feedbackService.getAverageRating()).isEqualTo(5.0);
         }
     }
 }

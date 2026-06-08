@@ -3,32 +3,28 @@ package com.tiagoportilho.ServEasy.config;
 import com.tiagoportilho.ServEasy.model.User;
 import com.tiagoportilho.ServEasy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 @Component
+@Profile("!prod")
 @RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
-        // Criar usuários padrão se não existirem
+    public void run(String... args) {
         createDefaultUsers();
-        
-        System.out.println("=== SISTEMA INICIADO COM USUÁRIOS PADRÃO ===");
-        System.out.println("Admin: admin / admin123");
-        System.out.println("Cozinheiro: cozinheiro / cozinha123");
-        System.out.println("Atendente: atendente / atende123");
-        System.out.println("=============================================");
+        log.info("Default users initialized (dev/docker profile)");
     }
-    
+
     private void createDefaultUsers() {
-        // Criar usuário Admin
         if (!userRepository.existsByUsername("admin")) {
             User admin = new User();
             admin.setUsername("admin");
@@ -36,10 +32,9 @@ public class DataInitializer implements CommandLineRunner {
             admin.setRole(User.UserRole.ADMIN);
             admin.setFullName("Administrador do Sistema");
             userRepository.save(admin);
-            System.out.println("✓ Usuário admin criado com sucesso!");
+            log.info("User 'admin' created");
         }
-        
-        // Criar usuário Cozinheiro
+
         if (!userRepository.existsByUsername("cozinheiro")) {
             User cozinheiro = new User();
             cozinheiro.setUsername("cozinheiro");
@@ -47,10 +42,9 @@ public class DataInitializer implements CommandLineRunner {
             cozinheiro.setRole(User.UserRole.COZINHEIRO);
             cozinheiro.setFullName("Cozinheiro Padrão");
             userRepository.save(cozinheiro);
-            System.out.println("✓ Usuário cozinheiro criado com sucesso!");
+            log.info("User 'cozinheiro' created");
         }
-        
-        // Criar usuário Atendente
+
         if (!userRepository.existsByUsername("atendente")) {
             User atendente = new User();
             atendente.setUsername("atendente");
@@ -58,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
             atendente.setRole(User.UserRole.CLIENTE_ATENDENTE);
             atendente.setFullName("Atendente Padrão");
             userRepository.save(atendente);
-            System.out.println("✓ Usuário atendente criado com sucesso!");
+            log.info("User 'atendente' created");
         }
     }
 }

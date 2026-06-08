@@ -1,26 +1,31 @@
 package com.tiagoportilho.ServEasy.controller.api;
 
 import com.tiagoportilho.ServEasy.dto.ApiResponse;
+import com.tiagoportilho.ServEasy.exception.BusinessException;
+import com.tiagoportilho.ServEasy.exception.ResourceNotFoundException;
 import com.tiagoportilho.ServEasy.model.Order;
 import com.tiagoportilho.ServEasy.model.RestaurantTable;
 import com.tiagoportilho.ServEasy.model.Sale;
 import com.tiagoportilho.ServEasy.service.OrderService;
 import com.tiagoportilho.ServEasy.service.SaleService;
 import com.tiagoportilho.ServEasy.service.TableService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tables")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@Tag(name = "Mesas", description = "Gestão de mesas: disponibilidade, ocupação e fechamento de conta")
 public class TableController {
 
     private final TableService tableService;
@@ -28,267 +33,188 @@ public class TableController {
     private final SaleService saleService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Listar mesas", description = "Retorna todas as mesas com seus status atuais.")
     public ResponseEntity<ApiResponse<List<RestaurantTable>>> getAllTables() {
-        try {
-            List<RestaurantTable> tables = tableService.getAllTables();
-            return ResponseEntity.ok(ApiResponse.success(tables));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.error("Erro ao buscar mesas: " + e.getMessage()));
-        }
+        return ResponseEntity.ok(ApiResponse.success(tableService.getAllTables()));
     }
 
     @GetMapping("/available")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Mesas disponíveis", description = "Retorna apenas as mesas com status DISPONIVEL.")
     public ResponseEntity<ApiResponse<List<RestaurantTable>>> getAvailableTables() {
-        try {
-            List<RestaurantTable> tables = tableService.getAvailableTables();
-            return ResponseEntity.ok(ApiResponse.success(tables));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.error("Erro ao buscar mesas disponíveis: " + e.getMessage()));
-        }
+        return ResponseEntity.ok(ApiResponse.success(tableService.getAvailableTables()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<RestaurantTable>> getTableById(@PathVariable Long id) {
-        try {
-            Optional<RestaurantTable> table = tableService.getTableById(id);
-            if (table.isPresent()) {
-                return ResponseEntity.ok(ApiResponse.success(table.get()));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.error("Erro ao buscar mesa: " + e.getMessage()));
-        }
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Buscar mesa por ID", description = "Retorna uma mesa específica. Retorna 404 se não encontrada.")
+    public ResponseEntity<ApiResponse<RestaurantTable>> getTableById(
+            @Parameter(description = "ID da mesa", example = "1") @PathVariable Long id) {
+        RestaurantTable table = tableService.getTableById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Mesa", id));
+        return ResponseEntity.ok(ApiResponse.success(table));
     }
 
     @GetMapping("/number/{tableNumber}")
-    public ResponseEntity<ApiResponse<RestaurantTable>> getTableByNumber(@PathVariable Integer tableNumber) {
-        try {
-            Optional<RestaurantTable> table = tableService.getTableByNumber(tableNumber);
-            if (table.isPresent()) {
-                return ResponseEntity.ok(ApiResponse.success(table.get()));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.error("Erro ao buscar mesa: " + e.getMessage()));
-        }
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Buscar mesa por número", description = "Retorna uma mesa pelo seu número. Retorna 404 se não encontrada.")
+    public ResponseEntity<ApiResponse<RestaurantTable>> getTableByNumber(
+            @Parameter(description = "Número da mesa", example = "5") @PathVariable Integer tableNumber) {
+        RestaurantTable table = tableService.getTableByNumber(tableNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Mesa", "número " + tableNumber));
+        return ResponseEntity.ok(ApiResponse.success(table));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Criar mesa", description = "Cria uma nova mesa. Retorna 409 se o número já existir. Somente ADMIN.")
     public ResponseEntity<ApiResponse<RestaurantTable>> createTable(@RequestBody RestaurantTable table) {
-        try {
-            RestaurantTable savedTable = tableService.saveTable(table);
-            return ResponseEntity.ok(ApiResponse.success("Mesa criada com sucesso", savedTable));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao criar mesa: " + e.getMessage()));
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Mesa criada com sucesso", tableService.saveTable(table)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<RestaurantTable>> updateTable(@PathVariable Long id, @RequestBody RestaurantTable table) {
-        try {
-            table.setId(id);
-            RestaurantTable updatedTable = tableService.saveTable(table);
-            return ResponseEntity.ok(ApiResponse.success("Mesa atualizada com sucesso", updatedTable));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao atualizar mesa: " + e.getMessage()));
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Atualizar mesa", description = "Atualiza dados de uma mesa. Somente ADMIN.")
+    public ResponseEntity<ApiResponse<RestaurantTable>> updateTable(
+            @Parameter(description = "ID da mesa", example = "1") @PathVariable Long id,
+            @RequestBody RestaurantTable table) {
+        table.setId(id);
+        return ResponseEntity.ok(ApiResponse.success("Mesa atualizada", tableService.saveTable(table)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteTable(@PathVariable Long id) {
-        try {
-            tableService.deleteTable(id);
-            return ResponseEntity.ok(ApiResponse.success("Mesa deletada com sucesso", null));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao deletar mesa: " + e.getMessage()));
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Deletar mesa", description = "Remove permanentemente uma mesa. Somente ADMIN.")
+    public ResponseEntity<Void> deleteTable(
+            @Parameter(description = "ID da mesa", example = "1") @PathVariable Long id) {
+        tableService.deleteTable(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Atualizar status da mesa por ID", description = "Altera o status da mesa (DISPONIVEL, OCUPADA, RESERVADA, MANUTENCAO).")
     public ResponseEntity<ApiResponse<RestaurantTable>> updateTableStatus(
-            @PathVariable Long id, 
-            @RequestParam RestaurantTable.TableStatus status) {
-        try {
-            RestaurantTable updatedTable = tableService.updateTableStatus(id, status);
-            return ResponseEntity.ok(ApiResponse.success("Status da mesa atualizado", updatedTable));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao atualizar status: " + e.getMessage()));
-        }
+            @Parameter(description = "ID da mesa", example = "1") @PathVariable Long id,
+            @Parameter(description = "Novo status", example = "OCUPADA") @RequestParam RestaurantTable.TableStatus status) {
+        return ResponseEntity.ok(ApiResponse.success("Status da mesa atualizado", tableService.updateTableStatus(id, status)));
     }
 
     @PatchMapping("/number/{tableNumber}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Atualizar status da mesa por número", description = "Altera o status da mesa pelo número.")
     public ResponseEntity<ApiResponse<RestaurantTable>> updateTableStatusByNumber(
-            @PathVariable Integer tableNumber, 
-            @RequestParam RestaurantTable.TableStatus status) {
-        try {
-            RestaurantTable updatedTable = tableService.updateTableStatusByNumber(tableNumber, status);
-            return ResponseEntity.ok(ApiResponse.success("Status da mesa atualizado", updatedTable));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao atualizar status: " + e.getMessage()));
-        }
+            @Parameter(description = "Número da mesa", example = "5") @PathVariable Integer tableNumber,
+            @Parameter(description = "Novo status", example = "OCUPADA") @RequestParam RestaurantTable.TableStatus status) {
+        return ResponseEntity.ok(ApiResponse.success("Status da mesa atualizado",
+                tableService.updateTableStatusByNumber(tableNumber, status)));
     }
 
     @PostMapping("/occupy/{tableNumber}")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Ocupar mesa", description = "Marca a mesa como OCUPADA. Retorna 409 se já ocupada.")
     public ResponseEntity<ApiResponse<RestaurantTable>> occupyTable(
-            @PathVariable Integer tableNumber,
+            @Parameter(description = "Número da mesa", example = "5") @PathVariable Integer tableNumber,
             @RequestParam(required = false) String customerName) {
-        try {
-            Optional<RestaurantTable> tableOpt = tableService.getTableByNumber(tableNumber);
-            if (tableOpt.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
+        RestaurantTable table = tableService.getTableByNumber(tableNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Mesa", "número " + tableNumber));
 
-            RestaurantTable table = tableOpt.get();
-            
-            if (table.getStatus() == RestaurantTable.TableStatus.OCUPADA) {
-                return ResponseEntity.badRequest()
-                        .body(ApiResponse.error("Mesa já está ocupada"));
-            }
-            
-            if (table.getStatus() == RestaurantTable.TableStatus.RESERVADA) {
-                // Se está reservada, precisa confirmar com nome do cliente
-                if (customerName == null || customerName.trim().isEmpty()) {
-                    return ResponseEntity.badRequest()
-                            .body(ApiResponse.error("Mesa reservada. Informe o nome do cliente para confirmar a reserva."));
-                }
-                // Aqui poderia validar o nome com o sistema de reservas
-                // Por agora, vamos apenas aceitar qualquer nome não vazio
-            }
-            
-            RestaurantTable updatedTable = tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.OCUPADA);
-            return ResponseEntity.ok(ApiResponse.success("Mesa ocupada com sucesso", updatedTable));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao ocupar mesa: " + e.getMessage()));
+        if (table.getStatus() == RestaurantTable.TableStatus.OCUPADA) {
+            throw new BusinessException("Mesa já está ocupada", HttpStatus.CONFLICT, "TABLE_ALREADY_OCCUPIED");
         }
+        if (table.getStatus() == RestaurantTable.TableStatus.RESERVADA
+                && (customerName == null || customerName.isBlank())) {
+            throw new BusinessException("Mesa reservada. Informe o nome do cliente para confirmar.",
+                    HttpStatus.BAD_REQUEST, "CUSTOMER_NAME_REQUIRED");
+        }
+
+        return ResponseEntity.ok(ApiResponse.success("Mesa ocupada com sucesso",
+                tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.OCUPADA)));
     }
 
     @PostMapping("/release/{tableNumber}")
-    public ResponseEntity<ApiResponse<RestaurantTable>> releaseTable(@PathVariable Integer tableNumber) {
-        try {
-            Optional<RestaurantTable> tableOpt = tableService.getTableByNumber(tableNumber);
-            if (tableOpt.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Liberar mesa", description = "Marca a mesa como DISPONIVEL. Retorna 409 se a mesa não estiver ocupada.")
+    public ResponseEntity<ApiResponse<RestaurantTable>> releaseTable(
+            @Parameter(description = "Número da mesa", example = "5") @PathVariable Integer tableNumber) {
+        RestaurantTable table = tableService.getTableByNumber(tableNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Mesa", "número " + tableNumber));
 
-            RestaurantTable table = tableOpt.get();
-            
-            if (table.getStatus() != RestaurantTable.TableStatus.OCUPADA) {
-                return ResponseEntity.badRequest()
-                        .body(ApiResponse.error("Mesa não está ocupada"));
-            }
-            
-            RestaurantTable updatedTable = tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
-            return ResponseEntity.ok(ApiResponse.success("Mesa liberada com sucesso", updatedTable));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao liberar mesa: " + e.getMessage()));
+        if (table.getStatus() != RestaurantTable.TableStatus.OCUPADA) {
+            throw new BusinessException("Mesa não está ocupada", HttpStatus.CONFLICT, "TABLE_NOT_OCCUPIED");
         }
+
+        return ResponseEntity.ok(ApiResponse.success("Mesa liberada com sucesso",
+                tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL)));
     }
 
     @PostMapping("/close-account/{tableNumber}")
-    public ResponseEntity<ApiResponse<Object>> closeTableAccount(@PathVariable Integer tableNumber) {
-        try {
-            Optional<RestaurantTable> tableOpt = tableService.getTableByNumber(tableNumber);
-            if (tableOpt.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENTE_ATENDENTE')")
+    @Operation(summary = "Fechar conta da mesa",
+            description = "Fecha a conta, registra a venda e libera a mesa. Retorna 409 se houver pedidos prontos aguardando entrega.")
+    public ResponseEntity<ApiResponse<Object>> closeTableAccount(
+            @Parameter(description = "Número da mesa", example = "5") @PathVariable Integer tableNumber) {
+        RestaurantTable table = tableService.getTableByNumber(tableNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Mesa", "número " + tableNumber));
 
-            RestaurantTable table = tableOpt.get();
-            
-            if (table.getStatus() != RestaurantTable.TableStatus.OCUPADA) {
-                return ResponseEntity.badRequest()
-                        .body(ApiResponse.error("Mesa não está ocupada"));
-            }
-
-            // Buscar todos os pedidos da mesa
-            List<Order> pedidosDaMesa = orderService.getOrdersByTable(tableNumber);
-            
-            if (pedidosDaMesa.isEmpty()) {
-                // Não há pedidos, apenas liberar a mesa
-                tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
-                return ResponseEntity.ok(ApiResponse.success("Mesa liberada - nenhum pedido encontrado", null));
-            }
-
-            // Verificar status dos pedidos
-            List<Order> pedidosProntos = pedidosDaMesa.stream()
-                    .filter(p -> p.getStatus() == Order.OrderStatus.PRONTO)
-                    .collect(Collectors.toList());
-
-            List<Order> pedidosEntregues = pedidosDaMesa.stream()
-                    .filter(p -> p.getStatus() == Order.OrderStatus.ENTREGUE)
-                    .collect(Collectors.toList());
-
-            List<Order> pedidosAtivos = pedidosDaMesa.stream()
-                    .filter(p -> p.getStatus() == Order.OrderStatus.NOVO || p.getStatus() == Order.OrderStatus.EM_ANDAMENTO)
-                    .collect(Collectors.toList());
-
-            // REGRA: Não permitir fechar se há pedidos PRONTOS (aguardando entrega)
-            if (!pedidosProntos.isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body(ApiResponse.error("Não é possível fechar a conta. Há " + pedidosProntos.size() + " pedido(s) pronto(s) aguardando entrega."));
-            }
-
-            // Calcular total apenas dos pedidos ENTREGUES
-            BigDecimal totalCobrar = pedidosEntregues.stream()
-                    .map(Order::getTotal)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            int totalItens = pedidosEntregues.stream()
-                    .mapToInt(p -> p.getItems() != null ? p.getItems().size() : 0)
-                    .sum();
-
-            // Se há pedidos ativos, retornar aviso
-            String avisoAtivos = "";
-            if (!pedidosAtivos.isEmpty()) {
-                avisoAtivos = pedidosAtivos.size() + " pedido(s) em preparo será(ão) cancelado(s). ";
-            }
-
-            // Criar venda no sistema
-            if (totalCobrar.compareTo(BigDecimal.ZERO) > 0) {
-                Sale sale = new Sale();
-                sale.setTableNumber(tableNumber);
-                sale.setTotalAmount(totalCobrar);
-                sale.setItemsCount(totalItens);
-                sale.setOrderIds(pedidosEntregues.stream()
-                        .map(p -> p.getId().toString())
-                        .collect(Collectors.joining(",")));
-                sale.setPaymentMethod("DINHEIRO"); // Default - poderia ser parametrizado
-                sale.setCancelledOrdersCount(pedidosAtivos.size()); // Registrar quantos foram cancelados
-                
-                saleService.saveSale(sale);
-            }
-
-            // Deletar TODOS os pedidos da mesa
-            for (Order pedido : pedidosDaMesa) {
-                orderService.deleteOrder(pedido.getId());
-            }
-
-            // Liberar mesa
-            tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
-
-            String mensagem = avisoAtivos + "Conta fechada com sucesso. Total cobrado: R$ " + totalCobrar.toString();
-            
-            return ResponseEntity.ok(ApiResponse.success(mensagem, Map.of(
-                    "totalCobrado", totalCobrar,
-                    "pedidosEntregues", pedidosEntregues.size(),
-                    "pedidosCancelados", pedidosAtivos.size()
-            )));
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Erro ao fechar conta: " + e.getMessage()));
+        if (table.getStatus() != RestaurantTable.TableStatus.OCUPADA) {
+            throw new BusinessException("Mesa não está ocupada", HttpStatus.CONFLICT, "TABLE_NOT_OCCUPIED");
         }
+
+        List<Order> pedidosDaMesa = orderService.getOrdersByTable(tableNumber);
+
+        if (pedidosDaMesa.isEmpty()) {
+            tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
+            return ResponseEntity.ok(ApiResponse.success("Mesa liberada — nenhum pedido encontrado", null));
+        }
+
+        List<Order> pedidosProntos = pedidosDaMesa.stream()
+                .filter(p -> p.getStatus() == Order.OrderStatus.PRONTO).toList();
+
+        if (!pedidosProntos.isEmpty()) {
+            throw new BusinessException(
+                    "Não é possível fechar a conta. Há " + pedidosProntos.size() + " pedido(s) pronto(s) aguardando entrega.",
+                    HttpStatus.CONFLICT, "PENDING_DELIVERY");
+        }
+
+        List<Order> pedidosEntregues = pedidosDaMesa.stream()
+                .filter(p -> p.getStatus() == Order.OrderStatus.ENTREGUE).toList();
+
+        List<Order> pedidosAtivos = pedidosDaMesa.stream()
+                .filter(p -> p.getStatus() == Order.OrderStatus.NOVO
+                        || p.getStatus() == Order.OrderStatus.EM_ANDAMENTO).toList();
+
+        BigDecimal totalCobrar = pedidosEntregues.stream()
+                .map(Order::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        int totalItens = pedidosEntregues.stream()
+                .mapToInt(p -> p.getItems() != null ? p.getItems().size() : 0)
+                .sum();
+
+        if (totalCobrar.compareTo(BigDecimal.ZERO) > 0) {
+            Sale sale = new Sale();
+            sale.setTableNumber(tableNumber);
+            sale.setTotalAmount(totalCobrar);
+            sale.setItemsCount(totalItens);
+            sale.setOrderIds(pedidosEntregues.stream()
+                    .map(p -> p.getId().toString())
+                    .reduce((a, b) -> a + "," + b).orElse(""));
+            sale.setPaymentMethod("DINHEIRO");
+            sale.setCancelledOrdersCount(pedidosAtivos.size());
+            saleService.saveSale(sale);
+        }
+
+        pedidosDaMesa.forEach(p -> orderService.deleteOrder(p.getId()));
+        tableService.updateTableStatus(table.getId(), RestaurantTable.TableStatus.DISPONIVEL);
+
+        String aviso = pedidosAtivos.isEmpty() ? "" : pedidosAtivos.size() + " pedido(s) em preparo cancelado(s). ";
+        return ResponseEntity.ok(ApiResponse.success(
+                aviso + "Conta fechada. Total: R$ " + totalCobrar,
+                Map.of("totalCobrado", totalCobrar,
+                        "pedidosEntregues", pedidosEntregues.size(),
+                        "pedidosCancelados", pedidosAtivos.size())));
     }
 }
